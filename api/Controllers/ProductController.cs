@@ -1,3 +1,4 @@
+using api.Dto;
 using api.Service;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,6 +34,30 @@ namespace api.Controllers
             }
 
             return Ok(product); 
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreateProductRequestDto dto)
+        {
+            var viewModel = await _productListingService.CreateAsync(dto);
+
+            return CreatedAtAction(nameof(GetById), new { id = viewModel.Id }, viewModel);
+        }
+
+        [HttpPut]
+        [Route("{id}")]
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateProductRequestDto dto)
+        {
+            try
+            {
+                var productModel = await _productListingService.UpdateAsync(id, dto);
+                
+                return Ok(productModel);
+            }
+            catch (Exception)
+            {
+                return NotFound();
+            }
         }
     }
 }
