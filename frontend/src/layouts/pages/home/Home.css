@@ -1,0 +1,628 @@
+.home {
+    padding: 20px 250px;
+}
+
+.hero {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    margin-top: 30px;
+    padding: 30px 0;
+}
+
+.top-content {
+    display: flex;
+    justify-content: space-between;
+}
+
+.new {
+    display: flex;
+    background: url("src/assets/img/new.jpg");
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 60%;
+    height: 500px;
+}
+
+.new h1 {
+    color: #fff;
+    font-size: 90px;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: 5px;
+}
+
+.new h3 {
+    color: #fff;
+    font-size: 52px;
+    font-weight: 200;
+    line-height: 1;
+    letter-spacing: 5px;
+}
+
+.new button {
+    outline: none;
+    border: none;
+    color: #fff;
+    background: #262626;
+    padding: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    font-weight: 300;
+    width: 20%;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.new button:hover {
+    background: #000;
+}
+
+.collection {
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    height: 500px;
+    margin-left: 30px;
+}
+
+#women {
+    background: url("src/assets/img/women.jpg") no-repeat;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#women h5,
+#men h5 {
+    font-weight: 200;
+    font-size: 20px;
+}
+
+#women h3,
+#men h3 {
+    font-weight: 700;
+    font-size: 52px;
+    line-height: 1;
+    letter-spacing: 3px;
+}
+
+#men {
+    background: url("src/assets/img/men.jpg") no-repeat;
+    height: 250px;
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.bottom-content {
+    display: grid;
+    grid-template-columns: repeat(3, 2fr);
+    grid-gap: 30px;
+    margin-top: 30px;
+}
+
+.sale {
+    background: url("src/assets/img/sale.jpg");
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.sale p {
+    font-weight: 200;
+    font-size: 18px;
+    color: #fff;
+    line-height: 1.5;
+}
+
+.sale h1 {
+    font-weight: 900;
+    font-size: 70px;
+    line-height: 1;
+    letter-spacing: 5px;
+    color: #fff;
+}
+
+.free {
+    background: url("src/assets/img/free.jpg");
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.free p {
+    font-weight: 200;
+    font-size: 20px;
+    color: #fff;
+}
+
+.free h1 {
+    font-weight: 700;
+    font-size: 45px;
+    line-height: 1;
+    letter-spacing: 3px;
+    color: #fff;
+}
+
+.footwear {
+    background: url("src/assets/img/footware.jpg");
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.footwear p {
+    font-weight: 200;
+    font-size: 20px;
+}
+
+.footwear h1 {
+    font-weight: 700;
+    font-size: 45px;
+    line-height: 1;
+    letter-spacing: 3px;
+}
+
+.brands {
+    display: flex;
+    padding: 30px 0;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.brand {
+    width: 200px;
+    height: 100px;
+}
+
+.popular-products,
+.onsale-products {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 30px 0;
+    width: 100%;
+}
+
+.popular-products h1,
+.onsale-products h1 {
+    font-size: 52px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 3px;
+}
+
+.product-items {
+    display: grid;
+    grid-template-columns: repeat(3, 2fr);
+    grid-gap: 30px;
+    margin-top: 30px;
+    width: 100%;
+}
+
+.product-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.product-item img {
+    max-width: 100%;
+}
+
+.product-item p {
+    line-height: 1;
+    letter-spacing: 1px;
+    font-weight: 200;
+    font-size: 12px;
+    text-transform: capitalize !important;
+    margin-top: 20px;
+}
+
+.product-item h6 {
+    margin-top: 10px;
+    font-size: 20px;
+}
+
+/*deals*/
+.deals {
+    display: grid;
+    grid-template-columns: repeat(2, 2fr);
+    padding: 30px 0;
+    width: 100%;
+    grid-gap: 30px;
+    margin-top: 30px;
+}
+
+.deals h1 {
+    font-weight: 700;
+    font-size: 70px;
+    line-height: 1;
+    letter-spacing: 3px;
+}
+
+.deals h5 {
+    font-size: 52px;
+    font-weight: 200;
+    line-height: 1;
+    letter-spacing: 5px;
+}
+
+#deal-one {
+    display: flex;
+    flex-direction: column;
+    background: url("src/assets/img/deal1.jpg");
+    height: 400px;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+}
+
+#deal-two {
+    display: flex;
+    flex-direction: column;
+    background: url("src/assets/img/deal2.jpg");
+    height: 400px;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+}
+
+/*showcase*/
+.showcase {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    padding: 30px 0;
+    margin-top: 30px;
+    width: 100%;
+    grid-gap: 30px;
+}
+
+.img {
+    display: flex;
+    width: 100%;
+}
+
+.img img {
+    max-width: 100%;
+}
+
+/*responsiveness*/
+@media (max-width: 768px) {
+    .home {
+        padding: 20px 20px;
+        width: 100% !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-content: center;
+    }
+
+    .hero {
+        display: flex;
+        width: 100% !important;
+        flex-direction: column;
+        margin-top: 30px;
+        padding: 0 0;
+    }
+
+    .top-content {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        width: 100%;
+        padding: 0;
+    }
+
+    .new {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 500px;
+    }
+
+    .new h1 {
+        color: #fff;
+        font-size: 75px;
+        font-weight: 900;
+        line-height: 1;
+        letter-spacing: 5px;
+    }
+
+    .new h3 {
+        color: #fff;
+        font-size: 32px;
+        text-align: center;
+        font-weight: 200;
+        line-height: 1;
+        letter-spacing: 5px;
+        margin-top: 20px;
+    }
+
+    .new button {
+        outline: none;
+        border: none;
+        color: #fff;
+        background: #262626;
+        padding: 15px;
+        font-size: 24px;
+        cursor: pointer;
+        font-weight: 300;
+        width: 50%;
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .new button:hover {
+        background: #000;
+    }
+
+    .collection {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 500px;
+        margin-left: 0;
+        margin-top: 30px;
+    }
+
+    #women {
+        background: url("src/assets/img/women.jpg") no-repeat center;
+        height: 250px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+
+    #women h5,
+    #men h5 {
+        font-weight: 200;
+        font-size: 20px;
+    }
+
+    #women h3,
+    #men h3 {
+        font-weight: 700;
+        font-size: 52px;
+        line-height: 1;
+        letter-spacing: 3px;
+    }
+
+    #men {
+        background: url("src/assets/img/men.jpg") no-repeat center;
+        height: 250px;
+        margin-top: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100% !important;
+    }
+
+    .bottom-content {
+        display: grid;
+        grid-template-columns: repeat(1, 2fr);
+        grid-gap: 30px;
+        margin-top: 30px;
+        width: 100%;
+    }
+
+    .sale {
+        background: url("src/assets/img/sale.jpg") center;
+        height: 250px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100% !important;
+    }
+
+    .sale p {
+        font-weight: 200;
+        font-size: 18px;
+        color: #fff;
+        line-height: 1.5;
+    }
+
+    .sale h1 {
+        font-weight: 900;
+        font-size: 70px;
+        line-height: 1;
+        letter-spacing: 5px;
+        color: #fff;
+    }
+
+    .free {
+        background: url("src/assets/img/free.jpg") center;
+        height: 250px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .free p {
+        font-weight: 200;
+        font-size: 20px;
+        color: #fff;
+    }
+
+    .free h1 {
+        font-weight: 700;
+        font-size: 40px;
+        line-height: 1;
+        letter-spacing: 3px;
+        color: #fff;
+        text-align: center;
+    }
+
+    .footwear {
+        background: url("src/assets/img/footware.jpg") center;
+        height: 250px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .footwear p {
+        font-weight: 200;
+        font-size: 20px;
+    }
+
+    .footwear h1 {
+        font-weight: 700;
+        font-size: 40px;
+        line-height: 1;
+        letter-spacing: 3px;
+        text-align: center;
+    }
+
+    .brands {
+        display: flex;
+        padding: 20px 0;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+
+    .brand {
+        width: 130px;
+        height: 100px;
+    }
+
+    .popular-products,
+    .onsale-products {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px 0;
+        width: 100%;
+    }
+
+    .popular-products h1,
+    .onsale-products h1 {
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 3px;
+    }
+
+    .product-items {
+        display: grid;
+        grid-template-columns: repeat(1, 2fr);
+        grid-gap: 30px;
+        margin-top: 30px;
+        width: 100%;
+    }
+
+    .product-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-item img {
+        max-width: 100%;
+    }
+
+    .product-item p {
+        line-height: 1;
+        letter-spacing: 1px;
+        font-weight: 200;
+        font-size: 12px;
+        text-transform: capitalize !important;
+        margin-top: 20px;
+    }
+
+    .product-item h6 {
+        margin-top: 10px;
+        font-size: 20px;
+    }
+
+    /*deals*/
+    .deals {
+        display: grid;
+        grid-template-columns: repeat(1, 2fr);
+        padding: 0 0;
+        width: 100%;
+        grid-gap: 30px;
+        margin-top: 30px;
+    }
+
+    .deals h1 {
+        font-weight: 700;
+        font-size: 40px;
+        text-align: center;
+        line-height: 1;
+        letter-spacing: 3px;
+    }
+
+    .deals h5 {
+        font-size: 32px;
+        font-weight: 200;
+        line-height: 1;
+        letter-spacing: 5px;
+        text-align: center;
+    }
+
+    #deal-one {
+        display: flex;
+        flex-direction: column;
+        background: url("src/assets/img/deal1.jpg") center;
+        height: 400px;
+        cursor: pointer;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+    }
+
+    #deal-two {
+        display: flex;
+        flex-direction: column;
+        background: url("src/assets/img/deal2.jpg") center;
+        height: 400px;
+        cursor: pointer;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /*showcase*/
+    .showcase {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        padding: 0 0;
+        margin-top: 30px;
+        width: 100%;
+        grid-gap: 20px;
+    }
+
+    .img {
+        display: flex;
+        width: 100%;
+    }
+
+    .img img {
+        max-width: 100%;
+    }
+}

@@ -1,0 +1,418 @@
+@import url("https://fonts.googleapis.com/css2?family=Ysabeau+SC:wght@1;100;200;300;400;500;600;700;800;900;1000&display=swap");
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Ysabeau SC", sans-serif;
+}
+
+.app {
+    width: 100%;
+}
+
+/*navbar styles*/
+.navbar {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 250px;
+}
+
+.logo {
+    display: flex;
+    cursor: pointer;
+}
+
+.logo h1 {
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: 8px;
+    font-size: 52px;
+}
+
+.nav-action {
+    display: flex;
+    width: 10%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-links {
+    display: flex;
+    width: 20%;
+    justify-content: center;
+    align-items: center;
+}
+
+.nav-links ul {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navLinkItem {
+    text-decoration: none !important;
+    font-size: 1.2rem;
+    color: #999999;
+}
+
+.navLinkItem:hover,
+.active {
+    color: #000;
+}
+
+#auth-icon {
+    cursor: pointer;
+}
+/*end of navbar styles*/
+
+/*category styles*/
+
+.category {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: black;
+    height: 70px;
+    color: #fff;
+    padding: 20px 250px;
+}
+
+.category-links {
+    display: flex;
+    align-items: center;
+    width: 60%;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.category-links p {
+    color: #999999;
+}
+
+.category-links p:hover {
+    color: #fff;
+}
+/*end of category styles*/
+
+/*footer */
+.footer {
+    background: #262626;
+    padding: 70px 250px;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.information,
+.pages {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-link {
+    text-decoration: none;
+    color: #999999;
+}
+
+.footer-link:hover {
+    color: #f43132;
+}
+
+.footer h3 {
+    color: #fff;
+    margin: 20px 0;
+}
+
+.footer p {
+    color: #999999;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.footer p i {
+    margin-right: 10px;
+}
+
+.subscribe {
+    display: flex;
+    align-items: center;
+}
+
+.subscribe input {
+    outline: none;
+    border: 1px solid #999999;
+    padding: 12px;
+    width: 70%;
+    background: transparent;
+}
+
+.subscribe button {
+    padding: 12px;
+    outline: none;
+    width: 30%;
+    cursor: pointer;
+}
+
+.social-icons {
+    margin-top: 18px;
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+/*login*/
+.login,
+.register {
+    display: flex;
+    justify-content: center;
+    padding: 100px 0;
+    width: 100%;
+}
+
+.login form,
+.register form {
+    display: flex;
+    flex-direction: column;
+    padding-top: 50px;
+    width: 50%;
+}
+
+.input-field {
+    display: flex;
+    width: 100%;
+}
+
+.input-field input {
+    padding: 15px;
+    margin-top: 15px;
+    outline: none;
+    width: 50%;
+    border: 1px solid #000;
+}
+
+.login form button,
+.register form button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 15%;
+    margin-top: 20px;
+    outline: none;
+    cursor: pointer;
+    padding: 15px;
+    color: #fff;
+    background: #000;
+    border: none;
+}
+/* REGULAR STYLES */
+
+/*!*RESPONSIVENESS*!*/
+@media (max-width: 768px) {
+    /*navbar styles*/
+    .navbar {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 250px;
+    }
+
+    .logo {
+        display: flex;
+    }
+
+    .logo h1 {
+        font-weight: 900;
+        line-height: 1;
+        letter-spacing: 8px;
+        font-size: 52px;
+    }
+
+    .nav-action {
+        display: flex;
+        width: 10%;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .nav-links {
+        display: flex;
+        width: 20%;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .nav-links ul {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .navLinkItem {
+        text-decoration: none !important;
+        font-size: 1.2rem;
+        color: #999999;
+    }
+
+    .navLinkItem:hover,
+    .active {
+        color: #000;
+    }
+
+    #auth-icon {
+        cursor: pointer;
+    }
+    /*end of navbar styles*/
+
+    /*category styles*/
+
+    .category {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        background: black;
+        height: 70px;
+        color: #fff;
+        padding: 20px 250px;
+    }
+
+    .category-links {
+        display: flex;
+        align-items: center;
+        width: 60%;
+        justify-content: space-between;
+        cursor: pointer;
+    }
+
+    .category-links p {
+        color: #999999;
+    }
+
+    .category-links p:hover {
+        color: #fff;
+    }
+    /*end of category styles*/
+
+    /*footer */
+    .footer {
+        background: #262626;
+        padding: 30px 20px;
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .information,
+    .pages {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .footer-link {
+        text-decoration: none;
+        color: #999999;
+    }
+
+    .footer-link:hover {
+        color: #f43132;
+    }
+
+    .footer h3 {
+        color: #fff;
+        margin: 20px 0;
+    }
+
+    .footer p {
+        color: #999999;
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+    }
+
+    .footer p i {
+        margin-right: 10px;
+    }
+
+    .subscribe {
+        display: flex;
+        align-items: center;
+    }
+
+    .subscribe input {
+        outline: none;
+        border: 1px solid #999999;
+        padding: 12px;
+        width: 70%;
+        background: transparent;
+    }
+
+    .subscribe button {
+        padding: 12px;
+        outline: none;
+        width: 30%;
+        cursor: pointer;
+    }
+
+    .social-icons {
+        margin-top: 18px;
+        width: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+    }
+
+    /*login*/
+    .login {
+        display: flex;
+        justify-content: center;
+        /*align-items: center;*/
+        height: 445px;
+        width: 100%;
+    }
+
+    .login form {
+        display: flex;
+        flex-direction: column;
+        padding-top: 50px;
+        width: 50%;
+    }
+
+    .input-field {
+        display: flex;
+        width: 100%;
+    }
+
+    .input-field input {
+        padding: 15px;
+        margin-top: 15px;
+        outline: none;
+        width: 50%;
+        border: 1px solid #000;
+    }
+
+    .login form button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 15%;
+        margin-top: 20px;
+        outline: none;
+        cursor: pointer;
+        padding: 15px;
+        color: #fff;
+        background: #000;
+        border: none;
+    }
+}
