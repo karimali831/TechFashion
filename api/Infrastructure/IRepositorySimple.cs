@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 
 namespace api.Infrastructure
 {
-     /// <summary>
+    /// <summary>
     /// Describes a low level repository use for basic data access
     /// Useful for entities with compound keys
     /// </summary>

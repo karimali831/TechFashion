@@ -1,88 +1,47 @@
-using System.Net.Http.Headers;
 using api.Data;
 using api.Dto;
-using api.Mapper;
+using api.Infrastructure;
 using api.Models;
 using api.ViewModels;
-using Microsoft.EntityFrameworkCore;
 
 namespace api.Service
 {
     public interface IProductListingService
     {
-        Task<Product?> GetByIdAsync(int id);
-        Task<List<ProductViewModel>> GetAllAsync();
-        Task<ProductViewModel> CreateAsync(CreateProductRequestDto dto);
-        Task<ProductViewModel> UpdateAsync(int id, UpdateProductRequestDto dto);
-        Task DeleteAsync(int id);
+        Task<IList<ProductViewModel>> GetAllAsync();
+        Task<ApiResponse<ProductViewModel>> GetAsync(int id);
+        Task<ApiResponse<ProductViewModel>> CreateAsync(CreateProductRequestDto dto);
+        Task<ApiResponse<ProductViewModel>> UpdateAsync(UpdateProductRequestDto dto);
+        Task<ApiResponse<bool>> DeleteAsync(int id);
     }
 
-    public class ProductListingService : IProductListingService
+    public class ProductListingService(AppDatabaseContext context) : EFRepositoryBase<Product>(context), IProductListingService
     {
-        private readonly AppDatabaseContext _context;
-
-        public ProductListingService(AppDatabaseContext context)
+        public async Task<IList<ProductViewModel>> GetAllAsync()
         {
-            _context = context;
+            return await GetViewModelAsync<ProductViewModel>();
         }
 
-        public async Task<List<ProductViewModel>> GetAllAsync()
+        public async Task<ApiResponse<ProductViewModel>> GetAsync(int id)
         {
-            return (await _context.Products.ToListAsync())
-                .Select(p => p.ToViewModel())
-                .ToList();
-        }
-
-        public async Task<Product?> GetByIdAsync(int id)
-        {
-            return await _context.Products.FindAsync(id);
+            return await GetViewModelAsync<ProductViewModel>(id);
         }
 
         public async Task<ApiResponse<ProductViewModel>> CreateAsync(CreateProductRequestDto dto)
         {
-            var productModel = dto.ToEntity();
-            await _context.Products.AddAsync(productModel);
-            await _context.SaveChangesAsync();
-
-            return productModel.ToViewModel();
+            var productModel = dto.ToEntity<Product, CreateProductRequestDto>();
+            return await InsertAndReturnViewModelAsync<ProductViewModel>(productModel);
         }
 
-        public async Task<ApiResponse<ProductViewModel>> UpdateAsync(int id, UpdateProductRequestDto dto)
+        public async Task<ApiResponse<ProductViewModel>> UpdateAsync(UpdateProductRequestDto dto)
         {
-            var productModel = await _context.Products.SingleOrDefaultAsync(x => x.Id == id);
-
-            if (productModel is null)
-            {
-                return new ApiResponse<ProductViewModel>
-                {
-                    ErrorMsg = "Product not found"
-                };
-            }
-
-            productModel.Sku = dto.Sku;
-            productModel.Price = dto.Price;
-
-            await _context.SaveChangesAsync();
-
-            return new ApiResponse<ProductViewModel>
-            {
-                Data = productModel.ToViewModel()
-            };
+            var model = dto.ToEntity<Product, UpdateProductRequestDto>();
+            return await UpdateAndReturnViewModelAsync<ProductViewModel>(model);
         }
 
-        public async Task<ApiResponse<ProductViewModel>> DeleteAsync(int id)
+        public async Task<ApiResponse<bool>> DeleteAsync(int id)
         {
-            var productModel = await _context.Products.SingleOrDefaultAsync(x => x.Id == id);
-
-            if (productModel is null)
-            {
-                return new ApiResponse<ProductViewModel>
-                {
-                    ErrorMsg = "Product not found"
-                };
-            }
-
-            await _context.Products.Remove(productModel);
+            return await RemoveAsync(id);
         }
     }
 }

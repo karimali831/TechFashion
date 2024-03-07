@@ -1,24 +1,32 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 using api.Data;
+using api.Dto;
 using Microsoft.EntityFrameworkCore;
 
 namespace api.Infrastructure
 {
-    public abstract class EFRepositoryBase<TEntity, TKey> : IRepositorySimple<TEntity> where TEntity : class
+    public abstract class EFRepositoryBase<TEntity>(AppDatabaseContext context) : IRepositorySimple<TEntity> where TEntity : class
     {
-        protected AppDatabaseContext _context;
-        protected readonly DbSet<TEntity> dbSet;
-        protected readonly IQueryable<TEntity> dbSetNoTracking;
+        protected AppDatabaseContext _context = context;
+        protected readonly DbSet<TEntity> dbSet = context.Set<TEntity>();
+        protected readonly IQueryable<TEntity> dbSetNoTracking = context.Set<TEntity>().AsNoTracking();
 
-
-        protected EFRepositoryBase(AppDatabaseContext context)
+        public async Task<ApiResponse<TEntity>> GetResponseByEntityIdAsync<T>(int id)
         {
-            dbSet = context.Set<TEntity>();
-            dbSetNoTracking = context.Set<TEntity>().AsNoTracking();
+            var entity = await GetByKeyAsync(id);
+
+            if (entity is null)
+            {
+                return new ApiResponse<TEntity>
+                {
+                    ErrorMsg = "Item not found"
+                };
+            }
+
+            return new ApiResponse<TEntity>
+            {
+                Data = entity
+            };
         }
 
         public virtual bool Insert(TEntity item)
@@ -30,6 +38,30 @@ namespace api.Infrastructure
             }
             return false;
         }
+
+        public async Task<ApiResponse<TViewModel>> InsertAndReturnViewModelAsync<TViewModel>(TEntity item)
+        {
+            try
+            {
+                await dbSet.AddAsync(item);
+                await _context.SaveChangesAsync();
+
+                return new ApiResponse<TViewModel>
+                {
+                    Data = item.ToViewModel<TViewModel, TEntity>()
+                };
+
+            }
+            catch (Exception exp)
+            {
+                return new ApiResponse<TViewModel>
+                {
+                    ErrorMsg = "An error occurred" + exp.Message
+                };
+            }
+        }
+
+
         public virtual TEntity InsertAndReturnItem(TEntity item)
         {
             dbSet.Add(item);
@@ -38,7 +70,7 @@ namespace api.Infrastructure
 
         public virtual bool Update(TEntity item)
         {
-            if (item != null)
+            if (item is not null)
             {
                 dbSet.Attach(item);
                 _context.Entry(item).State = EntityState.Modified;
@@ -48,17 +80,64 @@ namespace api.Infrastructure
 
             return false;
         }
+
+        public async Task<ApiResponse<TViewModel>> UpdateAndReturnViewModelAsync<TViewModel>(TEntity item)
+        {
+            try
+            {
+                dbSet.Attach(item);
+                _context.Entry(item).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                return new ApiResponse<TViewModel>
+                {
+                    Data = item.ToViewModel<TViewModel, TEntity>()
+                };
+            }
+            catch (Exception exp)
+            {
+                return new ApiResponse<TViewModel>
+                {
+                    ErrorMsg = "An error occurred: " + exp.Message
+                };
+            }
+        }
+
+        public async Task<ApiResponse<bool>> RemoveAsync(int id)
+        {
+            try
+            {
+                var entity = await GetByKeyAsync(id);
+                dbSet.Remove(entity);
+                await _context.SaveChangesAsync();
+
+                return new ApiResponse<bool>
+                {
+                    Data = true
+                };
+
+            }
+            catch (Exception exp)
+            {
+                return new ApiResponse<bool>
+                {
+                    ErrorMsg = "An error occurred:" + exp.Message
+                };
+            }
+        }
+
         public virtual bool Delete(TEntity entity)
         {
             dbSet.Remove(entity);
             return true;
         }
 
-        public virtual bool Delete(TKey id)
+        public virtual bool Delete(int id)
         {
-            TEntity? entity = dbSet.Find(id);
-            dbSet.Remove(entity);
+            TEntity? entity = dbSet.Find(id)
+                ?? throw new ApplicationException("Cannot delete entity. Does not exist: " + id);
 
+            dbSet.Remove(entity);
             return true;
         }
 
@@ -76,6 +155,7 @@ namespace api.Infrastructure
         {
             return [.. dbSet];
         }
+
         public virtual ICollection<TEntity> GetAll(params Expression<Func<TEntity, object>>[] includeProperties)
         {
             var query = dbSet.AsQueryable();
@@ -90,7 +170,7 @@ namespace api.Infrastructure
 
         public virtual ICollection<TEntity> Find(Expression<Func<TEntity, bool>> where)
         {
-            return dbSet.Where(where).ToList();
+            return [.. dbSet.Where(where)];
         }
         public TEntity? FindOne(Expression<Func<TEntity, bool>> where)
         {
@@ -115,7 +195,7 @@ namespace api.Infrastructure
         }
         public IEnumerable<TEntity> GetManyWithRelations(Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, object>> relations)
         {
-            return dbSet.Where(where).Include(relations).ToList();
+            return [.. dbSet.Where(where).Include(relations)];
         }
         public IEnumerable<TEntity> GetManyWithRelations(Expression<Func<TEntity, bool>> where, string relations)
         {
@@ -222,7 +302,7 @@ namespace api.Infrastructure
         /// <summary>
         /// get the PK for TEntity i.e. "return entity.ID"
         /// </summary>
-        protected virtual TKey GetKey(TEntity entity)
+        protected virtual int GetKey(TEntity entity)
         {
             //invoke the expression on our entity
             return BuildKeyExpression().Compile().Invoke(entity);
@@ -231,20 +311,25 @@ namespace api.Infrastructure
         /// <summary>
         /// Programatically build a linq expression to get the PK i.e. 'item => item.ID'
         /// </summary>
-        protected virtual Expression<Func<TEntity, TKey>> BuildKeyExpression()
+        protected virtual Expression<Func<TEntity, int>> BuildKeyExpression()
         {
             //programatically build a linq expression to get the PK e.g. "item => item.ID"
             var itemParameter = Expression.Parameter(typeof(TEntity), "item");
-            return Expression.Lambda<Func<TEntity, TKey>>
+            return Expression.Lambda<Func<TEntity, int>>
             (
                 Expression.Property(itemParameter, "Id"), itemParameter
             );
         }
 
 
-        public virtual TEntity? GetByKey(TKey id)
+        public virtual TEntity? GetByKey(int id)
         {
             return ((DbSet<TEntity>)Query()).Find(id);
+        }
+
+        public virtual async Task<TEntity?> GetByKeyAsync(int id)
+        {
+            return await ((DbSet<TEntity>)Query()).FindAsync(id);
         }
 
         public int Count(Expression<Func<TEntity, bool>>? Predicate = null)
@@ -264,6 +349,51 @@ namespace api.Infrastructure
         public ICollection<TEntity> GetAll(int pageNum, int pageSize)
         {
             return [.. dbSet.Skip(pageSize * pageNum).Take(pageSize)];
+        }
+
+        public async Task<IList<TEntity>> GetListAsync(Expression<Func<TEntity, bool>>? where = null)
+        {
+            if (where is not null)
+            {
+                return await dbSet.Where(where).ToListAsync();
+            }
+
+            return await dbSet.ToListAsync();
+        }
+
+        public async Task<ApiResponse<TViewModel>> GetViewModelAsync<TViewModel>(int id)
+        {
+            var entity = await GetByKeyAsync(id);
+
+            if (entity is null)
+            {
+                return new ApiResponse<TViewModel>
+                {
+                    ErrorMsg = "Item not found"
+                };
+            }
+
+            return new ApiResponse<TViewModel>
+            {
+                Data = entity.ToViewModel<TViewModel, TEntity>()
+            };
+        }
+
+        public async Task<IList<TViewModel>> GetViewModelAsync<TViewModel>(Expression<Func<TEntity, bool>>? where = null)
+        {
+            if (where is not null)
+            {
+                var list = await dbSet.Where(where).ToListAsync();
+                return ToViewModel<TViewModel>(list);
+            }
+
+            var results = await dbSet.ToListAsync();
+            return ToViewModel<TViewModel>(results);
+        }
+
+        private static IList<T> ToViewModel<T>(List<TEntity> entity)
+        {
+            return entity.ToList().Select(x => x.ToViewModel<T, TEntity>()).ToList();
         }
     }
 }
