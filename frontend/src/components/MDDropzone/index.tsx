@@ -3,8 +3,6 @@ import Dropzone from "dropzone";
 import "dropzone/dist/dropzone.css";
 import MDBox from "src/components/MDBox";
 import MDDropzoneRoot from "src/components/MDDropzone/MDDropzoneRoot";
-import { useAppSelector } from "src/state/Hooks";
-import { getDashboardState } from "src/state/contexts/dashboard/Selectors";
 
 interface Props {
     options: {
@@ -13,8 +11,7 @@ interface Props {
 }
 
 function MDDropzone({ options }: Props): JSX.Element {
-    const { darkMode } = useAppSelector(getDashboardState);
-
+    const darkMode = false;
     const dropzoneRef = useRef<HTMLFormElement | null>(null);
 
     useEffect(() => {

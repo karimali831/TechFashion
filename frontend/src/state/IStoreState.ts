@@ -1,12 +1,9 @@
-import {
-    IDashboardState,
-    dashboardInitialState,
-} from "./contexts/dashboard/IDashboardState";
+import { ICartState, cartInitialState } from "./contexts/cart/ICartState";
 
 export interface IStoreState {
-    dashboard: IDashboardState;
+    cart: ICartState;
 }
 
 export const StoreState: IStoreState = {
-    dashboard: dashboardInitialState,
+    cart: cartInitialState,
 };

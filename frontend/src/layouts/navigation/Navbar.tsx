@@ -1,6 +1,7 @@
 import { Link, type NavigateFunction, useNavigate } from "react-router-dom";
 import { FaShoppingCart, FaBalanceScale, FaUserAlt } from "react-icons/fa";
 import { navData } from "src/assets/data/navData";
+import "./styles.css";
 // import { useAppSelector } from "src/state/Hooks";
 
 const Navbar = (): JSX.Element => {
@@ -9,12 +10,17 @@ const Navbar = (): JSX.Element => {
     return (
         <div className="navbar">
             <div className="logo">
+                <img
+                    src="src/assets/img/logo.png"
+                    alt="Tech Fashion"
+                    className="logo-img"
+                />
                 <h1
                     onClick={() => {
                         navigate("/");
                     }}
                 >
-                    Styler
+                    Tech Fashion
                 </h1>
             </div>
             <div className="nav-links">

@@ -1,11 +1,8 @@
 import ckImg from "src/assets/img/ck.png";
-import dgImg from "src/assets/img/prada.png";
 import pradaImg from "src/assets/img/prada.png";
 import gucciImg from "src/assets/img/gucci.png";
 import vImg from "src/assets/img/v.png";
-import versacheImg from "src/assets/img/prada.png";
 import Carousel from "react-material-ui-carousel";
-import { ReactNode } from "react";
 
 export interface Brand {
     imgUrl: string;
@@ -28,7 +25,7 @@ export interface Options {
 
 const brandImgs: Brand[] = [
     {
-        imgUrl: dgImg,
+        imgUrl: pradaImg,
         id: 1,
         name: "dg",
     },
@@ -53,13 +50,18 @@ const brandImgs: Brand[] = [
         name: "v",
     },
     {
-        imgUrl: versacheImg,
+        imgUrl: pradaImg,
         id: 6,
         name: "versache",
     },
+    {
+        imgUrl: vImg,
+        id: 5,
+        name: "v",
+    },
 ];
 const Brands = (): JSX.Element => {
-    const sliderItems: number = brandImgs.length > 5 ? 5 : brandImgs.length;
+    const sliderItems: number = brandImgs.length > 6 ? 6 : brandImgs.length;
     const items: Array<any> = [];
 
     for (let i = 0; i < brandImgs.length; i += sliderItems) {
@@ -68,7 +70,10 @@ const Brands = (): JSX.Element => {
                 <div
                     key={i}
                     className="brand"
-                    style={{ display: "flex", flexDirection: "row" }}
+                    style={{
+                        display: "flex",
+                        flexDirection: "row",
+                    }}
                 >
                     {brandImgs.slice(i, i + sliderItems).map((brand, index) => {
                         return (
@@ -76,6 +81,7 @@ const Brands = (): JSX.Element => {
                                 key={index}
                                 src={brand.imgUrl}
                                 alt={brand.name}
+                                style={{ marginRight: 50 }}
                             />
                         );
                     })}
@@ -88,8 +94,10 @@ const Brands = (): JSX.Element => {
         <Carousel
             className="owl-carousel"
             autoPlay={true}
-            animation="fade"
+            animation="slide"
             duration={500}
+            interval={6000}
+            swipe={true}
         >
             {items}
         </Carousel>

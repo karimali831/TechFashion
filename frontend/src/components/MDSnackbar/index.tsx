@@ -8,9 +8,7 @@ import { SnackbarProps } from "@mui/material";
 import MDBox from "src/components/MDBox";
 import MDTypography from "src/components/MDTypography";
 import MDSnackbarIconRoot from "src/components/MDSnackbar/MDSnackbarIconRoot";
-import { SideNavColor } from "src/state/contexts/dashboard/IDashboardState";
-import { useAppSelector } from "src/state/Hooks";
-import { getDashboardState } from "src/state/contexts/dashboard/Selectors";
+import { SideNavColor } from "src/types/SideNavColor";
 
 // Declaring props types for MDSnackbar
 interface Props extends SnackbarProps {
@@ -38,7 +36,7 @@ function MDSnackbar({
     autoHideDuration,
     ...rest
 }: Props): JSX.Element {
-    const { darkMode } = useAppSelector(getDashboardState);
+    const darkMode = false;
 
     let titleColor: any;
     let dateTimeColor: any;

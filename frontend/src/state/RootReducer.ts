@@ -1,10 +1,10 @@
 import { combineReducers } from "@reduxjs/toolkit";
-import { dashboardReducer } from "./contexts/dashboard/Reducer";
-import { dashboardApi } from "../api/dashboardApi";
+import { cartReducer } from "./contexts/cart/Reducer";
+import { cartApi } from "src/api/cartApi";
 
 const rootReducer = combineReducers({
-    dashboard: dashboardReducer,
-    [dashboardApi.reducerPath]: dashboardApi.reducer,
+    cart: cartReducer,
+    [cartApi.reducerPath]: cartApi.reducer,
 });
 
 export default rootReducer;

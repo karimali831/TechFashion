@@ -1,8 +1,6 @@
 import { FC, ReactNode, forwardRef } from "react";
 import { TypographyProps } from "@mui/material";
 import MDTypographyRoot from "src/components/MDTypography/MDTypographyRoot";
-import { useAppSelector } from "src/state/Hooks";
-import { getDashboardState } from "src/state/contexts/dashboard/Selectors";
 
 // Declaring props types for MDTypography
 interface Props extends TypographyProps {
@@ -50,7 +48,8 @@ const MDTypography: FC<Props | any> = forwardRef(
         },
         ref
     ) => {
-        const { darkMode } = useAppSelector(getDashboardState);
+        const darkMode = false;
+
         return (
             <MDTypographyRoot
                 {...rest}

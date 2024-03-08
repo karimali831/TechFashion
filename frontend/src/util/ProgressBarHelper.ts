@@ -1,4 +1,4 @@
-import { SideNavColor } from "src/state/contexts/dashboard/IDashboardState";
+import { SideNavColor } from "src/types/SideNavColor";
 
 export function getProgressBarColor(
     value: number,

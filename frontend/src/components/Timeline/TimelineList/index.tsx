@@ -2,8 +2,6 @@ import { ReactNode } from "react";
 import Card from "@mui/material/Card";
 import MDBox from "src/components/MDBox";
 import MDTypography from "src/components/MDTypography";
-import { useAppSelector } from "src/state/Hooks";
-import { getDashboardState } from "src/state/contexts/dashboard/Selectors";
 import { TimelineProvider } from "../context";
 
 // Declaring props types for TimelineList
@@ -14,8 +12,6 @@ interface Props {
 }
 
 function TimelineList({ title, dark, children }: Props): JSX.Element {
-    const { darkMode } = useAppSelector(getDashboardState);
-
     return (
         <TimelineProvider value={dark}>
             <Card>

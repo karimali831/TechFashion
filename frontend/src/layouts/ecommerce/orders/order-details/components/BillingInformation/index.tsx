@@ -1,10 +1,8 @@
 import MDBox from "src/components/MDBox";
 import MDTypography from "src/components/MDTypography";
-import { useAppSelector } from "src/state/Hooks";
-import { getDashboardState } from "src/state/contexts/dashboard/Selectors";
 
 function BillingInformation(): JSX.Element {
-    const { darkMode } = useAppSelector(getDashboardState);
+    const darkMode = false;
 
     return (
         <>

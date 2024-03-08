@@ -23,13 +23,11 @@ import Tooltip from "@mui/material/Tooltip";
 import MDBox from "src/components/MDBox";
 import MDTypography from "src/components/MDTypography";
 import MDButton from "src/components/MDButton";
-import { useAppSelector } from "src/state/Hooks";
-import { getDashboardState } from "src/state/contexts/dashboard/Selectors";
 import masterCardLogo from "src/assets/img/cards/mastercard.png";
 import visaLogo from "src/assets/img/cards/visa.png";
 
 function PaymentMethod(): JSX.Element {
-    const { darkMode } = useAppSelector(getDashboardState);
+    const darkMode = false;
 
     return (
         <Card id="delete-account">

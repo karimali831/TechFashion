@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { dashboardApi } from "../api/dashboardApi";
 import rootReducer from "./RootReducer";
+import { cartApi } from "src/api/cartApi";
 // import { onAuthStateChanged } from "firebase/auth";
 // import { auth } from "../config/firebase";
 // import {
@@ -15,7 +15,7 @@ const store = configureStore({
     // and other useful features of `rtk-query`.
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({ serializableCheck: false }).concat([
-            dashboardApi.middleware,
+            cartApi.middleware,
         ]),
 });
 

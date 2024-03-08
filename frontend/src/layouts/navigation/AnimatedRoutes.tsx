@@ -2,7 +2,7 @@ import { AnimatePresence } from "framer-motion";
 import { Route, Routes } from "react-router-dom";
 import Home from "../pages/home";
 import Login from "../pages/login";
-import Products from "../pages/products/Products";
+import Products from "../pages/products";
 import Register from "../pages/register/Register";
 import ResetPassword from "../pages/account/resetpassword";
 import Contact from "../pages/contact";
@@ -14,6 +14,7 @@ import Outdoor from "../ecommerce/category/outdoor";
 import Outware from "../ecommerce/category/outware";
 import Sportsware from "../ecommerce/category/sportsware";
 import Womans from "../ecommerce/category/womans";
+import ProductPage from "../ecommerce/products/product-page";
 
 export const AnimatedRoutes = () => {
     return (
@@ -24,6 +25,7 @@ export const AnimatedRoutes = () => {
                 <Route path="/register" element={<Register />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/products" element={<Products />} />
+                <Route path="/product/:id" element={<ProductPage />} />
                 <Route path="/contacts" element={<Contact />} />
                 <Route
                     path="/store/category/accessories"

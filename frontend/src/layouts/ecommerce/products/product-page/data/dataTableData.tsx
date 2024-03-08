@@ -1,20 +1,3 @@
-/**
-=========================================================
-* Material Dashboard 2 PRO React TS - v1.0.2
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-2-pro-react-ts
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-// Material Dashboard 2 PRO React TS components
-import MDBox from "src/components/MDBox";
 import MDProgress from "src/components/MDProgress";
 
 // ProductPage page components
@@ -23,10 +6,10 @@ import ReviewCell from "src/layouts/ecommerce/products/product-page/components/R
 import DefaultCell from "src/layouts/ecommerce/products/product-page/components/DefaultCell";
 
 // Images
-import blackChair from "/images/financeapp/ecommerce/black-chair.jpeg";
-import chairPink from "/images/financeapp/ecommerce/chair-pink.jpeg";
-import chairSteel from "/images/financeapp/ecommerce/chair-steel.jpeg";
-import chairWood from "/images/financeapp/ecommerce/chair-wood.jpeg";
+import blackChair from "src/assets/img/ecommerce/black-chair.jpeg";
+import chairPink from "src/assets/img/ecommerce/chair-pink.jpeg";
+import chairSteel from "src/assets/img/ecommerce/chair-steel.jpeg";
+import chairWood from "src/assets/img/ecommerce/chair-wood.jpeg";
 
 const dataTableData = {
     columns: [

@@ -1,28 +1,11 @@
-/**
-=========================================================
-* Material Dashboard 2 PRO React TS - v1.0.2
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-2-pro-react-ts
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 import Card from "@mui/material/Card";
 import Icon from "@mui/material/Icon";
 import { Theme } from "@mui/material/styles";
 import MDBox from "src/components/MDBox";
 import MDTypography from "src/components/MDTypography";
-import { useAppSelector } from "src/state/Hooks";
-import { getDashboardState } from "src/state/contexts/dashboard/Selectors";
 
 function Sidenav(): JSX.Element {
-    const { darkMode } = useAppSelector(getDashboardState);
+    const darkMode = false;
 
     const sidenavItems = [
         { icon: "person", label: "profile", href: "profile" },

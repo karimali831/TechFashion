@@ -2,8 +2,6 @@ import Icon from "@mui/material/Icon";
 import MDBox from "src/components/MDBox";
 import MDTypography from "src/components/MDTypography";
 import MDButton from "src/components/MDButton";
-import { useAppSelector } from "src/state/Hooks";
-import { getDashboardState } from "src/state/contexts/dashboard/Selectors";
 
 // Declaring props types for Bill
 interface Props {
@@ -15,7 +13,7 @@ interface Props {
 }
 
 function Bill({ name, company, email, vat, noGutter }: Props): JSX.Element {
-    const { darkMode } = useAppSelector(getDashboardState);
+    const darkMode = false;
 
     return (
         <MDBox

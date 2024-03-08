@@ -2,8 +2,6 @@ import { ReactNode } from "react";
 import Icon from "@mui/material/Icon";
 import { Theme } from "@mui/material/styles";
 import MDBox from "src/components/MDBox";
-import { useAppSelector } from "src/state/Hooks";
-import { getDashboardState } from "src/state/contexts/dashboard/Selectors";
 
 // Declaring props types for DataTableHeadCell
 interface Props {
@@ -20,7 +18,7 @@ function DataTableHeadCell({
     align,
     ...rest
 }: Props): JSX.Element {
-    const { darkMode } = useAppSelector(getDashboardState);
+    const darkMode = false;
 
     return (
         <MDBox

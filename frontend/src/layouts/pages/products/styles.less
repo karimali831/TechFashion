@@ -1,0 +1,33 @@
+.zoom {
+    object-fit: cover;
+    width: 270px;
+    height: 245px;
+    transition: transform 0.5s ease;
+}
+
+.zoom:hover {
+    -ms-transform: scale(1.05);
+    -webkit-transform: scale(1.05);
+    transform: scale(1.05);
+}
+
+.title {
+    // color: currentColor;
+    // font-family: Inter, sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 1.1rem;
+    letter-spacing: calc(1 * 0.06rem);
+    word-break: break-word;
+    line-height: calc(1 + 0.3 / max(1, 1));
+}
+
+.price {
+    // font-weight: 600;
+    font-family: Inter, sans-serif;
+    margin-top: 0.7rem;
+    color: rgb(18, 18, 18);
+    font-size: 1rem;
+    letter-spacing: 0.1rem;
+    line-height: calc(1 + 0.5 / 1);
+}
