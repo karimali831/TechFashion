@@ -1,19 +1,20 @@
 import { Provider } from "react-redux";
 import store from "./state/InitialiseStore";
 import { AnimatedRoutes } from "./layouts/navigation/AnimatedRoutes";
-// import Navbar from "./layouts/navigation/Navbar";
+import { ThemeProvider } from "@mui/material/styles";
 import Category from "./layouts/ecommerce/category";
 import "./App.css";
 import Footer from "./layouts/ecommerce/footer";
 import NavbarV2 from "./layouts/navigation/NavbarV2";
-import { defaultTheme } from "./styles/MuiTheme";
-import { ThemeProvider } from "@mui/material";
+import theme from "src/assets/theme";
+import themeDark from "src/assets/theme-dark";
 
 function App() {
+    const darkMode = false;
+
     return (
-        <ThemeProvider theme={defaultTheme}>
+        <ThemeProvider theme={darkMode ? themeDark : theme}>
             <Provider store={store}>
-                {/* <Navbar /> */}
                 <NavbarV2 />
                 <Category />
                 <AnimatedRoutes />

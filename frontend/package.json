@@ -13,9 +13,11 @@
         "@emotion/cache": "11.10.8",
         "@emotion/react": "11.10.8",
         "@emotion/styled": "11.10.8",
+        "@haz3l/react-images-viewer": "^18.0.1",
         "@mui/icons-material": "5.11.16",
         "@mui/material": "5.12.3",
         "@reduxjs/toolkit": "^1.9.5",
+        "chroma-js": "^2.4.2",
         "date-fns": "^3.0.6",
         "draft-convert": "^2.1.13",
         "draft-js": "^0.11.7",
@@ -62,6 +64,7 @@
         "eslint": "^8.53.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "eslint-plugin-react-refresh": "^0.4.4",
+        "less": "^4.2.0",
         "typescript": "^5.2.2",
         "vite": "^5.0.0"
     }

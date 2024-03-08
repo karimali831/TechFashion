@@ -6,10 +6,42 @@ import ProductInfo from "../../../../layouts/ecommerce/products/product-page/com
 import dataTableData from "../../../../layouts/ecommerce/products/product-page/data/dataTableData";
 import MDBox from "../../../../components/MDBox";
 import DataTable from "src/layouts/table/DataTable";
+import { Fade, LinearProgress } from "@mui/material";
+import { useAppDispatch, useAppSelector } from "src/state/Hooks";
+import { getProductState } from "src/state/contexts/product/Selectors";
+import { useEffect } from "react";
+import { SelectedProductAction } from "src/state/contexts/product/Actions";
+import { useParams } from "react-router-dom";
+import { IProductRouteParams } from "src/types/RouteParams";
 
 function ProductPage(): JSX.Element {
+    const { slug } = useParams<IProductRouteParams>();
+    const dispatch = useAppDispatch();
+
+    const { selectedProduct, products } = useAppSelector(getProductState);
+
+    useEffect(() => {
+        if (!selectedProduct) {
+            const findItem = products.filter((x) => x.slug === slug)[0];
+
+            setTimeout(() => {
+                dispatch(SelectedProductAction(findItem));
+            }, 500);
+        }
+
+        return () => {
+            if (selectedProduct) {
+                dispatch(SelectedProductAction(null));
+            }
+        };
+    }, [selectedProduct]);
+
+    if (!selectedProduct) {
+        return <LinearProgress />;
+    }
+
     return (
-        <MDBox py={3}>
+        <MDBox py={3} className="home">
             <Card sx={{ overflow: "visible" }}>
                 <MDBox p={3}>
                     <MDBox mb={3}>
@@ -19,18 +51,35 @@ function ProductPage(): JSX.Element {
                     </MDBox>
 
                     <Grid container spacing={3}>
-                        <Grid item xs={12} lg={6} xl={5}>
-                            <ProductImages />
-                        </Grid>
-                        <Grid item xs={12} lg={5} sx={{ mx: "auto" }}>
-                            <ProductInfo />
-                        </Grid>
+                        <Fade
+                            in={true}
+                            timeout={500}
+                            mountOnEnter={true}
+                            unmountOnExit={true}
+                        >
+                            <Grid item xs={12} lg={6} xl={5}>
+                                <ProductImages />
+                            </Grid>
+                        </Fade>
+                        <Fade
+                            in={true}
+                            timeout={500}
+                            mountOnEnter={true}
+                            unmountOnExit={true}
+                            style={{
+                                transitionDelay: "100ms",
+                            }}
+                        >
+                            <Grid item xs={12} lg={5} sx={{ mx: "auto" }}>
+                                <ProductInfo item={selectedProduct} />
+                            </Grid>
+                        </Fade>
                     </Grid>
 
                     <MDBox mt={8} mb={2}>
                         <MDBox mb={1} ml={2}>
                             <MDTypography variant="h5" fontWeight="medium">
-                                Other Products
+                                You may also like
                             </MDTypography>
                         </MDBox>
                         <DataTable

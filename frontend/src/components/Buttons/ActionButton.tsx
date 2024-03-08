@@ -1,10 +1,11 @@
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import { FC } from "react";
 import { ButtonColor } from "src/types/SideNavColor";
 
 interface IProps {
     text: string;
     onClick: () => void;
+    loading?: boolean;
     size?: "small" | "medium" | "large";
     color?: ButtonColor;
     disabled?: boolean;
@@ -17,17 +18,20 @@ export const ActionButton: FC<IProps> = ({
     disabled,
     color,
     size,
+    loading,
     onClick,
 }) => {
     return (
         <Button
-            disabled={disabled}
+            disabled={loading || disabled}
             variant={outlined ? "outlined" : "contained"}
             onClick={onClick}
+            fullWidth={true}
+            startIcon={loading && <CircularProgress size={16} />}
             size={size ?? "medium"}
             color={color ?? "primary"}
         >
-            {text}
+            {!loading && text}
         </Button>
     );
 };

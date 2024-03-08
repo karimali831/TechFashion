@@ -1,6 +1,4 @@
 import MDProgress from "src/components/MDProgress";
-
-// ProductPage page components
 import ProductCell from "src/layouts/ecommerce/products/product-page/components/ProductCell";
 import ReviewCell from "src/layouts/ecommerce/products/product-page/components/ReviewCell";
 import DefaultCell from "src/layouts/ecommerce/products/product-page/components/DefaultCell";
@@ -10,6 +8,7 @@ import blackChair from "src/assets/img/ecommerce/black-chair.jpeg";
 import chairPink from "src/assets/img/ecommerce/chair-pink.jpeg";
 import chairSteel from "src/assets/img/ecommerce/chair-steel.jpeg";
 import chairWood from "src/assets/img/ecommerce/chair-wood.jpeg";
+import MDBox from "src/components/MDBox";
 
 const dataTableData = {
     columns: [

@@ -1,31 +1,31 @@
-// import { useState } from "react";
-// import ImgsViewer from "react-images-viewer";
-// import Stack from "@mui/material/Stack";
+import { useState } from "react";
+import ImgsViewer from "@haz3l/react-images-viewer";
+import Stack from "@mui/material/Stack";
 import MDBox from "src/components/MDBox";
-// import image1 from "/images/financeapp/products/product-details-1.jpg";
-// import image2 from "/images/financeapp/products/product-details-2.jpg";
-// import image3 from "/images/financeapp/products/product-details-3.jpg";
-// import image4 from "/images/financeapp/products/product-details-4.jpg";
-// import image5 from "/images/financeapp/products/product-details-5.jpg";
+import image1 from "src/assets/img/ecommerce/products/product-details-1.jpg";
+import image2 from "src/assets/img/ecommerce/products/product-details-2.jpg";
+import image3 from "src/assets/img/ecommerce/products/product-details-3.jpg";
+import image4 from "src/assets/img/ecommerce/products/product-details-4.jpg";
+import image5 from "src/assets/img/ecommerce/products/product-details-5.jpg";
 
 function ProductImages(): JSX.Element {
-    // const [currentImage, setCurrentImage] = useState<string>(image1);
-    // const [imgsViewer, setImgsViewer] = useState<boolean | number>(false);
-    // const [imgsViewerCurrent, setImgsViewerCurrent] = useState<number>(0);
+    const [currentImage, setCurrentImage] = useState<string>(image1);
+    const [imgsViewer, setImgsViewer] = useState<boolean | number>(false);
+    const [imgsViewerCurrent, setImgsViewerCurrent] = useState<number>(0);
 
-    // const handleSetCurrentImage = ({ currentTarget }: any) => {
-    //     setCurrentImage(currentTarget.src);
-    //     setImgsViewerCurrent(Number(currentTarget.id));
-    // };
+    const handleSetCurrentImage = ({ currentTarget }: any) => {
+        setCurrentImage(currentTarget.src);
+        setImgsViewerCurrent(Number(currentTarget.id));
+    };
 
-    // const openImgsViewer = () => setImgsViewer(true);
-    // const closeImgsViewer = () => setImgsViewer(false);
-    // const imgsViewerNext = () => setImgsViewerCurrent(imgsViewerCurrent + 1);
-    // const imgsViewerPrev = () => setImgsViewerCurrent(imgsViewerCurrent - 1);
+    const openImgsViewer = () => setImgsViewer(true);
+    const closeImgsViewer = () => setImgsViewer(false);
+    const imgsViewerNext = () => setImgsViewerCurrent(imgsViewerCurrent + 1);
+    const imgsViewerPrev = () => setImgsViewerCurrent(imgsViewerCurrent - 1);
 
     return (
         <MDBox>
-            {/* <ImgsViewer
+            <ImgsViewer
                 imgs={[
                     { src: image1 },
                     { src: image2 },
@@ -118,7 +118,7 @@ function ProductImages(): JSX.Element {
                         onClick={handleSetCurrentImage}
                     />
                 </Stack>
-            </MDBox> */}
+            </MDBox>
         </MDBox>
     );
 }

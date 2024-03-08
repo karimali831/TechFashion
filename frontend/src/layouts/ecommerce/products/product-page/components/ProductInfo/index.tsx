@@ -1,36 +1,87 @@
-/**
-=========================================================
-* Material Dashboard 2 PRO React TS - v1.0.2
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-2-pro-react-ts
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-// @mui material components
 import Grid from "@mui/material/Grid";
 import Icon from "@mui/material/Icon";
 import Autocomplete from "@mui/material/Autocomplete";
-
-// Material Dashboard 2 PRO React TS components
 import MDBox from "src/components/MDBox";
 import MDTypography from "src/components/MDTypography";
-import MDButton from "src/components/MDButton";
 import MDBadge from "src/components/MDBadge";
 import MDInput from "src/components/MDInput";
+import { ActionButton } from "src/components/Buttons/ActionButton";
+import { IProductInfo } from "src/interface/IProductInfo";
+import { useAppDispatch, useAppSelector } from "src/state/Hooks";
+import {
+    AddToCartAction,
+    OpenCartOverlayAction,
+    UpdateProductCartQuantityAction,
+} from "src/state/contexts/cart/Actions";
+import { uuidv4 } from "@firebase/util";
+import { useState } from "react";
+import { getCartState } from "src/state/contexts/cart/Selectors";
 
-function ProductInfo(): JSX.Element {
+interface IProps {
+    item: IProductInfo;
+}
+
+function ProductInfo({ item }: IProps): JSX.Element {
+    const [adding, setAdding] = useState<boolean>(false);
+    const [variant, setVariant] = useState<any>({
+        material: "Steel",
+        color: "White",
+    });
+    const [quantity, setQuantity] = useState<number>(1);
+
+    const { itemsInCart } = useAppSelector(getCartState);
+    const dispatch = useAppDispatch();
+
+    const itemInCart = itemsInCart.filter(
+        (x) =>
+            x.productId === item.id &&
+            JSON.stringify(variant) === JSON.stringify(x.variant)
+    )[0];
+
+    const addToCart = () => {
+        setAdding(true);
+
+        setTimeout(() => {
+            if (!!itemInCart) {
+                const totalQuantity = itemInCart.quantity + quantity;
+
+                dispatch(
+                    UpdateProductCartQuantityAction({
+                        id: itemInCart.id,
+                        price: "£" + item.price * totalQuantity,
+                        quantity: totalQuantity,
+                    })
+                );
+            } else {
+                dispatch(
+                    AddToCartAction({
+                        id: uuidv4(),
+                        productId: item.id,
+                        variant,
+                        quantity,
+                        price: "£" + item.price * quantity,
+                    })
+                );
+            }
+
+            dispatch(OpenCartOverlayAction(true));
+            setQuantity(1);
+            setAdding(false);
+        }, 1000);
+    };
+
+    const updateVariant = (key: string, value: string) => {
+        setVariant({
+            ...variant,
+            [key]: value,
+        });
+    };
+
     return (
         <MDBox>
             <MDBox mb={1}>
                 <MDTypography variant="h3" fontWeight="bold">
-                    Minimal Bar Stool
+                    {item.name}
                 </MDTypography>
             </MDBox>
             <MDTypography variant="h4" color="text">
@@ -47,7 +98,7 @@ function ProductInfo(): JSX.Element {
             </MDBox>
             <MDBox mb={1}>
                 <MDTypography variant="h5" fontWeight="medium">
-                    $1,419
+                    {item.priceStr}
                 </MDTypography>
             </MDBox>
             <MDBadge
@@ -142,8 +193,12 @@ function ProductInfo(): JSX.Element {
                             </MDTypography>
                         </MDBox>
                         <Autocomplete
-                            defaultValue="Steel"
+                            value={variant["material"]}
                             options={["Aluminium", "Carbon", "Steel", "Wood"]}
+                            onChange={(
+                                e: React.SyntheticEvent,
+                                value: string
+                            ) => updateVariant("material", value)}
                             renderInput={(params) => (
                                 <MDInput {...params} variant="standard" />
                             )}
@@ -161,7 +216,7 @@ function ProductInfo(): JSX.Element {
                             </MDTypography>
                         </MDBox>
                         <Autocomplete
-                            defaultValue="White"
+                            value={variant["color"]}
                             options={[
                                 "Black",
                                 "Blue",
@@ -170,25 +225,40 @@ function ProductInfo(): JSX.Element {
                                 "Red",
                                 "White",
                             ]}
+                            onChange={(
+                                e: React.SyntheticEvent,
+                                value: string
+                            ) => updateVariant("color", value)}
                             renderInput={(params) => (
                                 <MDInput {...params} variant="standard" />
                             )}
                         />
                     </Grid>
-                    <Grid item xs={12} lg={2}>
-                        <MDBox mb={1.5} lineHeight={0} display="inline-block">
+                    <Grid item xs={12} lg={3}>
+                        <MDBox mb={1.5} lineHeight={0} width={200}>
                             <MDTypography
                                 component="label"
                                 variant="button"
                                 color="text"
                                 fontWeight="regular"
                             >
-                                Quantity
+                                Quantity{" "}
+                                {itemInCart &&
+                                    `(${itemInCart.quantity} in cart)`}
                             </MDTypography>
                         </MDBox>
                         <MDInput
-                            inputProps={{ type: "number" }}
-                            defaultValue={1}
+                            inputProps={{
+                                type: "number",
+                                min: 1,
+                                max: 10,
+                                style: { width: 150 },
+                                onChange: (
+                                    e: React.ChangeEvent<HTMLInputElement>
+                                ) => setQuantity(Number(e.target.value)),
+                            }}
+                            value={quantity}
+                            width={250}
                             variant="standard"
                         />
                     </Grid>
@@ -196,9 +266,12 @@ function ProductInfo(): JSX.Element {
             </MDBox>
             <MDBox mt={3}>
                 <Grid item xs={12} lg={5} container>
-                    <MDButton variant="gradient" color="info" fullWidth>
-                        add to cart
-                    </MDButton>
+                    <ActionButton
+                        disabled={quantity === 0}
+                        loading={adding}
+                        text="add to cart"
+                        onClick={addToCart}
+                    />
                 </Grid>
             </MDBox>
         </MDBox>

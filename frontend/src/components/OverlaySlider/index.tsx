@@ -39,7 +39,9 @@ export const OverlaySlider: FC<IProps> = ({
                 >
                     {children}
                     <Box className="close" onClick={() => setSlide(false)}>
-                        <Icon>close</Icon>
+                        <Icon fontSize={"large"} sx={{ color: "#121212" }}>
+                            close
+                        </Icon>
                     </Box>
                 </Box>
             </Slide>

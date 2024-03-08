@@ -25,7 +25,7 @@ export const AnimatedRoutes = () => {
                 <Route path="/register" element={<Register />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/products" element={<Products />} />
-                <Route path="/product/:id" element={<ProductPage />} />
+                <Route path="/product/:slug" element={<ProductPage />} />
                 <Route path="/contacts" element={<Contact />} />
                 <Route
                     path="/store/category/accessories"

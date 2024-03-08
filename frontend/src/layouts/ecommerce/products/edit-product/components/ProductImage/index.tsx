@@ -22,7 +22,7 @@ import MDTypography from "src/components/MDTypography";
 import MDButton from "src/components/MDButton";
 
 // Images
-import productImage from "/images/financeapp/products/product-11.jpg";
+import productImage from "src/assets/img/ecommerce/products/product-11.jpg";
 
 function ProductImage(): JSX.Element {
     return (

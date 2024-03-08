@@ -16,7 +16,7 @@ import { getCartState } from "src/state/contexts/cart/Selectors";
 import { OverlaySlider, OverlaySliderSize } from "src/components/OverlaySlider";
 import { navData } from "src/assets/data/navData";
 import { NavigateFunction, useNavigate } from "react-router-dom";
-import { ActionButton } from "src/components/Buttons/ActionButton";
+import { CartOverlay } from "../ecommerce/cart-overlay";
 
 // const pages = ["Home", "Shop", "Blog", "Contact"];
 // const settings = ["Profile", "Account", "Dashboard", "Logout"];
@@ -61,30 +61,7 @@ function NavbarV2() {
                     size={OverlaySliderSize.Small}
                     onClose={() => dispatch(OpenCartOverlayAction(false))}
                 >
-                    <Box display="flex" flexDirection="column" height="100%">
-                        {itemsInCart === 0 ? (
-                            <Box
-                                display="flex"
-                                flexDirection="column"
-                                alignItems="center"
-                                height="100%"
-                                justifyContent="center"
-                            >
-                                <h2 style={{ marginBottom: 10 }}>
-                                    Your cart is empty
-                                </h2>
-                                <ActionButton
-                                    size="large"
-                                    text="Continue shopping"
-                                    onClick={() => window.location.reload()}
-                                />
-                            </Box>
-                        ) : (
-                            <Box>
-                                <h2>Your cart</h2>
-                            </Box>
-                        )}
-                    </Box>
+                    <CartOverlay />
                 </OverlaySlider>
             )}
             <AppBar
@@ -93,7 +70,7 @@ function NavbarV2() {
             >
                 <Container>
                     <Toolbar disableGutters>
-                        <Box sx={{ display: { xs: "none", md: "flex" } }}>
+                        {/* <Box sx={{ display: { xs: "none", md: "flex" } }}>
                             <img
                                 src="src/assets/img/logo.png"
                                 alt="Tech Fashion"
@@ -103,19 +80,21 @@ function NavbarV2() {
                                     objectFit: "cover",
                                 }}
                             />
-                        </Box>
+                        </Box> */}
                         <Typography
                             variant="h6"
                             noWrap
                             component="a"
                             href="/"
                             sx={{
-                                mr: 2,
-                                ml: 2,
+                                mr: 5,
+                                // ml: 2,
                                 display: { xs: "none", md: "flex" },
-                                fontFamily: "monospace",
-                                fontWeight: 700,
-                                letterSpacing: ".3rem",
+                                fontFamily: "'Ysabeau SC', sans-serif",
+                                fontWeight: 900,
+                                lineHeight: 1,
+                                fontSize: 52,
+                                letterSpacing: 8,
                                 color: "inherit",
                                 textDecoration: "none",
                             }}
@@ -179,9 +158,11 @@ function NavbarV2() {
                                 mr: 2,
                                 display: { xs: "flex", md: "none" },
                                 flexGrow: 1,
-                                fontFamily: "monospace",
-                                fontWeight: 700,
-                                letterSpacing: ".3rem",
+                                fontFamily: "'Ysabeau SC', sans-serif",
+                                fontWeight: 900,
+                                lineHeight: 1,
+                                fontSize: 22,
+                                letterSpacing: 6,
                                 color: "inherit",
                                 textDecoration: "none",
                             }}
@@ -214,12 +195,13 @@ function NavbarV2() {
 
                         <Box sx={{ flexGrow: 0 }}>
                             <Badge
-                                badgeContent={itemsInCart}
+                                badgeContent={itemsInCart.length}
                                 color="primary"
-                                invisible={itemsInCart === 0}
+                                invisible={itemsInCart.length === 0}
                             >
                                 <Icon
                                     sx={{ cursor: "pointer" }}
+                                    fontSize="medium"
                                     onClick={() =>
                                         dispatch(
                                             OpenCartOverlayAction(!openOverlay)

@@ -1,7 +1,11 @@
 import { Fade, Grid, Paper, styled } from "@mui/material";
 import ProductItem from "./ProductItem";
-import { products } from "src/assets/data/productInfo";
 import { NavigateFunction, useNavigate } from "react-router-dom";
+import { useAppSelector } from "src/state/Hooks";
+import { getProductState } from "src/state/contexts/product/Selectors";
+import { IProductInfo } from "src/interface/IProductInfo";
+import { useDispatch } from "react-redux";
+import { SelectedProductAction } from "src/state/contexts/product/Actions";
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -16,10 +20,24 @@ const Item = styled(Paper)(({ theme }) => ({
 const Products = () => {
     const navigate: NavigateFunction = useNavigate();
 
+    const dispatch = useDispatch();
+    const { products } = useAppSelector(getProductState);
+
+    const onProductClick = (item: IProductInfo) => {
+        dispatch(SelectedProductAction(item));
+        navigate("/product/" + item.slug);
+    };
+
     return (
-        <Fade in={true} timeout={500} mountOnEnter={true} unmountOnExit={true}>
+        <Fade
+            in={true}
+            timeout={500}
+            mountOnEnter={true}
+            unmountOnExit={true}
+            className="home"
+        >
             <Grid
-                padding={10}
+                // padding={10}
                 container
                 spacing={{ xs: 2, md: 3 }}
                 columns={{ xs: 4, sm: 8, md: 12 }}
@@ -28,7 +46,7 @@ const Products = () => {
                     <Grid item xs={2} sm={3} md={3} key={index}>
                         <Item
                             sx={{ cursor: "pointer" }}
-                            onClick={() => navigate("/product/" + product.slug)}
+                            onClick={() => onProductClick(product)}
                         >
                             <ProductItem item={product} index={index} />
                         </Item>

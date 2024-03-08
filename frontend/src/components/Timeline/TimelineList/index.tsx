@@ -21,7 +21,7 @@ function TimelineList({ title, dark, children }: Props): JSX.Element {
                     borderRadius="xl"
                     sx={{
                         background: ({ palette: { background } }: any) =>
-                            darkMode && background.card,
+                            background.card,
                     }}
                 >
                     <MDBox pt={3} px={3}>

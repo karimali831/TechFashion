@@ -1,8 +1,13 @@
-import { baseApi } from "./baseApi";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseApiUrl } from "./baseApi";
 
-export const getTokenFromLocalStorage = () => localStorage.getItem("token");
-
-export const cartApi = baseApi.injectEndpoints({
+export const cartApi = createApi({
+    reducerPath: "cartApi",
+    tagTypes: ["Activity", "BillsAndTransactions", "Charts", "UserInfo"],
+    baseQuery: fetchBaseQuery({
+        baseUrl: baseApiUrl,
+        // headers: { Authorization: `Bearer ${getTokenFromLocalStorage()}` },
+    }),
     endpoints: (builder) => ({
         getWidgets: builder.query<ITest, number>({
             query: (period) => `Dashboard/GetWidgets/${period}`,
@@ -34,11 +39,6 @@ export const cartApi = baseApi.injectEndpoints({
     }),
 });
 
-export const {
-    useGetWidgetsQuery,
-    useGetChartsQuery,
-    useAddEventMutation,
-    useSetPrivacyModeMutation,
-} = cartApi;
+export const { useGetWidgetsQuery, useGetChartsQuery } = cartApi;
 
 export interface ITest {}

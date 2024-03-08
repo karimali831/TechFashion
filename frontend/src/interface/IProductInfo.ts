@@ -3,5 +3,6 @@ export interface IProductInfo {
     slug: string;
     image: string;
     name: string;
-    price: string;
+    price: number;
+    priceStr: string;
 }

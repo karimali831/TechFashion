@@ -7,7 +7,7 @@ interface IProps {
     item: IProductInfo;
 }
 
-const ProductItem = ({ index }: IProps) => {
+const ProductItem = ({ index, item }: IProps) => {
     return (
         <Box>
             <Fade
@@ -17,15 +17,15 @@ const ProductItem = ({ index }: IProps) => {
                 }}
             >
                 <Box>
-                    <img src="src/assets/img/footware.jpg" className="zoom" />
+                    <img src={item.image} className="zoom" />
                     <Box
                         style={{ marginTop: 10 }}
                         display="flex"
                         flexDirection="column"
                         alignItems="flex-start"
                     >
-                        <h3 className="title">Product Title</h3>
-                        <span className="price">£44.40</span>
+                        <h3 className="title">{item.name}</h3>
+                        <span className="price">{item.price}</span>
                     </Box>
                 </Box>
             </Fade>
