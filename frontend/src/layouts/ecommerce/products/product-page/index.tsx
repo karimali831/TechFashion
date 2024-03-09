@@ -6,16 +6,18 @@ import ProductInfo from "../../../../layouts/ecommerce/products/product-page/com
 import dataTableData from "../../../../layouts/ecommerce/products/product-page/data/dataTableData";
 import MDBox from "../../../../components/MDBox";
 import DataTable from "src/layouts/table/DataTable";
-import { Fade, LinearProgress } from "@mui/material";
+import { Fade, Icon, LinearProgress } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
 import { getProductState } from "src/state/contexts/product/Selectors";
 import { useEffect } from "react";
 import { SelectedProductAction } from "src/state/contexts/product/Actions";
-import { useParams } from "react-router-dom";
+import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
 import { IProductRouteParams } from "src/types/RouteParams";
 
 function ProductPage(): JSX.Element {
     const { slug } = useParams<IProductRouteParams>();
+
+    const navigate: NavigateFunction = useNavigate();
     const dispatch = useAppDispatch();
 
     const { selectedProduct, products } = useAppSelector(getProductState);
@@ -44,8 +46,14 @@ function ProductPage(): JSX.Element {
         <MDBox py={3} className="home">
             <Card sx={{ overflow: "visible" }}>
                 <MDBox p={3}>
-                    <MDBox mb={3}>
-                        <MDTypography variant="h5" fontWeight="medium">
+                    <MDBox mb={3} display="flex" alignItems="center">
+                        <Icon
+                            onClick={() => navigate("/products")}
+                            sx={{ cursor: "pointer" }}
+                        >
+                            arrow_back
+                        </Icon>
+                        <MDTypography ml={1} variant="h5" fontWeight="medium">
                             Product Details
                         </MDTypography>
                     </MDBox>

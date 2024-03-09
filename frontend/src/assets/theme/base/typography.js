@@ -8,6 +8,7 @@ const baseProperties = {
     fontWeightLighter: 100,
     fontWeightLight: 300,
     fontWeightRegular: 400,
+    fontWeightStrong: 500,
     fontWeightMedium: 600,
     fontWeightBold: 700,
     fontSizeXXS: pxToRem(10.4),
@@ -38,6 +39,7 @@ const typography = {
     fontWeightLighter: baseProperties.fontWeightLighter,
     fontWeightLight: baseProperties.fontWeightLight,
     fontWeightRegular: baseProperties.fontWeightRegular,
+    fontWeightStrong: baseProperties.fontWeightStrong,
     fontWeightMedium: baseProperties.fontWeightMedium,
     fontWeightBold: baseProperties.fontWeightBold,
 

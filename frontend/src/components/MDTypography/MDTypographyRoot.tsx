@@ -19,6 +19,7 @@ export default styled(Typography)(({ theme, ownerState }: any): any => {
         fontWeightRegular,
         fontWeightMedium,
         fontWeightBold,
+        fontWeightStrong,
     } = typography;
     const { linearGradient } = functions;
 
@@ -26,6 +27,7 @@ export default styled(Typography)(({ theme, ownerState }: any): any => {
     const fontWeights: { [key: string]: number } = {
         light: fontWeightLight,
         regular: fontWeightRegular,
+        strong: fontWeightStrong,
         medium: fontWeightMedium,
         bold: fontWeightBold,
     };

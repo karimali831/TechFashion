@@ -16,7 +16,7 @@ interface Props extends TypographyProps {
         | "dark"
         | "text"
         | "white";
-    fontWeight?: "light" | "regular" | "medium" | "bold" | undefined;
+    fontWeight?: "light" | "regular" | "medium" | "bold" | "strong" | undefined;
     textTransform?: "none" | "capitalize" | "uppercase" | "lowercase";
     verticalAlign?:
         | "unset"
