@@ -1,4 +1,5 @@
 using api;
+using api.Config;
 using api.Data;
 using Ebaysharp;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,10 @@ builder.Services.AddSwaggerGen();
 
 // Container for dependency injection
 builder.Services.Modules();
+
+// Configs
+var ebayConfig = builder.Configuration.GetSection("Ebay");
+builder.Services.Configure<EbayConfig>(ebayConfig);
 
 builder.Services.AddDbContext<AppDatabaseContext>(options =>
 {

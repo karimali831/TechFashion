@@ -1,14 +1,26 @@
 using api.Dto;
 using api.Service;
+using api.Service.Ebay;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
 {
     [Route("api/product")]
     [ApiController]
-    public class ProductController(IProductListingService productListingService) : ControllerBase
+    public class ProductController(
+        IProductListingService productListingService,
+        IEbayFeedService ebayFeedService) : ControllerBase
     {
         private readonly IProductListingService _productListingService = productListingService;
+        private readonly IEbayFeedService _ebayFeedService = ebayFeedService;
+
+        [HttpGet("test")]
+        public async Task<IActionResult> Test()
+        {
+            var items = await _ebayFeedService.GetItemsAsync();
+
+            return Ok(items);
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()

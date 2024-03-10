@@ -12,12 +12,12 @@ namespace api.Service.Ebay
 {
     public interface IEbayFeedService
     {
-
+        Task<EbayList<Order, EbayFilter>> GetItemsAsync();
     }
 
     public class EbayFeedService(IOptions<EbayConfig> configuration) : EbayBaseService(configuration), IEbayFeedService
     {
-        public async Task GetItemsAsync()
+        public async Task<EbayList<Order, EbayFilter>> GetItemsAsync()
         {
             var clientToken = GetClientToken();
             var accessToken = await GetAccessTokenAsync("");
@@ -30,6 +30,8 @@ namespace api.Service.Ebay
                 var filter = orders != null ? orders.GetNextPageFilter() : new EbayFilter(limit);
                 orders = await orderService.GetAllAsync(filter);
             } while (orders.HasNextPage());
+
+            return orders;
         }
     }
 }

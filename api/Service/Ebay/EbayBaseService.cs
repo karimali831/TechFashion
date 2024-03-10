@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using api.Config;
+using api.Helper;
 using Ebaysharp.Entities;
 using Ebaysharp.Services;
 using Microsoft.Extensions.Options;
@@ -20,7 +22,8 @@ namespace api.Service.Ebay
                 clientId = _configuration.Value.ClientId,
                 clientSecret = _configuration.Value.ClientSecret,
                 devId = _configuration.Value.DevId,
-                oauthCredentials = _configuration.Value.ApiToken, // "Your clientId:clientSecret base64 encoded",
+                oauthCredentials = $"Basic {StringHelper.Base64Encode(_configuration.Value.ClientId + ":" + _configuration.Value.ClientSecret)}",
+                // _configuration.Value.ApiToken, "Your clientId:clientSecret base64 encoded",
                 ruName = "Your ruName from developer portal",
                 scopes = "Space separated scopes from Ebay API"
             };
