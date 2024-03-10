@@ -1,5 +1,6 @@
 using api;
 using api.Data;
+using Ebaysharp;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,9 +14,12 @@ builder.Services.AddSwaggerGen();
 // Container for dependency injection
 builder.Services.Modules();
 
-builder.Services.AddDbContext<AppDatabaseContext>(options => {
+builder.Services.AddDbContext<AppDatabaseContext>(options =>
+{
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+EnvironemntManager.Environemnt = EnvironemntManager.Environments.Sandbox;
 
 var app = builder.Build();
 
