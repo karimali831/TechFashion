@@ -13,7 +13,6 @@ namespace api.ViewModels
         public string PriceStr { get; set; } = string.Empty;
         public int? Stock { get; set; }
         public IList<ProductVariant> Variants { get; set; } = [];
-        public IList<ProductImage> Images { get; set; } = [];
 
     }
 }

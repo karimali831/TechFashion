@@ -1,11 +1,11 @@
 import { Fade, Grid, Paper, styled } from "@mui/material";
-import ProductItem from "./ProductItem";
-import { NavigateFunction, useNavigate } from "react-router-dom";
-import { useAppSelector } from "src/state/Hooks";
-import { getProductState } from "src/state/contexts/product/Selectors";
-import { IProductInfo } from "src/interface/IProductInfo";
 import { useDispatch } from "react-redux";
+import { NavigateFunction, useNavigate } from "react-router-dom";
+import { IProductInfo } from "src/interface/IProductInfo";
+import { useAppSelector } from "src/state/Hooks";
 import { SelectedProductAction } from "src/state/contexts/product/Actions";
+import { getProductState } from "src/state/contexts/product/Selectors";
+import ProductItem from "./ProductItem";
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -23,19 +23,15 @@ const Products = () => {
     const dispatch = useDispatch();
     const { products } = useAppSelector(getProductState);
 
+    // const {} = useGetProductQuery()
+
     const onProductClick = (item: IProductInfo) => {
         dispatch(SelectedProductAction(item));
         navigate("/product/" + item.slug);
     };
 
     return (
-        <Fade
-            in={true}
-            timeout={500}
-            mountOnEnter={true}
-            unmountOnExit={true}
-            className="home"
-        >
+        <Fade in={true} timeout={500} mountOnEnter={true} unmountOnExit={true} className="home">
             <Grid
                 // padding={10}
                 container
@@ -44,10 +40,7 @@ const Products = () => {
             >
                 {products.map((product, index) => (
                     <Grid item xs={2} sm={3} md={3} key={index}>
-                        <Item
-                            sx={{ cursor: "pointer" }}
-                            onClick={() => onProductClick(product)}
-                        >
+                        <Item sx={{ cursor: "pointer" }} onClick={() => onProductClick(product)}>
                             <ProductItem item={product} index={index} />
                         </Item>
                     </Grid>

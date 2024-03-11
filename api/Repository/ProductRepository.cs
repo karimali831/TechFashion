@@ -3,6 +3,7 @@ using api.Dto;
 using api.Infrastructure;
 using api.Models;
 using api.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Repository
 {
@@ -19,6 +20,11 @@ namespace api.Repository
     {
         public async Task<IList<ProductViewModel>> GetAllAsync()
         {
+            var data = await _context.Products
+                .Include(x => x.Variants)
+                .Where(x => x.Active && x.Variants.Any(v => v.Active))
+                .ToListAsync();
+
             return await GetViewModelAsync<ProductViewModel>();
         }
 
