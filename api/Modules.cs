@@ -1,4 +1,5 @@
 using api.Repository;
+using api.Repository.EF;
 using api.Service;
 using api.Service.Ebay;
 
@@ -13,6 +14,7 @@ namespace api
 
             // Repositories
             services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IProductEFRepository, ProductEFRepository>();
 
             return services;
         }

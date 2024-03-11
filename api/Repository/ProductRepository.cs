@@ -1,51 +1,31 @@
-using api.Data;
-using api.Dto;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using api.Infrastructure;
-using api.Models;
 using api.ViewModels;
-using Microsoft.EntityFrameworkCore;
 
 namespace api.Repository
 {
     public interface IProductRepository
     {
-        Task<IList<ProductViewModel>> GetAllAsync();
-        Task<ApiResponse<ProductViewModel>> GetAsync(int id);
-        Task<ApiResponse<ProductViewModel>> CreateAsync(Product model);
-        Task<ApiResponse<ProductViewModel>> UpdateAsync(Product model);
-        Task<ApiResponse<bool>> DeleteAsync(int id);
+
     }
 
-    public class ProductRepository(AppDatabaseContext context) : EFRepositoryBase<Product>(context), IProductRepository
+    public class ProductRepository : DapperBaseRepository, IProductRepository
     {
-        public async Task<IList<ProductViewModel>> GetAllAsync()
+        public ProductRepository(IConfiguration configuration) : base(configuration)
         {
-            var data = await _context.Products
-                .Include(x => x.Variants)
-                .Where(x => x.Active && x.Variants.Any(v => v.Active))
-                .ToListAsync();
 
-            return await GetViewModelAsync<ProductViewModel>();
         }
 
-        public async Task<ApiResponse<ProductViewModel>> GetAsync(int id)
+        public async Task<IEnumerable<ProductViewModel>> GetAllAsync()
         {
-            return await GetViewModelAsync<ProductViewModel>(id);
-        }
+            const string sqlTxt = $@"
+                
+            ";
 
-        public async Task<ApiResponse<ProductViewModel>> CreateAsync(Product model)
-        {
-            return await InsertAndReturnViewModelAsync<ProductViewModel>(model);
-        }
-
-        public async Task<ApiResponse<ProductViewModel>> UpdateAsync(Product model)
-        {
-            return await UpdateAndReturnViewModelAsync<ProductViewModel>(model);
-        }
-
-        public async Task<ApiResponse<bool>> DeleteAsync(int id)
-        {
-            return await RemoveAsync(id);
+            return await QueryAsync<ProductViewModel>(sqlTxt);
         }
     }
 }
