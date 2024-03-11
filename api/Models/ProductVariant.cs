@@ -3,27 +3,30 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.Models
 {
-    public class Product
+    public class ProductVariant
     {
         [Key]
         public required int Id { get; set; }
         [Required]
-        public string Slug { get; set; } = string.Empty;
-        public string? Sku { get; set; }
+        public required string Key { get; set; }
         [Required]
-        public string Title { get; set; } = string.Empty;
-        [Column(TypeName = "varchar(MAX)")]
-        public string Description { get; set; } = string.Empty;
+        public required string Value { get; set; }
+        public string Sku { get; set; } = string.Empty;
+        public int? Stock { get; set; }
         [Required]
         [Column(TypeName = "decimal(8,2)")]
         public decimal Price { get; set; }
-        public int? Stock { get; set; }
+        [Required]
+        public int ProductId { get; set; }
+        [ForeignKey(nameof(ProductId))]
+        [Required]
+        public required Product Product { get; set; }
         [Required]
         public required bool Active { get; set; } = true;
         [Required, DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime CreatedDate { get; set; }
         public DateTime? ModifiedDate { get; set; }
-        public ICollection<ProductVariant> Variants { get; set; } = [];
-        public ICollection<ProductImage> Images { get; set; } = [];
+
+
     }
 }

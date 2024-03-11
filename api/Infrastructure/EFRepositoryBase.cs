@@ -11,6 +11,7 @@ namespace api.Infrastructure
         protected readonly DbSet<TEntity> dbSet = context.Set<TEntity>();
         protected readonly IQueryable<TEntity> dbSetNoTracking = context.Set<TEntity>().AsNoTracking();
 
+
         public async Task<ApiResponse<TEntity>> GetResponseByEntityIdAsync<T>(int id)
         {
             var entity = await GetByKeyAsync(id);

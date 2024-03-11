@@ -1,7 +1,6 @@
-using api.Data;
 using api.Dto;
-using api.Infrastructure;
 using api.Models;
+using api.Repository;
 using api.ViewModels;
 
 namespace api.Service
@@ -15,33 +14,35 @@ namespace api.Service
         Task<ApiResponse<bool>> DeleteAsync(int id);
     }
 
-    public class ProductListingService(AppDatabaseContext context) : EFRepositoryBase<Product>(context), IProductListingService
+    public class ProductListingService(IProductRepository productRepository) : IProductListingService
     {
+        private readonly IProductRepository _productRepository = productRepository;
+
         public async Task<IList<ProductViewModel>> GetAllAsync()
         {
-            return await GetViewModelAsync<ProductViewModel>();
+            return await _productRepository.GetAllAsync();
         }
 
         public async Task<ApiResponse<ProductViewModel>> GetAsync(int id)
         {
-            return await GetViewModelAsync<ProductViewModel>(id);
+            return await GetAsync(id);
         }
 
         public async Task<ApiResponse<ProductViewModel>> CreateAsync(CreateProductRequestDto dto)
         {
             var productModel = dto.ToEntity<Product, CreateProductRequestDto>();
-            return await InsertAndReturnViewModelAsync<ProductViewModel>(productModel);
+            return await _productRepository.CreateAsync(productModel);
         }
 
         public async Task<ApiResponse<ProductViewModel>> UpdateAsync(UpdateProductRequestDto dto)
         {
             var model = dto.ToEntity<Product, UpdateProductRequestDto>();
-            return await UpdateAndReturnViewModelAsync<ProductViewModel>(model);
+            return await _productRepository.UpdateAsync(model);
         }
 
         public async Task<ApiResponse<bool>> DeleteAsync(int id)
         {
-            return await RemoveAsync(id);
+            return await _productRepository.DeleteAsync(id);
         }
     }
 }

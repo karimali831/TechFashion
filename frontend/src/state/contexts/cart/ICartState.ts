@@ -1,8 +1,8 @@
-import { IProductCart } from "src/interface/IProductCart";
+import { ICart } from "src/data/ICart";
 
 export interface ICartState {
     openOverlay: boolean;
-    itemsInCart: IProductCart[];
+    itemsInCart: ICart[];
 }
 
 export const cartInitialState: ICartState = {

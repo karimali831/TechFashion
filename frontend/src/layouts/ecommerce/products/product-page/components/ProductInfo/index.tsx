@@ -81,7 +81,7 @@ function ProductInfo({ item }: IProps): JSX.Element {
         <MDBox>
             <MDBox mb={1}>
                 <MDTypography variant="h3" fontWeight="bold">
-                    {item.name}
+                    {item.title}
                 </MDTypography>
             </MDBox>
             <MDTypography variant="h4" color="text">

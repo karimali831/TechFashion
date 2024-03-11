@@ -81,7 +81,7 @@ namespace api.Controllers
                 return NotFound(response.ErrorMsg);
             }
 
-            return Ok();
+            return NoContent();
         }
     }
 }

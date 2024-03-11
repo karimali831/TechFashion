@@ -1,3 +1,4 @@
+using api.Repository;
 using api.Service;
 using api.Service.Ebay;
 
@@ -9,6 +10,9 @@ namespace api
         {
             services.AddScoped<IProductListingService, ProductListingService>();
             services.AddScoped<IEbayFeedService, EbayFeedService>();
+
+            // Repositories
+            services.AddScoped<IProductRepository, ProductRepository>();
 
             return services;
         }

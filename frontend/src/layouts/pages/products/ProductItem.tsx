@@ -8,6 +8,8 @@ interface IProps {
 }
 
 const ProductItem = ({ index, item }: IProps) => {
+    const mainImage = item.images.filter((x) => x.main)[0];
+
     return (
         <Box>
             <Fade
@@ -17,15 +19,15 @@ const ProductItem = ({ index, item }: IProps) => {
                 }}
             >
                 <Box>
-                    <img src={item.image} className="zoom" />
+                    <img src={mainImage.url} className="zoom" />
                     <Box
                         style={{ marginTop: 10 }}
                         display="flex"
                         flexDirection="column"
                         alignItems="flex-start"
                     >
-                        <h3 className="title">{item.name}</h3>
-                        <span className="price">{item.price}</span>
+                        <h3 className="title">{item.title}</h3>
+                        <span className="price">{item.priceStr}</span>
                     </Box>
                 </Box>
             </Fade>

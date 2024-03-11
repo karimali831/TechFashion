@@ -135,7 +135,7 @@ export const CartOverlay = () => {
                                                         color="text"
                                                         fontWeight="medium"
                                                     >
-                                                        {product.name}
+                                                        {product.title}
                                                     </MDTypography>
                                                     <MDTypography
                                                         component="label"
