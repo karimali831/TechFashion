@@ -37,10 +37,36 @@ namespace api.Migrations
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<decimal>("Total")
+                        .HasColumnType("decimal(8,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Carts");
+                });
+
+            modelBuilder.Entity("api.Models.CartProduct", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CartId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int?>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ProductVariantId")
+                    b.Property<int?>("ProductVariantOptionId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
@@ -51,11 +77,13 @@ namespace api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CartId");
+
                     b.HasIndex("ProductId");
 
-                    b.HasIndex("ProductVariantId");
+                    b.HasIndex("ProductVariantOptionId");
 
-                    b.ToTable("Cart");
+                    b.ToTable("CartProducts");
                 });
 
             modelBuilder.Entity("api.Models.Product", b =>
@@ -126,7 +154,7 @@ namespace api.Migrations
                     b.Property<int?>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ProductVariantId")
+                    b.Property<int?>("ProductVariantOptionId")
                         .HasColumnType("int");
 
                     b.Property<string>("Url")
@@ -137,7 +165,7 @@ namespace api.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.HasIndex("ProductVariantId");
+                    b.HasIndex("ProductVariantOptionId");
 
                     b.ToTable("ProductImages");
                 });
@@ -157,17 +185,46 @@ namespace api.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Key")
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductVariants");
+                });
+
+            modelBuilder.Entity("api.Models.ProductVariantOption", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(8,2)");
 
-                    b.Property<int>("ProductId")
+                    b.Property<int>("ProductVariantId")
                         .HasColumnType("int");
 
                     b.Property<string>("Sku")
@@ -177,30 +234,34 @@ namespace api.Migrations
                     b.Property<int?>("Stock")
                         .HasColumnType("int");
 
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductVariantId");
 
-                    b.ToTable("ProductVariants");
+                    b.ToTable("ProductVariantOptions");
                 });
 
-            modelBuilder.Entity("api.Models.Cart", b =>
+            modelBuilder.Entity("api.Models.CartProduct", b =>
                 {
+                    b.HasOne("api.Models.Cart", "Cart")
+                        .WithMany()
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("api.Models.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId");
 
-                    b.HasOne("api.Models.ProductVariant", "ProductVariant")
+                    b.HasOne("api.Models.ProductVariantOption", "ProductVariantOption")
                         .WithMany()
-                        .HasForeignKey("ProductVariantId");
+                        .HasForeignKey("ProductVariantOptionId");
+
+                    b.Navigation("Cart");
 
                     b.Navigation("Product");
 
-                    b.Navigation("ProductVariant");
+                    b.Navigation("ProductVariantOption");
                 });
 
             modelBuilder.Entity("api.Models.ProductImage", b =>
@@ -209,13 +270,13 @@ namespace api.Migrations
                         .WithMany("Images")
                         .HasForeignKey("ProductId");
 
-                    b.HasOne("api.Models.ProductVariant", "ProductVariant")
+                    b.HasOne("api.Models.ProductVariantOption", "ProductVariantOption")
                         .WithMany()
-                        .HasForeignKey("ProductVariantId");
+                        .HasForeignKey("ProductVariantOptionId");
 
                     b.Navigation("Product");
 
-                    b.Navigation("ProductVariant");
+                    b.Navigation("ProductVariantOption");
                 });
 
             modelBuilder.Entity("api.Models.ProductVariant", b =>
@@ -229,11 +290,27 @@ namespace api.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("api.Models.ProductVariantOption", b =>
+                {
+                    b.HasOne("api.Models.ProductVariant", "ProductVariant")
+                        .WithMany("Options")
+                        .HasForeignKey("ProductVariantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProductVariant");
+                });
+
             modelBuilder.Entity("api.Models.Product", b =>
                 {
                     b.Navigation("Images");
 
                     b.Navigation("Variants");
+                });
+
+            modelBuilder.Entity("api.Models.ProductVariant", b =>
+                {
+                    b.Navigation("Options");
                 });
 #pragma warning restore 612, 618
         }

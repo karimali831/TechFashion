@@ -1,12 +1,10 @@
 import { IProduct } from "src/data/IProduct";
+import { IProductVariantOption } from "./IProductVariantOption";
 
 export interface IProductVariant {
     id: number;
-    key: string;
-    value: string;
-    sku: string;
-    stock?: number;
-    price: number;
+    name: string;
+    options: IProductVariantOption[];
     productId?: number;
     product?: IProduct;
     active: boolean;

@@ -1,12 +1,15 @@
+import { ICart } from "./ICart";
 import { IProduct } from "./IProduct";
 import { IProductVariantOption } from "./IProductVariantOption";
 
-export interface IProductImage {
+export interface ICartProduct {
     id: number;
-    url: string;
+    cartId: number;
+    cart: ICart;
+    quantity: number;
     productId?: number;
     product?: IProduct;
     productVariantOptionId?: number;
     productVariantOption?: IProductVariantOption;
-    main: boolean;
+    total: number;
 }

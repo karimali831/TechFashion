@@ -4,6 +4,7 @@ obj/
 
 .fake
 
+api/migrations
 
 # Logs
 logs

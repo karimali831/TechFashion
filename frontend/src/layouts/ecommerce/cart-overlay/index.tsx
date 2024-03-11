@@ -15,10 +15,10 @@ import "src/styles/scrollbars.css";
 export const CartOverlay = () => {
     const dispatch = useAppDispatch();
     const { itemsInCart } = useAppSelector(getCartState);
-    const [updating, setUpdating] = useState<string | null>(null);
+    const [updating, setUpdating] = useState<number | null>(null);
 
     const updateQuantity = (
-        id: string,
+        id: number,
         unitPrice: number,
         quantity: number
     ) => {
@@ -37,7 +37,7 @@ export const CartOverlay = () => {
         }, 1000);
     };
 
-    const removeItem = (id: string) => {
+    const removeItem = (id: number) => {
         setUpdating(id);
 
         setTimeout(() => {
@@ -149,7 +149,7 @@ export const CartOverlay = () => {
                                                                 size={16}
                                                             />
                                                         ) : (
-                                                            item.price
+                                                            item.total
                                                         )}
                                                     </MDTypography>
                                                 </Box>
@@ -163,8 +163,10 @@ export const CartOverlay = () => {
                                                 >
                                                     {product.priceStr}
                                                 </MDTypography>
-                                                {Object.keys(item.variant).map(
-                                                    (key: string) => (
+                                                {item.productVariant &&
+                                                    Object.keys(
+                                                        item.productVariant
+                                                    ).map((key: string) => (
                                                         <MDTypography
                                                             variant="h7"
                                                             key={key}
@@ -172,8 +174,7 @@ export const CartOverlay = () => {
                                                             {key}:{" "}
                                                             {item.variant[key]}
                                                         </MDTypography>
-                                                    )
-                                                )}
+                                                    ))}
                                                 <Box
                                                     mt={2}
                                                     display="flex"

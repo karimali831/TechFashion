@@ -8,14 +8,9 @@ namespace api.Models
         [Key]
         public required int Id { get; set; }
         [Required]
-        public required string Key { get; set; }
+        public required string Name { get; set; }
         [Required]
-        public required string Value { get; set; }
-        public string Sku { get; set; } = string.Empty;
-        public int? Stock { get; set; }
-        [Required]
-        [Column(TypeName = "decimal(8,2)")]
-        public decimal Price { get; set; }
+        public required ICollection<ProductVariantOption> Options { get; set; }
         [Required]
         public int ProductId { get; set; }
         [ForeignKey(nameof(ProductId))]

@@ -1,11 +1,11 @@
 import { createAction } from "@reduxjs/toolkit";
-import { ICart } from "src/data/ICart";
+import { ICartProduct } from "src/data/ICartProduct";
 
 const OpenCartOverlayAction = createAction<boolean>("@@Cart/OpenCartOverlay");
-const AddToCartAction = createAction<ICart>("@@Cart/AddToCart");
-const RemoveFromCartAction = createAction<string>("@@Cart/RemoveFromCart");
+const AddToCartAction = createAction<ICartProduct>("@@Cart/AddToCart");
+const RemoveFromCartAction = createAction<number>("@@Cart/RemoveFromCart");
 const UpdateProductCartQuantityAction = createAction<{
-    id: string;
+    id: number;
     quantity: number;
     price: string;
 }>("@@Cart/UpdateProductCartQuantity");

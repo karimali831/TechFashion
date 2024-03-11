@@ -5,10 +5,13 @@ namespace api.Data
 {
     public class AppDatabaseContext(DbContextOptions dbContextOptions) : DbContext(dbContextOptions)
     {
-        public DbSet<Product> Products { get; set; }
-        public DbSet<ProductVariant> ProductVariants { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartProduct> CartProducts { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
-        public DbSet<Cart> Cart { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<ProductVariantOption> ProductVariantOptions { get; set; }
+        public DbSet<ProductVariant> ProductVariants { get; set; }
+
 
         public override int SaveChanges()
         {

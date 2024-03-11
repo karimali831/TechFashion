@@ -13,21 +13,23 @@ export const products: IProductInfo[] = [
         variants: [
             {
                 id: 1,
-                key: "Color",
-                value: "Red",
-                sku: "",
-                stock: 2,
-                price: 10.55,
+                name: "Color",
                 active: true,
+                options: [
+                    { id: 1, name: "Red", sku: "", stock: 2, price: 10.55 },
+                    { id: 2, name: "Blue", sku: "", stock: 5, price: 10.55 },
+                    { id: 3, name: "Green", sku: "", stock: 1, price: 10.55 },
+                ],
             },
             {
                 id: 2,
-                key: "Color",
-                value: "Blue",
-                sku: "",
-                // stock: 2,
-                price: 12.3,
+                name: "Size",
                 active: true,
+                options: [
+                    { id: 1, name: "S", sku: "", stock: 1, price: 10.55 },
+                    { id: 2, name: "M", sku: "", stock: 3, price: 11.45 },
+                    { id: 3, name: "XL", sku: "", stock: 3, price: 12.3 },
+                ],
             },
         ],
         images: [
@@ -40,13 +42,13 @@ export const products: IProductInfo[] = [
             {
                 id: 2,
                 url: "src/assets/img/footware.jpg",
-                productVariantId: 1,
+                productVariantOptionId: 1,
                 main: false,
             },
         ],
     },
     {
-        id: 1,
+        id: 2,
         sku: "",
         slug: "diy-3d-wooden-bookshelf-insert-decor",
         title: "DIY 3D Wooden Booksehlf",
@@ -57,21 +59,23 @@ export const products: IProductInfo[] = [
         variants: [
             {
                 id: 1,
-                key: "Color",
-                value: "Red",
-                sku: "",
-                stock: 2,
-                price: 10.55,
+                name: "Color",
                 active: true,
+                options: [
+                    { id: 1, name: "Red", sku: "", stock: 2, price: 10.55 },
+                    { id: 2, name: "Blue", sku: "", stock: 5, price: 10.55 },
+                    { id: 3, name: "Green", sku: "", stock: 1, price: 10.55 },
+                ],
             },
             {
                 id: 2,
-                key: "Color",
-                value: "Blue",
-                sku: "",
-                // stock: 2,
-                price: 12.3,
+                name: "Size",
                 active: true,
+                options: [
+                    { id: 1, name: "S", sku: "", stock: 1, price: 10.55 },
+                    { id: 2, name: "M", sku: "", stock: 3, price: 11.45 },
+                    { id: 3, name: "XL", sku: "", stock: 3, price: 12.3 },
+                ],
             },
         ],
         images: [
@@ -84,13 +88,13 @@ export const products: IProductInfo[] = [
             {
                 id: 2,
                 url: "src/assets/img/footware.jpg",
-                productVariantId: 1,
+                productVariantOptionId: 1,
                 main: false,
             },
         ],
     },
     {
-        id: 1,
+        id: 3,
         sku: "",
         slug: "diy-3d-wooden-bookshelf-insert-decor",
         title: "DIY 3D Wooden Booksehlf",
@@ -101,21 +105,23 @@ export const products: IProductInfo[] = [
         variants: [
             {
                 id: 1,
-                key: "Color",
-                value: "Red",
-                sku: "",
-                stock: 2,
-                price: 10.55,
+                name: "Color",
                 active: true,
+                options: [
+                    { id: 1, name: "Red", sku: "", stock: 2, price: 10.55 },
+                    { id: 2, name: "Blue", sku: "", stock: 5, price: 10.55 },
+                    { id: 3, name: "Green", sku: "", stock: 1, price: 10.55 },
+                ],
             },
             {
                 id: 2,
-                key: "Color",
-                value: "Blue",
-                sku: "",
-                // stock: 2,
-                price: 12.3,
+                name: "Size",
                 active: true,
+                options: [
+                    { id: 1, name: "S", sku: "", stock: 1, price: 10.55 },
+                    { id: 2, name: "M", sku: "", stock: 3, price: 11.45 },
+                    { id: 3, name: "XL", sku: "", stock: 3, price: 12.3 },
+                ],
             },
         ],
         images: [
@@ -128,13 +134,13 @@ export const products: IProductInfo[] = [
             {
                 id: 2,
                 url: "src/assets/img/footware.jpg",
-                productVariantId: 1,
+                productVariantOptionId: 1,
                 main: false,
             },
         ],
     },
     {
-        id: 1,
+        id: 4,
         sku: "",
         slug: "diy-3d-wooden-bookshelf-insert-decor",
         title: "DIY 3D Wooden Booksehlf",
@@ -145,21 +151,23 @@ export const products: IProductInfo[] = [
         variants: [
             {
                 id: 1,
-                key: "Color",
-                value: "Red",
-                sku: "",
-                stock: 2,
-                price: 10.55,
+                name: "Color",
                 active: true,
+                options: [
+                    { id: 1, name: "Red", sku: "", stock: 2, price: 10.55 },
+                    { id: 2, name: "Blue", sku: "", stock: 5, price: 10.55 },
+                    { id: 3, name: "Green", sku: "", stock: 1, price: 10.55 },
+                ],
             },
             {
                 id: 2,
-                key: "Color",
-                value: "Blue",
-                sku: "",
-                // stock: 2,
-                price: 12.3,
+                name: "Size",
                 active: true,
+                options: [
+                    { id: 1, name: "S", sku: "", stock: 1, price: 10.55 },
+                    { id: 2, name: "M", sku: "", stock: 3, price: 11.45 },
+                    { id: 3, name: "XL", sku: "", stock: 3, price: 12.3 },
+                ],
             },
         ],
         images: [
@@ -172,13 +180,13 @@ export const products: IProductInfo[] = [
             {
                 id: 2,
                 url: "src/assets/img/footware.jpg",
-                productVariantId: 1,
+                productVariantOptionId: 1,
                 main: false,
             },
         ],
     },
     {
-        id: 1,
+        id: 5,
         sku: "",
         slug: "diy-3d-wooden-bookshelf-insert-decor",
         title: "DIY 3D Wooden Booksehlf",
@@ -189,21 +197,23 @@ export const products: IProductInfo[] = [
         variants: [
             {
                 id: 1,
-                key: "Color",
-                value: "Red",
-                sku: "",
-                stock: 2,
-                price: 10.55,
+                name: "Color",
                 active: true,
+                options: [
+                    { id: 1, name: "Red", sku: "", stock: 2, price: 10.55 },
+                    { id: 2, name: "Blue", sku: "", stock: 5, price: 10.55 },
+                    { id: 3, name: "Green", sku: "", stock: 1, price: 10.55 },
+                ],
             },
             {
                 id: 2,
-                key: "Color",
-                value: "Blue",
-                sku: "",
-                // stock: 2,
-                price: 12.3,
+                name: "Size",
                 active: true,
+                options: [
+                    { id: 1, name: "S", sku: "", stock: 1, price: 10.55 },
+                    { id: 2, name: "M", sku: "", stock: 3, price: 11.45 },
+                    { id: 3, name: "XL", sku: "", stock: 3, price: 12.3 },
+                ],
             },
         ],
         images: [
@@ -216,13 +226,13 @@ export const products: IProductInfo[] = [
             {
                 id: 2,
                 url: "src/assets/img/footware.jpg",
-                productVariantId: 1,
+                productVariantOptionId: 1,
                 main: false,
             },
         ],
     },
     {
-        id: 1,
+        id: 6,
         sku: "",
         slug: "diy-3d-wooden-bookshelf-insert-decor",
         title: "DIY 3D Wooden Booksehlf",
@@ -233,21 +243,23 @@ export const products: IProductInfo[] = [
         variants: [
             {
                 id: 1,
-                key: "Color",
-                value: "Red",
-                sku: "",
-                stock: 2,
-                price: 10.55,
+                name: "Color",
                 active: true,
+                options: [
+                    { id: 1, name: "Red", sku: "", stock: 2, price: 10.55 },
+                    { id: 2, name: "Blue", sku: "", stock: 5, price: 10.55 },
+                    { id: 3, name: "Green", sku: "", stock: 1, price: 10.55 },
+                ],
             },
             {
                 id: 2,
-                key: "Color",
-                value: "Blue",
-                sku: "",
-                // stock: 2,
-                price: 12.3,
+                name: "Size",
                 active: true,
+                options: [
+                    { id: 1, name: "S", sku: "", stock: 1, price: 10.55 },
+                    { id: 2, name: "M", sku: "", stock: 3, price: 11.45 },
+                    { id: 3, name: "XL", sku: "", stock: 3, price: 12.3 },
+                ],
             },
         ],
         images: [
@@ -260,13 +272,13 @@ export const products: IProductInfo[] = [
             {
                 id: 2,
                 url: "src/assets/img/footware.jpg",
-                productVariantId: 1,
+                productVariantOptionId: 1,
                 main: false,
             },
         ],
     },
     {
-        id: 1,
+        id: 7,
         sku: "",
         slug: "diy-3d-wooden-bookshelf-insert-decor",
         title: "DIY 3D Wooden Booksehlf",
@@ -277,21 +289,23 @@ export const products: IProductInfo[] = [
         variants: [
             {
                 id: 1,
-                key: "Color",
-                value: "Red",
-                sku: "",
-                stock: 2,
-                price: 10.55,
+                name: "Color",
                 active: true,
+                options: [
+                    { id: 1, name: "Red", sku: "", stock: 2, price: 10.55 },
+                    { id: 2, name: "Blue", sku: "", stock: 5, price: 10.55 },
+                    { id: 3, name: "Green", sku: "", stock: 1, price: 10.55 },
+                ],
             },
             {
                 id: 2,
-                key: "Color",
-                value: "Blue",
-                sku: "",
-                // stock: 2,
-                price: 12.3,
+                name: "Size",
                 active: true,
+                options: [
+                    { id: 1, name: "S", sku: "", stock: 1, price: 10.55 },
+                    { id: 2, name: "M", sku: "", stock: 3, price: 11.45 },
+                    { id: 3, name: "XL", sku: "", stock: 3, price: 12.3 },
+                ],
             },
         ],
         images: [
@@ -304,13 +318,13 @@ export const products: IProductInfo[] = [
             {
                 id: 2,
                 url: "src/assets/img/footware.jpg",
-                productVariantId: 1,
+                productVariantOptionId: 1,
                 main: false,
             },
         ],
     },
     {
-        id: 1,
+        id: 8,
         sku: "",
         slug: "diy-3d-wooden-bookshelf-insert-decor",
         title: "DIY 3D Wooden Booksehlf",
@@ -321,21 +335,23 @@ export const products: IProductInfo[] = [
         variants: [
             {
                 id: 1,
-                key: "Color",
-                value: "Red",
-                sku: "",
-                stock: 2,
-                price: 10.55,
+                name: "Color",
                 active: true,
+                options: [
+                    { id: 1, name: "Red", sku: "", stock: 2, price: 10.55 },
+                    { id: 2, name: "Blue", sku: "", stock: 5, price: 10.55 },
+                    { id: 3, name: "Green", sku: "", stock: 1, price: 10.55 },
+                ],
             },
             {
                 id: 2,
-                key: "Color",
-                value: "Blue",
-                sku: "",
-                // stock: 2,
-                price: 12.3,
+                name: "Size",
                 active: true,
+                options: [
+                    { id: 1, name: "S", sku: "", stock: 1, price: 10.55 },
+                    { id: 2, name: "M", sku: "", stock: 3, price: 11.45 },
+                    { id: 3, name: "XL", sku: "", stock: 3, price: 12.3 },
+                ],
             },
         ],
         images: [
@@ -348,13 +364,13 @@ export const products: IProductInfo[] = [
             {
                 id: 2,
                 url: "src/assets/img/footware.jpg",
-                productVariantId: 1,
+                productVariantOptionId: 1,
                 main: false,
             },
         ],
     },
     {
-        id: 1,
+        id: 9,
         sku: "",
         slug: "diy-3d-wooden-bookshelf-insert-decor",
         title: "DIY 3D Wooden Booksehlf",
@@ -365,21 +381,23 @@ export const products: IProductInfo[] = [
         variants: [
             {
                 id: 1,
-                key: "Color",
-                value: "Red",
-                sku: "",
-                stock: 2,
-                price: 10.55,
+                name: "Color",
                 active: true,
+                options: [
+                    { id: 1, name: "Red", sku: "", stock: 2, price: 10.55 },
+                    { id: 2, name: "Blue", sku: "", stock: 5, price: 10.55 },
+                    { id: 3, name: "Green", sku: "", stock: 1, price: 10.55 },
+                ],
             },
             {
                 id: 2,
-                key: "Color",
-                value: "Blue",
-                sku: "",
-                // stock: 2,
-                price: 12.3,
+                name: "Size",
                 active: true,
+                options: [
+                    { id: 1, name: "S", sku: "", stock: 1, price: 10.55 },
+                    { id: 2, name: "M", sku: "", stock: 3, price: 11.45 },
+                    { id: 3, name: "XL", sku: "", stock: 3, price: 12.3 },
+                ],
             },
         ],
         images: [
@@ -392,13 +410,13 @@ export const products: IProductInfo[] = [
             {
                 id: 2,
                 url: "src/assets/img/footware.jpg",
-                productVariantId: 1,
+                productVariantOptionId: 1,
                 main: false,
             },
         ],
     },
     {
-        id: 1,
+        id: 10,
         sku: "",
         slug: "diy-3d-wooden-bookshelf-insert-decor",
         title: "DIY 3D Wooden Booksehlf",
@@ -409,21 +427,23 @@ export const products: IProductInfo[] = [
         variants: [
             {
                 id: 1,
-                key: "Color",
-                value: "Red",
-                sku: "",
-                stock: 2,
-                price: 10.55,
+                name: "Color",
                 active: true,
+                options: [
+                    { id: 1, name: "Red", sku: "", stock: 2, price: 10.55 },
+                    { id: 2, name: "Blue", sku: "", stock: 5, price: 10.55 },
+                    { id: 3, name: "Green", sku: "", stock: 1, price: 10.55 },
+                ],
             },
             {
                 id: 2,
-                key: "Color",
-                value: "Blue",
-                sku: "",
-                // stock: 2,
-                price: 12.3,
+                name: "Size",
                 active: true,
+                options: [
+                    { id: 1, name: "S", sku: "", stock: 1, price: 10.55 },
+                    { id: 2, name: "M", sku: "", stock: 3, price: 11.45 },
+                    { id: 3, name: "XL", sku: "", stock: 3, price: 12.3 },
+                ],
             },
         ],
         images: [
@@ -436,13 +456,13 @@ export const products: IProductInfo[] = [
             {
                 id: 2,
                 url: "src/assets/img/footware.jpg",
-                productVariantId: 1,
+                productVariantOptionId: 1,
                 main: false,
             },
         ],
     },
     {
-        id: 1,
+        id: 11,
         sku: "",
         slug: "diy-3d-wooden-bookshelf-insert-decor",
         title: "DIY 3D Wooden Booksehlf",
@@ -453,21 +473,23 @@ export const products: IProductInfo[] = [
         variants: [
             {
                 id: 1,
-                key: "Color",
-                value: "Red",
-                sku: "",
-                stock: 2,
-                price: 10.55,
+                name: "Color",
                 active: true,
+                options: [
+                    { id: 1, name: "Red", sku: "", stock: 2, price: 10.55 },
+                    { id: 2, name: "Blue", sku: "", stock: 5, price: 10.55 },
+                    { id: 3, name: "Green", sku: "", stock: 1, price: 10.55 },
+                ],
             },
             {
                 id: 2,
-                key: "Color",
-                value: "Blue",
-                sku: "",
-                // stock: 2,
-                price: 12.3,
+                name: "Size",
                 active: true,
+                options: [
+                    { id: 1, name: "S", sku: "", stock: 1, price: 10.55 },
+                    { id: 2, name: "M", sku: "", stock: 3, price: 11.45 },
+                    { id: 3, name: "XL", sku: "", stock: 3, price: 12.3 },
+                ],
             },
         ],
         images: [
@@ -480,13 +502,13 @@ export const products: IProductInfo[] = [
             {
                 id: 2,
                 url: "src/assets/img/footware.jpg",
-                productVariantId: 1,
+                productVariantOptionId: 1,
                 main: false,
             },
         ],
     },
     {
-        id: 1,
+        id: 12,
         sku: "",
         slug: "diy-3d-wooden-bookshelf-insert-decor",
         title: "DIY 3D Wooden Booksehlf",
@@ -497,21 +519,23 @@ export const products: IProductInfo[] = [
         variants: [
             {
                 id: 1,
-                key: "Color",
-                value: "Red",
-                sku: "",
-                stock: 2,
-                price: 10.55,
+                name: "Color",
                 active: true,
+                options: [
+                    { id: 1, name: "Red", sku: "", stock: 2, price: 10.55 },
+                    { id: 2, name: "Blue", sku: "", stock: 5, price: 10.55 },
+                    { id: 3, name: "Green", sku: "", stock: 1, price: 10.55 },
+                ],
             },
             {
                 id: 2,
-                key: "Color",
-                value: "Blue",
-                sku: "",
-                // stock: 2,
-                price: 12.3,
+                name: "Size",
                 active: true,
+                options: [
+                    { id: 1, name: "S", sku: "", stock: 1, price: 10.55 },
+                    { id: 2, name: "M", sku: "", stock: 3, price: 11.45 },
+                    { id: 3, name: "XL", sku: "", stock: 3, price: 12.3 },
+                ],
             },
         ],
         images: [
@@ -524,13 +548,13 @@ export const products: IProductInfo[] = [
             {
                 id: 2,
                 url: "src/assets/img/footware.jpg",
-                productVariantId: 1,
+                productVariantOptionId: 1,
                 main: false,
             },
         ],
     },
     {
-        id: 1,
+        id: 13,
         sku: "",
         slug: "diy-3d-wooden-bookshelf-insert-decor",
         title: "DIY 3D Wooden Booksehlf",
@@ -541,21 +565,23 @@ export const products: IProductInfo[] = [
         variants: [
             {
                 id: 1,
-                key: "Color",
-                value: "Red",
-                sku: "",
-                stock: 2,
-                price: 10.55,
+                name: "Color",
                 active: true,
+                options: [
+                    { id: 1, name: "Red", sku: "", stock: 2, price: 10.55 },
+                    { id: 2, name: "Blue", sku: "", stock: 5, price: 10.55 },
+                    { id: 3, name: "Green", sku: "", stock: 1, price: 10.55 },
+                ],
             },
             {
                 id: 2,
-                key: "Color",
-                value: "Blue",
-                sku: "",
-                // stock: 2,
-                price: 12.3,
+                name: "Size",
                 active: true,
+                options: [
+                    { id: 1, name: "S", sku: "", stock: 1, price: 10.55 },
+                    { id: 2, name: "M", sku: "", stock: 3, price: 11.45 },
+                    { id: 3, name: "XL", sku: "", stock: 3, price: 12.3 },
+                ],
             },
         ],
         images: [
@@ -568,13 +594,13 @@ export const products: IProductInfo[] = [
             {
                 id: 2,
                 url: "src/assets/img/footware.jpg",
-                productVariantId: 1,
+                productVariantOptionId: 1,
                 main: false,
             },
         ],
     },
     {
-        id: 1,
+        id: 14,
         sku: "",
         slug: "diy-3d-wooden-bookshelf-insert-decor",
         title: "DIY 3D Wooden Booksehlf",
@@ -585,21 +611,23 @@ export const products: IProductInfo[] = [
         variants: [
             {
                 id: 1,
-                key: "Color",
-                value: "Red",
-                sku: "",
-                stock: 2,
-                price: 10.55,
+                name: "Color",
                 active: true,
+                options: [
+                    { id: 1, name: "Red", sku: "", stock: 2, price: 10.55 },
+                    { id: 2, name: "Blue", sku: "", stock: 5, price: 10.55 },
+                    { id: 3, name: "Green", sku: "", stock: 1, price: 10.55 },
+                ],
             },
             {
                 id: 2,
-                key: "Color",
-                value: "Blue",
-                sku: "",
-                // stock: 2,
-                price: 12.3,
+                name: "Size",
                 active: true,
+                options: [
+                    { id: 1, name: "S", sku: "", stock: 1, price: 10.55 },
+                    { id: 2, name: "M", sku: "", stock: 3, price: 11.45 },
+                    { id: 3, name: "XL", sku: "", stock: 3, price: 12.3 },
+                ],
             },
         ],
         images: [
@@ -612,13 +640,13 @@ export const products: IProductInfo[] = [
             {
                 id: 2,
                 url: "src/assets/img/footware.jpg",
-                productVariantId: 1,
+                productVariantOptionId: 1,
                 main: false,
             },
         ],
     },
     {
-        id: 1,
+        id: 15,
         sku: "",
         slug: "diy-3d-wooden-bookshelf-insert-decor",
         title: "DIY 3D Wooden Booksehlf",
@@ -629,21 +657,23 @@ export const products: IProductInfo[] = [
         variants: [
             {
                 id: 1,
-                key: "Color",
-                value: "Red",
-                sku: "",
-                stock: 2,
-                price: 10.55,
+                name: "Color",
                 active: true,
+                options: [
+                    { id: 1, name: "Red", sku: "", stock: 2, price: 10.55 },
+                    { id: 2, name: "Blue", sku: "", stock: 5, price: 10.55 },
+                    { id: 3, name: "Green", sku: "", stock: 1, price: 10.55 },
+                ],
             },
             {
                 id: 2,
-                key: "Color",
-                value: "Blue",
-                sku: "",
-                // stock: 2,
-                price: 12.3,
+                name: "Size",
                 active: true,
+                options: [
+                    { id: 1, name: "S", sku: "", stock: 1, price: 10.55 },
+                    { id: 2, name: "M", sku: "", stock: 3, price: 11.45 },
+                    { id: 3, name: "XL", sku: "", stock: 3, price: 12.3 },
+                ],
             },
         ],
         images: [
@@ -656,13 +686,13 @@ export const products: IProductInfo[] = [
             {
                 id: 2,
                 url: "src/assets/img/footware.jpg",
-                productVariantId: 1,
+                productVariantOptionId: 1,
                 main: false,
             },
         ],
     },
     {
-        id: 1,
+        id: 19,
         sku: "",
         slug: "diy-3d-wooden-bookshelf-insert-decor",
         title: "DIY 3D Wooden Booksehlf",
@@ -673,21 +703,23 @@ export const products: IProductInfo[] = [
         variants: [
             {
                 id: 1,
-                key: "Color",
-                value: "Red",
-                sku: "",
-                stock: 2,
-                price: 10.55,
+                name: "Color",
                 active: true,
+                options: [
+                    { id: 1, name: "Red", sku: "", stock: 2, price: 10.55 },
+                    { id: 2, name: "Blue", sku: "", stock: 5, price: 10.55 },
+                    { id: 3, name: "Green", sku: "", stock: 1, price: 10.55 },
+                ],
             },
             {
                 id: 2,
-                key: "Color",
-                value: "Blue",
-                sku: "",
-                // stock: 2,
-                price: 12.3,
+                name: "Size",
                 active: true,
+                options: [
+                    { id: 1, name: "S", sku: "", stock: 1, price: 10.55 },
+                    { id: 2, name: "M", sku: "", stock: 3, price: 11.45 },
+                    { id: 3, name: "XL", sku: "", stock: 3, price: 12.3 },
+                ],
             },
         ],
         images: [
@@ -700,7 +732,7 @@ export const products: IProductInfo[] = [
             {
                 id: 2,
                 url: "src/assets/img/footware.jpg",
-                productVariantId: 1,
+                productVariantOptionId: 1,
                 main: false,
             },
         ],
