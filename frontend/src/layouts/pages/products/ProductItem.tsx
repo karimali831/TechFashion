@@ -1,14 +1,17 @@
 import { Box, Fade } from "@mui/material";
 import "./styles.less";
-import { IProductInfo } from "src/interface/IProductInfo";
+import { IProductCatalogue } from "src/interface/IProductCatalogue";
 
 interface IProps {
     index: number;
-    item: IProductInfo;
+    item: IProductCatalogue;
 }
 
 const ProductItem = ({ index, item }: IProps) => {
-    const mainImage = item.images.filter((x) => x.main)[0];
+    // const { data } = useGetProductQuery();
+
+    // const mainImage = data.details.filter(x => x.id === item.id)
+    //     .map(x => x.imageMain)
 
     return (
         <Box>
@@ -19,7 +22,7 @@ const ProductItem = ({ index, item }: IProps) => {
                 }}
             >
                 <Box>
-                    <img src={mainImage.url} className="zoom" />
+                    <img src={item.imageSrc} className="zoom" />
                     <Box
                         style={{ marginTop: 10 }}
                         display="flex"

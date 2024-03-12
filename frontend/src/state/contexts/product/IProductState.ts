@@ -1,12 +1,9 @@
-import { products } from "src/assets/data/productInfo";
-import { IProductInfo } from "src/interface/IProductInfo";
+import { IProductCatalogue } from "src/interface/IProductCatalogue";
 
 export interface IProductState {
-    products: IProductInfo[];
-    selectedProduct: IProductInfo | null;
+    selectedProduct: IProductCatalogue | null;
 }
 
 export const productInitialState: IProductState = {
-    products,
     selectedProduct: null,
 };

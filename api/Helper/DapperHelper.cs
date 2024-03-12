@@ -27,32 +27,32 @@ namespace api.Helper
                 }).ToArray();
         }
 
-        public static string SELECT(string table, string[] fields, int? top = null)
+        public static string Select(string table, string[] fields, int? top = null)
         {
-            return $"SELECT {(top.HasValue ? $"TOP" + $" {top.Value}" : "")} {string.Join(",", fields)} FROM {table}";
+            return $";SELECT {(top.HasValue ? $"TOP" + $" {top.Value}" : "")} {string.Join(",", fields)} FROM {table}";
         }
 
-        public static string COUNT(string table, StringBuilder? filter = null)
+        public static string Count(string table, StringBuilder? filter = null)
         {
-            return $"SELECT COUNT(*) AS TotalItems FROM {table} {filter}";
+            return $";SELECT COUNT(*) AS TotalItems FROM {table} {filter}";
         }
 
-        public static string SUM(string table, string column, StringBuilder? filter = null)
+        public static string Sum(string table, string column, StringBuilder? filter = null)
         {
-            return $"SELECT SUM({column}) FROM {table} {filter}";
+            return $";SELECT SUM({column}) FROM {table} {filter}";
         }
 
-        public static string INSERT(string table, string[] fields)
+        public static string Insert(string table, string[] fields)
         {
-            return $"INSERT INTO {table} ({string.Join(", ", fields)}) VALUES ({string.Join(", ", fields.Select(f => $"@{f}"))})";
+            return $";INSERT INTO {table} ({string.Join(", ", fields)}) VALUES ({string.Join(", ", fields.Select(f => $"@{f}"))})";
         }
 
-        public static string DELETE(string table)
+        public static string Delete(string table)
         {
-            return $"DELETE FROM {table}";
+            return $";DELETE FROM {table}";
         }
 
-        public static StringBuilder FILTER(this DynamicParameters parameters, (string[] Fields, string[] Values) searchTerm, string where = "")
+        public static StringBuilder Filter(this DynamicParameters parameters, (string[] Fields, string[] Values) searchTerm, string where = "")
         {
             var sqlTxt = new StringBuilder();
 
@@ -62,7 +62,7 @@ namespace api.Helper
             }
 
             // build query filter dynamically and parametrise each field/value pair
-            if (searchTerm.Fields.Any() && searchTerm.Values.Any())
+            if (searchTerm.Fields.Length != 0 && searchTerm.Values.Length != 0)
             {
                 sqlTxt.Append(string.IsNullOrEmpty(where) ? " WHERE " : " AND ");
                 sqlTxt.Append('(');

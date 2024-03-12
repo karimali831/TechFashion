@@ -1,5 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { baseApiUrl } from "./baseApi";
+import { IProductDetail } from "src/interface/IProductDetail";
+import { IProductCatalogue } from "src/interface/IProductCatalogue";
 
 export const productApi = createApi({
     reducerPath: "productApi",
@@ -9,12 +11,16 @@ export const productApi = createApi({
         // headers: { Authorization: `Bearer ${getTokenFromLocalStorage()}` },
     }),
     endpoints: (builder) => ({
-        getProduct: builder.query<ITest, number>({
-            query: (period) => `Dashboard/GetWidgets/${period}`,
+        getProduct: builder.query<IProductResponse, void>({
+            query: () => "Product",
         }),
+        addToCart: builder.query<void, 
     }),
 });
 
 export const { useGetProductQuery } = productApi;
 
-export interface ITest {}
+export interface IProductResponse {
+    catalogue: IProductCatalogue[];
+    details: IProductDetail[];
+}

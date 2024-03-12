@@ -8,7 +8,7 @@ namespace api.Repository.EF
 {
     public interface IProductEFRepository
     {
-        Task<IList<ProductViewModel>> GetAllAsync();
+        Task<IList<ProductCatalogue>> GetAllAsync();
         Task<ApiResponse<ProductViewModel>> GetAsync(int id);
         Task<ApiResponse<ProductViewModel>> CreateAsync(Product model);
         Task<ApiResponse<ProductViewModel>> UpdateAsync(Product model);
@@ -17,9 +17,9 @@ namespace api.Repository.EF
 
     public class ProductEFRepository(AppDatabaseContext context) : EFRepositoryBase<Product>(context), IProductEFRepository
     {
-        public async Task<IList<ProductViewModel>> GetAllAsync()
+        public async Task<IList<ProductCatalogue>> GetAllAsync()
         {
-            return await GetViewModelAsync<ProductViewModel>();
+            return await GetViewModelAsync<ProductCatalogue>();
         }
 
         public async Task<ApiResponse<ProductViewModel>> GetAsync(int id)

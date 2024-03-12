@@ -99,7 +99,7 @@ function NavbarV2() {
                                 textDecoration: "none",
                             }}
                         >
-                            Tech Fashion
+                            Store
                         </Typography>
 
                         <Box

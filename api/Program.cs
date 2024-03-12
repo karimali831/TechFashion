@@ -24,6 +24,17 @@ builder.Services.AddDbContext<AppDatabaseContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173");
+        });
+});
+
 EnvironemntManager.Environemnt = EnvironemntManager.Environments.Sandbox;
 
 var app = builder.Build();
@@ -37,6 +48,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.MapControllers();
+app.UseCors(MyAllowSpecificOrigins);
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)

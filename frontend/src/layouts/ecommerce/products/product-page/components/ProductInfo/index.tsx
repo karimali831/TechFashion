@@ -6,7 +6,6 @@ import MDTypography from "src/components/MDTypography";
 import MDBadge from "src/components/MDBadge";
 import MDInput from "src/components/MDInput";
 import { ActionButton } from "src/components/Buttons/ActionButton";
-import { IProductInfo } from "src/interface/IProductInfo";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
 import {
     AddToCartAction,
@@ -16,9 +15,10 @@ import {
 import { uuidv4 } from "@firebase/util";
 import { useState } from "react";
 import { getCartState } from "src/state/contexts/cart/Selectors";
+import { IProductCatalogue } from "src/interface/IProductCatalogue";
 
 interface IProps {
-    item: IProductInfo;
+    item: IProductCatalogue;
 }
 
 function ProductInfo({ item }: IProps): JSX.Element {

@@ -1,7 +1,7 @@
 import { createAction } from "@reduxjs/toolkit";
-import { IProductInfo } from "src/interface/IProductInfo";
+import { IProductCatalogue } from "src/interface/IProductCatalogue";
 
-const SelectedProductAction = createAction<IProductInfo | null>(
+const SelectedProductAction = createAction<IProductCatalogue | null>(
     "@@Product/SelectedProduct"
 );
 

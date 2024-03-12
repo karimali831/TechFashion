@@ -13,6 +13,7 @@ import { useEffect } from "react";
 import { SelectedProductAction } from "src/state/contexts/product/Actions";
 import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
 import { IProductRouteParams } from "src/types/RouteParams";
+import { useGetProductQuery } from "src/api/productApi";
 
 function ProductPage(): JSX.Element {
     const { slug } = useParams<IProductRouteParams>();
@@ -20,11 +21,13 @@ function ProductPage(): JSX.Element {
     const navigate: NavigateFunction = useNavigate();
     const dispatch = useAppDispatch();
 
-    const { selectedProduct, products } = useAppSelector(getProductState);
+    const { selectedProduct } = useAppSelector(getProductState);
+
+    const { data: products, isLoading } = useGetProductQuery();
 
     useEffect(() => {
-        if (!selectedProduct) {
-            const findItem = products.filter((x) => x.slug === slug)[0];
+        if (!selectedProduct && !isLoading) {
+            const findItem = products.catalogue.find((x) => x.slug === slug);
 
             setTimeout(() => {
                 dispatch(SelectedProductAction(findItem));
@@ -36,9 +39,9 @@ function ProductPage(): JSX.Element {
                 dispatch(SelectedProductAction(null));
             }
         };
-    }, [selectedProduct]);
+    }, [selectedProduct, isLoading]);
 
-    if (!selectedProduct) {
+    if (!selectedProduct || isLoading) {
         return <LinearProgress />;
     }
 
