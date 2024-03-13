@@ -1,5 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { baseApiUrl } from "./baseApi";
+import { ICartProduct } from "src/data/ICartProduct";
+import { ICartProductDetail } from "src/interface/ICartProductDetail";
 
 export const cartApi = createApi({
     reducerPath: "cartApi",
@@ -9,36 +11,47 @@ export const cartApi = createApi({
         // headers: { Authorization: `Bearer ${getTokenFromLocalStorage()}` },
     }),
     endpoints: (builder) => ({
-        getWidgets: builder.query<ITest, number>({
-            query: (period) => `Dashboard/GetWidgets/${period}`,
+        getCart: builder.query<ICartResponse, void>({
+            query: () => "Cart",
         }),
-        getCharts: builder.query<ITest, ITest>({
-            query: (request) => ({
-                url: "Dashboard/GetCharts",
-                method: "POST",
-                body: request,
+        updateProductQuantity: builder.mutation<
+            void,
+            { id: number; quantity: number }
+        >({
+            query: ({ id, quantity }) => ({
+                url: `Cart/UpdateProductQuantity/${id}/${quantity}`,
+                method: "GET",
             }),
-            providesTags: ["Charts"],
         }),
-
-        addEvent: builder.mutation<void, Omit<ITest, "id">>({
+        addProductToCart: builder.mutation<void, ICartProduct>({
             query: (body) => ({
-                url: "Dashboard/AddEvent",
+                url: "Cart/AddProduct",
                 method: "POST",
                 body,
             }),
-            invalidatesTags: ["Activity"],
         }),
-        setPrivacyMode: builder.mutation<void, boolean>({
-            query: (enabled) => ({
-                url: `Dashboard/SetPrivacyMode/${enabled}`,
+        removeProductFromCart: builder.mutation<void, number>({
+            query: (id) => ({
+                url: `Cart/RemoveProduct/${id}`,
                 method: "GET",
             }),
-            invalidatesTags: ["UserInfo"],
         }),
     }),
 });
 
-export const { useGetWidgetsQuery, useGetChartsQuery } = cartApi;
+export interface ICartProductQuantityRequest {
+    id: number;
+    quantity: number;
+}
 
-export interface ITest {}
+export interface ICartResponse {
+    products: ICartProductDetail[];
+    totalStr: string;
+}
+
+export const {
+    useGetCartQuery,
+    useUpdateProductQuantityMutation,
+    useAddProductToCartMutation,
+    useRemoveProductFromCartMutation,
+} = cartApi;

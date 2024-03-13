@@ -106,9 +106,12 @@ namespace api.Infrastructure
 
         public async Task<ApiResponse<bool>> RemoveAsync(int id)
         {
-            try
+
+            var entity = await GetByKeyAsync(id);
+
+            if (entity is not null)
             {
-                var entity = await GetByKeyAsync(id);
+
                 dbSet.Remove(entity);
                 await _context.SaveChangesAsync();
 
@@ -116,15 +119,15 @@ namespace api.Infrastructure
                 {
                     Data = true
                 };
-
             }
-            catch (Exception exp)
+            else
             {
                 return new ApiResponse<bool>
                 {
-                    ErrorMsg = "An error occurred:" + exp.Message
+                    ErrorMsg = "An error occurred"
                 };
             }
+
         }
 
         public virtual bool Delete(TEntity entity)
@@ -246,14 +249,14 @@ namespace api.Infrastructure
             return [.. dbSet.Where(searchPredicate).Skip(pageNumber * pageSize).Take(pageSize)];
         }
 
-        public ICollection<TEntity> Find(Expression<Func<TEntity, bool>> searchPredicate, string columnToOrderBy, int pageNumber, int pageSize, bool orderByDescending = false)
-        {
-            Expression<Func<TEntity, object>> orderByFunc = x => x.GetType().GetProperty(columnToOrderBy).GetValue(x, null);
-            IQueryable<TEntity> query = dbSet.Where(searchPredicate);
+        // public ICollection<TEntity> Find(Expression<Func<TEntity, bool>> searchPredicate, string columnToOrderBy, int pageNumber, int pageSize, bool orderByDescending = false)
+        // {
+        //     Expression<Func<TEntity, object>> orderByFunc = x => x.GetType().GetProperty(columnToOrderBy).GetValue(x, null);
+        //     IQueryable<TEntity> query = dbSet.Where(searchPredicate);
 
-            query = orderByDescending ? query.OrderByDescending(orderByFunc) : query.OrderBy(orderByFunc);
-            return [.. query.Skip(pageNumber * pageSize).Take(pageSize)];
-        }
+        //     query = orderByDescending ? query.OrderByDescending(orderByFunc) : query.OrderBy(orderByFunc);
+        //     return [.. query.Skip(pageNumber * pageSize).Take(pageSize)];
+        // }
 
         public bool InsertIfNotExists(TEntity item, Expression<Func<TEntity, bool>> searchPredicate)
         {

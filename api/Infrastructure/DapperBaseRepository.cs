@@ -9,10 +9,10 @@ namespace api.Infrastructure
     {
         Task<IEnumerable<T>> QueryAsync<T>(string query, object? parameters = null);
         Task<bool> ExecuteAsync(string query, object? parameters = null);
-        Task<T> ExecuteScalarAsync<T>(string query, object? parameters = null);
-        Task<T> QueryFirstOrDefaultAsync<T>(string query, object? parameters = null);
-        Task<T> QuerySingleOrDefaultAsync<T>(string query, object? parameters = null);
-        Task<int> ExecuteScalarAsync(string query, object parameters);
+        Task<T?> ExecuteScalarAsync<T>(string query, object? parameters = null);
+        Task<T?> QueryFirstOrDefaultAsync<T>(string query, object? parameters = null);
+        Task<T?> QuerySingleOrDefaultAsync<T>(string query, object? parameters = null);
+        Task<int?> ExecuteScalarAsync(string query, object? parameters);
     }
 
     public abstract class DapperBaseRepository : IDapperBaseRepository, IDisposable
@@ -51,7 +51,7 @@ namespace api.Infrastructure
             }
         }
 
-        public async Task<T> QueryFirstOrDefaultAsync<T>(string query, object? parameters = null)
+        public async Task<T?> QueryFirstOrDefaultAsync<T>(string query, object? parameters = null)
         {
             try
             {
@@ -63,7 +63,7 @@ namespace api.Infrastructure
             }
         }
 
-        public async Task<T> QuerySingleOrDefaultAsync<T>(string query, object? parameters = null)
+        public async Task<T?> QuerySingleOrDefaultAsync<T>(string query, object? parameters = null)
         {
             try
             {
@@ -75,7 +75,7 @@ namespace api.Infrastructure
             }
         }
 
-        public async Task<int> ExecuteScalarAsync(string query, object parameters)
+        public async Task<int?> ExecuteScalarAsync(string query, object? parameters)
         {
             try
             {
@@ -101,7 +101,7 @@ namespace api.Infrastructure
             }
         }
 
-        public async Task<T> ExecuteScalarAsync<T>(string query, object? parameters = null)
+        public async Task<T?> ExecuteScalarAsync<T>(string query, object? parameters = null)
         {
 
             try
@@ -114,7 +114,7 @@ namespace api.Infrastructure
             }
         }
 
-        public async Task<T> QuerySingleAsync<T>(string query, object parameters = null)
+        public async Task<T> QuerySingleAsync<T>(string query, object? parameters = null)
         {
             try
             {

@@ -1,6 +1,6 @@
+using api.Data;
 using api.Dto;
 using api.Helper;
-using api.Models;
 using api.Repository;
 using api.Repository.EF;
 using api.ViewModels;

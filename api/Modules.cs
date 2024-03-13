@@ -11,10 +11,13 @@ namespace api
         {
             services.AddScoped<IProductListingService, ProductListingService>();
             services.AddScoped<IEbayFeedService, EbayFeedService>();
+            services.AddScoped<ICartProductService, CartProductService>();
 
             // Repositories
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductEFRepository, ProductEFRepository>();
+            services.AddScoped<ICartProductRepository, CartProductRepository>();
+            services.AddScoped<ICartRepository, CartRepository>();
 
             return services;
         }

@@ -14,7 +14,6 @@ export const productApi = createApi({
         getProduct: builder.query<IProductResponse, void>({
             query: () => "Product",
         }),
-        addToCart: builder.query<void, 
     }),
 });
 

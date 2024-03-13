@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text;
 using Dapper;
 
@@ -5,6 +6,16 @@ namespace api.Helper
 {
     public static class DapperHelper
     {
+        public static string[] DapperFields(this Type type)
+        {
+            return
+                type
+                    .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy)
+                    .Where(x => !x.CustomAttributes.Any(a => a.AttributeType == typeof(DbIgnoreAttribute)))
+                    .Select(x => x.Name).ToArray();
+        }
+
+
         // returns list of fields from model type
         // except props with DbIgnore attribute
         public static string[] SqlFields(this Type type)
@@ -40,6 +51,12 @@ namespace api.Helper
         public static string Sum(string table, string column, StringBuilder? filter = null)
         {
             return $";SELECT SUM({column}) FROM {table} {filter}";
+        }
+
+
+        public static string Update(string table, string[] fields, string? primaryKey = "Id")
+        {
+            return $"UPDATE {table} SET {string.Join(", ", fields.Where(f => f != primaryKey).Select(f => $"{f}=@{f}"))}";
         }
 
         public static string Insert(string table, string[] fields)

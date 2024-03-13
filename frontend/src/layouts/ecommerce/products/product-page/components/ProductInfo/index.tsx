@@ -6,82 +6,90 @@ import MDTypography from "src/components/MDTypography";
 import MDBadge from "src/components/MDBadge";
 import MDInput from "src/components/MDInput";
 import { ActionButton } from "src/components/Buttons/ActionButton";
-import { useAppDispatch, useAppSelector } from "src/state/Hooks";
-import {
-    AddToCartAction,
-    OpenCartOverlayAction,
-    UpdateProductCartQuantityAction,
-} from "src/state/contexts/cart/Actions";
-import { uuidv4 } from "@firebase/util";
+import { useAppDispatch } from "src/state/Hooks";
+import { OpenCartOverlayAction } from "src/state/contexts/cart/Actions";
 import { useState } from "react";
-import { getCartState } from "src/state/contexts/cart/Selectors";
-import { IProductCatalogue } from "src/interface/IProductCatalogue";
+import {
+    useAddProductToCartMutation,
+    useGetCartQuery,
+    useUpdateProductQuantityMutation,
+} from "src/api/cartApi";
+import { ICartProductDetail } from "src/interface/ICartProductDetail";
+import { IProductDetail } from "src/interface/IProductDetail";
 
 interface IProps {
-    item: IProductCatalogue;
+    item: IProductDetail[];
 }
 
 function ProductInfo({ item }: IProps): JSX.Element {
-    const [adding, setAdding] = useState<boolean>(false);
-    const [variant, setVariant] = useState<any>({
-        material: "Steel",
-        color: "White",
-    });
     const [quantity, setQuantity] = useState<number>(1);
 
-    const { itemsInCart } = useAppSelector(getCartState);
+    const [addProductToCart, { isLoading: adding }] =
+        useAddProductToCartMutation();
+    const [updateProductQuantity] = useUpdateProductQuantityMutation();
+
+    const { data: cart } = useGetCartQuery();
+
     const dispatch = useAppDispatch();
 
-    const itemInCart = itemsInCart.filter(
-        (x) =>
-            x.productId === item.id &&
-            JSON.stringify(variant) === JSON.stringify(x.variant)
+    const itemsInCart: ICartProductDetail[] = cart?.products ?? [];
+
+    const itemInCart = itemsInCart.filter((x) =>
+        item.some(
+            (i) =>
+                i.id === x.productId &&
+                (!i.productVariantId ||
+                    i.productVariantId === x.productVariantId)
+        )
     )[0];
 
-    const addToCart = () => {
-        setAdding(true);
+    const addToCart = async () => {
+        if (!!itemInCart) {
+            const totalQuantity = itemInCart.quantity + quantity;
 
-        setTimeout(() => {
-            if (!!itemInCart) {
-                const totalQuantity = itemInCart.quantity + quantity;
+            await updateProductQuantity({
+                id: itemInCart.id,
+                quantity: totalQuantity,
+            })
+                .unwrap()
+                .then((payload) => {
+                    alert("success");
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        } else {
+            await addProductToCart({
+                cartId: 1,
+                quantity: quantity,
+                productId: item[0].id,
+                productVariantId: itemInCart.productVariantId,
+            })
+                .unwrap()
+                .then((payload) => {
+                    alert("success");
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
 
-                dispatch(
-                    UpdateProductCartQuantityAction({
-                        id: itemInCart.id,
-                        price: "£" + item.price * totalQuantity,
-                        quantity: totalQuantity,
-                    })
-                );
-            } else {
-                dispatch(
-                    AddToCartAction({
-                        id: uuidv4(),
-                        productId: item.id,
-                        variant,
-                        quantity,
-                        price: "£" + item.price * quantity,
-                    })
-                );
-            }
-
-            dispatch(OpenCartOverlayAction(true));
-            setQuantity(1);
-            setAdding(false);
-        }, 1000);
+        dispatch(OpenCartOverlayAction(true));
+        setQuantity(1);
     };
 
     const updateVariant = (key: string, value: string) => {
-        setVariant({
-            ...variant,
-            [key]: value,
-        });
+        // setVariant({
+        //     ...variant,
+        //     [key]: value,
+        // });
     };
 
     return (
         <MDBox>
             <MDBox mb={1}>
                 <MDTypography variant="h3" fontWeight="bold">
-                    {item.title}
+                    {item[0].title}
                 </MDTypography>
             </MDBox>
             <MDTypography variant="h4" color="text">
@@ -98,7 +106,7 @@ function ProductInfo({ item }: IProps): JSX.Element {
             </MDBox>
             <MDBox mb={1}>
                 <MDTypography variant="h5" fontWeight="medium">
-                    {item.priceStr}
+                    {item[0].price}
                 </MDTypography>
             </MDBox>
             <MDBadge
@@ -193,7 +201,7 @@ function ProductInfo({ item }: IProps): JSX.Element {
                             </MDTypography>
                         </MDBox>
                         <Autocomplete
-                            value={variant["material"]}
+                            value={"Steel"}
                             options={["Aluminium", "Carbon", "Steel", "Wood"]}
                             onChange={(
                                 e: React.SyntheticEvent,
@@ -216,7 +224,7 @@ function ProductInfo({ item }: IProps): JSX.Element {
                             </MDTypography>
                         </MDBox>
                         <Autocomplete
-                            value={variant["color"]}
+                            value={"Black"}
                             options={[
                                 "Black",
                                 "Blue",

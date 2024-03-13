@@ -17,6 +17,8 @@ import { OverlaySlider, OverlaySliderSize } from "src/components/OverlaySlider";
 import { navData } from "src/assets/data/navData";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { CartOverlay } from "../ecommerce/cart-overlay";
+import { useGetCartQuery } from "src/api/cartApi";
+import { ICartProductDetail } from "src/interface/ICartProductDetail";
 
 // const pages = ["Home", "Shop", "Blog", "Contact"];
 // const settings = ["Profile", "Account", "Dashboard", "Logout"];
@@ -32,7 +34,10 @@ function NavbarV2() {
     // );
 
     const dispatch = useAppDispatch();
-    const { openOverlay, itemsInCart } = useAppSelector(getCartState);
+
+    const { data: cart } = useGetCartQuery();
+
+    const { openOverlay } = useAppSelector(getCartState);
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
@@ -40,6 +45,8 @@ function NavbarV2() {
     // const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     //     setAnchorElUser(event.currentTarget);
     // };
+
+    const itemsInCart: ICartProductDetail[] = cart?.products ?? [];
 
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);

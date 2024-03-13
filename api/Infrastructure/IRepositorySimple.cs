@@ -19,7 +19,7 @@ namespace api.Infrastructure
         [Obsolete("Use GetManyWithRelations, which does not expose IQueryable")]
         IQueryable<TEntity> Find(Expression<Func<TEntity, bool>> where, params Expression<Func<TEntity, object>>[] includeProperties);
         ICollection<TEntity> Find(Expression<Func<TEntity, bool>> searchPredicate, int pageNumber, int pageSize);
-        ICollection<TEntity> Find(Expression<Func<TEntity, bool>> searchPredicate, string columnToOrderBy, int pageNumber, int pageSize, bool orderByDescending = false);
+        // ICollection<TEntity> Find(Expression<Func<TEntity, bool>> searchPredicate, string columnToOrderBy, int pageNumber, int pageSize, bool orderByDescending = false);
         ICollection<TEntity> GetAll();
         ICollection<TEntity> GetAll(params Expression<Func<TEntity, object>>[] includeProperties);
         ICollection<TEntity> GetAll(int pageNum, int pageSize);

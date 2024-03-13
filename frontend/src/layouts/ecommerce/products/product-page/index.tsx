@@ -26,12 +26,9 @@ function ProductPage(): JSX.Element {
     const { data: products, isLoading } = useGetProductQuery();
 
     useEffect(() => {
-        if (!selectedProduct && !isLoading) {
-            const findItem = products.catalogue.find((x) => x.slug === slug);
-
-            setTimeout(() => {
-                dispatch(SelectedProductAction(findItem));
-            }, 500);
+        if (!!products && selectedProduct.length === 0) {
+            const findItem = products.details.filter((x) => x.slug === slug);
+            dispatch(SelectedProductAction(findItem));
         }
 
         return () => {
@@ -39,9 +36,9 @@ function ProductPage(): JSX.Element {
                 dispatch(SelectedProductAction(null));
             }
         };
-    }, [selectedProduct, isLoading]);
+    }, [products]);
 
-    if (!selectedProduct || isLoading) {
+    if (selectedProduct.length === 0 || isLoading) {
         return <LinearProgress />;
     }
 

@@ -1,9 +1,9 @@
-import { IProductCatalogue } from "src/interface/IProductCatalogue";
+import { IProductDetail } from "src/interface/IProductDetail";
 
 export interface IProductState {
-    selectedProduct: IProductCatalogue | null;
+    selectedProduct: IProductDetail[];
 }
 
 export const productInitialState: IProductState = {
-    selectedProduct: null,
+    selectedProduct: [],
 };

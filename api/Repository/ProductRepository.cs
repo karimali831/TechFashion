@@ -1,5 +1,5 @@
 using api.Infrastructure;
-using api.ViewModels;
+using api.Models;
 
 namespace api.Repository
 {
@@ -34,20 +34,19 @@ namespace api.Repository
                     p.Title, 
                     p.Slug,
                     PI.Url,
-                    pvo.Price,
+                    pv.Price,
                     1
                 FROM [Products] AS P
                 CROSS APPLY
                 (
-                    SELECT TOP 1 PVO.Id, Price
+                    SELECT TOP 1 PV.Id, Price
                     FROM [ProductVariants] AS PV
-                    JOIN [ProductVariantOptions] AS PVO
-                    ON PVO.ProductVariantId = PV.Id
-                    WHERE PV.ProductId = p.Id AND PV.Active = 1
-                    ORDER BY PVO.Price ASC
-                ) AS PVO
+                  
+                    WHERE PV.ProductId = p.Id 
+                    ORDER BY PV.Price ASC
+                ) AS PV
                 LEFT JOIN  [ProductImages] AS PI
-                ON PI.ProductVariantOptionId = PVO.Id and PI.Main = 1
+                ON PI.ProductVariantId = PV.Id and PI.Main = 1
                 WHERE p.Active = 1 
             ";
 
@@ -59,27 +58,25 @@ namespace api.Repository
             const string sqlTxt = $@"
                 ;SELECT 
                     p.Id, 
+                    pv.Id AS ProductVariantId,
                     p.Title, 
                     p.Description, 
                     p.Slug, 
-                    CASE WHEN PVO.Price IS NULL THEN p.Price ELSE PVO.Price END AS Price,
-                    CASE WHEN PVO.Stock IS NULL THEN p.Stock ELSE PVO.Stock END AS Stock,
-                    CASE WHEN PVO.Sku IS NULL THEN p.Sku ELSE PVO.Sku END AS Sku,
-                    p.Active,
-                    pa.Name AS Variant, 
-                    PVO.Name as VariantValue,
-                    CASE WHEN PVO.Id IS NULL THEN PI1.Url ELSE PI2.Url END AS ImageSrc,
-                    CASE WHEN PVO.Id IS NULL THEN PI1.Main ELSE PI2.Main END AS ImageMain
+                    CASE WHEN pv.Price IS NULL THEN p.Price ELSE pv.Price END AS Price,
+                    CASE WHEN pv.Stock IS NULL THEN p.Stock ELSE pv.Stock END AS Stock,
+                    CASE WHEN pv.Sku IS NULL THEN p.Sku ELSE pv.Sku END AS Sku,
+                    p.Active, 
+                    pv.Variations,
+                    CASE WHEN PV.Id IS NULL THEN PI1.Url ELSE PI2.Url END AS ImageSrc,
+                    CASE WHEN PV.Id IS NULL THEN PI1.Main ELSE PI2.Main END AS ImageMain
                 FROM [Products] AS P
-                LEFT JOIN [ProductVariants] AS PA
-                ON PA.ProductId = P.Id AND PA.Active = 1
-                LEFT JOIN [ProductVariantOptions] AS PVO
-                ON PVO.ProductVariantId = PA.Id
+                LEFT JOIN [ProductVariants] AS PV
+                ON PV.ProductId = P.Id 
                 LEFT JOIN [ProductImages] AS PI1
                 ON PI1.ProductId = P.Id
                 LEFT JOIN [ProductImages] AS PI2
-                ON PI2.ProductVariantOptionId = PVO.Id
-                WHERE p.Active = 1  
+                ON PI2.ProductVariantId = pv.Id
+                WHERE p.Active = 1 
             ";
 
             return (await QueryAsync<ProductDetail>(sqlTxt)).ToList(); ;

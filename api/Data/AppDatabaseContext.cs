@@ -1,4 +1,3 @@
-using api.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace api.Data
@@ -9,7 +8,6 @@ namespace api.Data
         public DbSet<CartProduct> CartProducts { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<Product> Products { get; set; }
-        public DbSet<ProductVariantOption> ProductVariantOptions { get; set; }
         public DbSet<ProductVariant> ProductVariants { get; set; }
 
 

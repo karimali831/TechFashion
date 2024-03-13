@@ -22,14 +22,14 @@ const Products = () => {
     const dispatch = useDispatch();
     // const { products } = useAppSelector(getProductState);
 
-    const { data: products, error, isLoading } = useGetProductQuery();
+    const { data: products, isLoading } = useGetProductQuery();
 
     const onProductClick = (item: IProductCatalogue) => {
-        dispatch(SelectedProductAction(item));
+        const productDetails = products.details.filter((x) => x.id === item.id);
+
+        dispatch(SelectedProductAction(productDetails));
         navigate("/product/" + item.slug);
     };
-
-    console.log(products);
 
     if (isLoading) {
         return <LinearProgress />;
