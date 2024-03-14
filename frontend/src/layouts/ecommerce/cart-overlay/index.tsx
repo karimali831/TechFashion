@@ -1,10 +1,6 @@
 import { Box, CircularProgress, Icon, LinearProgress } from "@mui/material";
 import { useState } from "react";
-import {
-    useGetCartQuery,
-    useRemoveProductFromCartMutation,
-    useUpdateProductQuantityMutation,
-} from "src/api/cartApi";
+import { useGetCartQuery, useRemoveProductFromCartMutation, useUpdateProductQuantityMutation } from "src/api/cartApi";
 import { useGetProductQuery } from "src/api/productApi";
 import { ActionButton } from "src/components/Buttons/ActionButton";
 import MDInput from "src/components/MDInput";
@@ -22,14 +18,12 @@ export const CartOverlay = () => {
     // const cartId = 1;
     const itemsInCart: ICartProductDetail[] = cart?.products ?? [];
 
-    const [updateProductQuantity, { isLoading: updatingProductQuantity }] =
-        useUpdateProductQuantityMutation();
+    const [updateProductQuantity, { isLoading: updatingProductQuantity }] = useUpdateProductQuantityMutation();
 
     // const [addProductToCart, { isLoading: addingProduct }] =
     //     useAddProductToCartMutation();
 
-    const [removeProductFromCart, { isLoading: removingProduct }] =
-        useRemoveProductFromCartMutation();
+    const [removeProductFromCart, { isLoading: removingProduct }] = useRemoveProductFromCartMutation();
 
     useEffectSkipInitialRender(() => {
         if (!updatingProductQuantity && !removingProduct && updating) {
@@ -46,9 +40,7 @@ export const CartOverlay = () => {
             quantity,
         })
             .unwrap()
-            .then((payload) => {
-                alert("success");
-            })
+            .then((payload) => {})
             .catch((error) => {
                 console.error(error);
             });
@@ -74,19 +66,9 @@ export const CartOverlay = () => {
     return (
         <Box display="flex" flexDirection="column" height="100%">
             {itemsInCart.length === 0 ? (
-                <Box
-                    display="flex"
-                    flexDirection="column"
-                    alignItems="center"
-                    height="100%"
-                    justifyContent="center"
-                >
+                <Box display="flex" flexDirection="column" alignItems="center" height="100%" justifyContent="center">
                     <h2 style={{ marginBottom: 10 }}>Your cart is empty</h2>
-                    <ActionButton
-                        size="large"
-                        text="Continue shopping"
-                        onClick={() => window.location.reload()}
-                    />
+                    <ActionButton size="large" text="Continue shopping" onClick={() => window.location.reload()} />
                 </Box>
             ) : (
                 <Box overflow="hidden">
@@ -94,11 +76,7 @@ export const CartOverlay = () => {
                         <h2>Your cart</h2>
                     </MDTypography>
 
-                    <Box
-                        display="flex"
-                        flexDirection="column"
-                        justifyContent="space-between"
-                    >
+                    <Box display="flex" flexDirection="column" justifyContent="space-between">
                         <Box>
                             <Box
                                 mt={1}
@@ -118,9 +96,7 @@ export const CartOverlay = () => {
                             <Box overflow="auto" height={600}>
                                 {itemsInCart.length > 0 &&
                                     itemsInCart.map((item, idx) => {
-                                        const product = products.catalogue.find(
-                                            (x) => x.id === item.productId
-                                        );
+                                        const product = products.catalogue.find((x) => x.id === item.productId);
 
                                         // const productDetails =
                                         //     products.details.filter(
@@ -128,11 +104,7 @@ export const CartOverlay = () => {
                                         //     );
 
                                         return (
-                                            <Box
-                                                key={item.id}
-                                                mb={4}
-                                                display="flex"
-                                            >
+                                            <Box key={item.id} mb={4} display="flex">
                                                 <Box mr={2}>
                                                     <img
                                                         src={product.imageSrc}
@@ -140,8 +112,7 @@ export const CartOverlay = () => {
                                                         style={{
                                                             width: 150,
                                                             height: "aspect-ratio: auto 150 / 150",
-                                                            overflowClipMargin:
-                                                                "content-box",
+                                                            overflowClipMargin: "content-box",
                                                             overflow: "clip",
                                                         }}
                                                     />
@@ -152,10 +123,7 @@ export const CartOverlay = () => {
                                                     height="100%"
                                                     justifyContent="space-evenly"
                                                 >
-                                                    <Box
-                                                        display="flex"
-                                                        justifyContent="space-between"
-                                                    >
+                                                    <Box display="flex" justifyContent="space-between">
                                                         <MDTypography
                                                             component="label"
                                                             variant="button"
@@ -170,11 +138,8 @@ export const CartOverlay = () => {
                                                             color="text"
                                                             fontWeight="regular"
                                                         >
-                                                            {updating ===
-                                                            item.id ? (
-                                                                <CircularProgress
-                                                                    size={16}
-                                                                />
+                                                            {updating === item.id ? (
+                                                                <CircularProgress size={16} />
                                                             ) : (
                                                                 item.unitTotalStr
                                                             )}
@@ -190,31 +155,15 @@ export const CartOverlay = () => {
                                                     >
                                                         {product.priceStr}
                                                     </MDTypography>
-                                                    {item.variationsList.map(
-                                                        (variant, idx) => (
-                                                            <MDTypography
-                                                                variant="h7"
-                                                                key={idx}
-                                                            >
-                                                                {
-                                                                    variant.attribute
-                                                                }
-                                                                {": " +
-                                                                    variant.value}
-                                                            </MDTypography>
-                                                        )
-                                                    )}
-                                                    <Box
-                                                        mt={2}
-                                                        display="flex"
-                                                        justifyContent="space-between"
-                                                    >
+                                                    {item.variationsList.map((variant, idx) => (
+                                                        <MDTypography variant="h7" key={idx}>
+                                                            {variant.attribute}
+                                                            {": " + variant.value}
+                                                        </MDTypography>
+                                                    ))}
+                                                    <Box mt={2} display="flex" justifyContent="space-between">
                                                         <Box>
-                                                            <Box
-                                                                mb={1.5}
-                                                                lineHeight={0}
-                                                                display="inline-block"
-                                                            >
+                                                            <Box mb={1.5} lineHeight={0} display="inline-block">
                                                                 <MDTypography
                                                                     component="label"
                                                                     variant="button"
@@ -227,44 +176,26 @@ export const CartOverlay = () => {
                                                             <MDInput
                                                                 inputProps={{
                                                                     type: "number",
-                                                                    disabled:
-                                                                        !!updating,
+                                                                    disabled: !!updating,
                                                                     onChange: (
                                                                         e: React.ChangeEvent<HTMLInputElement>
                                                                     ) =>
                                                                         onQuantityChange(
                                                                             item.id,
-                                                                            Number(
-                                                                                e
-                                                                                    .target
-                                                                                    .value
-                                                                            )
+                                                                            Number(e.target.value)
                                                                         ),
                                                                 }}
-                                                                value={
-                                                                    item.quantity
-                                                                }
+                                                                value={item.quantity}
                                                                 variant="standard"
                                                             />
                                                         </Box>
-                                                        <Box
-                                                            onClick={() =>
-                                                                !updating &&
-                                                                removeItem(
-                                                                    item.id
-                                                                )
-                                                            }
-                                                        >
+                                                        <Box onClick={() => !updating && removeItem(item.id)}>
                                                             <Icon
                                                                 sx={{
-                                                                    cursor:
-                                                                        !updating &&
-                                                                        "pointer",
+                                                                    cursor: !updating && "pointer",
                                                                     color: "#121212",
                                                                 }}
-                                                                fontSize={
-                                                                    "medium"
-                                                                }
+                                                                fontSize={"medium"}
                                                             >
                                                                 delete
                                                             </Icon>
@@ -281,12 +212,7 @@ export const CartOverlay = () => {
                             // padding="1.5rem 0"
                             borderTop="0.1rem solid rgba(18,18,18, .2)"
                         >
-                            <Box
-                                mt={2}
-                                display="flex"
-                                justifyContent="space-between"
-                                alignItems="center"
-                            >
+                            <Box mt={2} display="flex" justifyContent="space-between" alignItems="center">
                                 <MDTypography
                                     variant="body2"
                                     color="text"
@@ -317,14 +243,10 @@ export const CartOverlay = () => {
                                 mt={1}
                                 mb={1}
                             >
-                                Taxes, discounts and shipping calculated at
-                                checkout
+                                Taxes, discounts and shipping calculated at checkout
                             </MDTypography>
 
-                            <ActionButton
-                                text={"check out"}
-                                onClick={() => console.log("checkout")}
-                            />
+                            <ActionButton text={"check out"} onClick={() => console.log("checkout")} />
                         </Box>
                     </Box>
                 </Box>
