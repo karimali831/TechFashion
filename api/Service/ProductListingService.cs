@@ -36,10 +36,45 @@ namespace api.Service
 
             var productDetails = await _productRepository.GetAllAsync();
 
+            var productIds = productDetails
+                .DistinctBy(x => x.Id)
+                .Select(x => x.Id);
+
+            var productVariants = new List<ProductAttribute>();
+
+            foreach (var productId in productIds)
+            {
+                var variations = productDetails
+                .Where(x => x.Id == productId)
+                .SelectMany(x => x.VariationsList);
+
+                var attributes = variations
+                    .DistinctBy(x => x.Attribute)
+                    .Select(x => x.Attribute);
+
+                foreach (var attribute in attributes)
+                {
+                    var options = variations
+                        .Where(x => x.Attribute == attribute)
+                        .DistinctBy(x => x.Value)
+                        .Select(x => x.Value);
+
+                    productVariants.Add(
+                            new ProductAttribute
+                            {
+                                ProductId = productId,
+                                Attribute = attribute,
+                                Options = options
+                            }
+                        );
+                }
+            }
+
             return new ProductViewModel
             {
                 Catalogue = productCatalogue,
-                Details = productDetails
+                Details = productDetails,
+                Variants = productVariants
             };
         }
 

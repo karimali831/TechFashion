@@ -16,6 +16,7 @@ import {
 } from "src/api/cartApi";
 import { ICartProductDetail } from "src/interface/ICartProductDetail";
 import { IProductDetail } from "src/interface/IProductDetail";
+import { useGetProductQuery } from "src/api/productApi";
 
 interface IProps {
     item: IProductDetail[];
@@ -23,12 +24,15 @@ interface IProps {
 
 function ProductInfo({ item }: IProps): JSX.Element {
     const [quantity, setQuantity] = useState<number>(1);
+    const [variant, setVariant] = useState<any>({});
 
     const [addProductToCart, { isLoading: adding }] =
         useAddProductToCartMutation();
     const [updateProductQuantity] = useUpdateProductQuantityMutation();
 
     const { data: cart } = useGetCartQuery();
+
+    const { data: products } = useGetProductQuery();
 
     const dispatch = useAppDispatch();
 
@@ -79,10 +83,10 @@ function ProductInfo({ item }: IProps): JSX.Element {
     };
 
     const updateVariant = (key: string, value: string) => {
-        // setVariant({
-        //     ...variant,
-        //     [key]: value,
-        // });
+        setVariant({
+            ...variant,
+            [key]: value,
+        });
     };
 
     return (
@@ -189,61 +193,45 @@ function ProductInfo({ item }: IProps): JSX.Element {
             </MDBox>
             <MDBox mt={3}>
                 <Grid container spacing={3}>
+                    {products.variants
+                        .filter((x) => x.productId === item[0].id)
+                        .map((variant) => {
+                            return (
+                                <Grid item xs={12} lg={5}>
+                                    <MDBox
+                                        mb={1.5}
+                                        lineHeight={0}
+                                        display="inline-block"
+                                    >
+                                        <MDTypography
+                                            component="label"
+                                            variant="button"
+                                            color="text"
+                                            fontWeight="regular"
+                                        >
+                                            {variant.attribute}
+                                        </MDTypography>
+                                    </MDBox>
+                                    <Autocomplete
+                                        value={variant.options[0]}
+                                        options={variant.options}
+                                        onChange={(
+                                            e: React.SyntheticEvent,
+                                            value: string
+                                        ) => updateVariant("material", value)}
+                                        renderInput={(params) => (
+                                            <MDInput
+                                                {...params}
+                                                variant="standard"
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                            );
+                        })}
+
                     <Grid item xs={12} lg={5}>
-                        <MDBox mb={1.5} lineHeight={0} display="inline-block">
-                            <MDTypography
-                                component="label"
-                                variant="button"
-                                color="text"
-                                fontWeight="regular"
-                            >
-                                Frame Material
-                            </MDTypography>
-                        </MDBox>
-                        <Autocomplete
-                            value={"Steel"}
-                            options={["Aluminium", "Carbon", "Steel", "Wood"]}
-                            onChange={(
-                                e: React.SyntheticEvent,
-                                value: string
-                            ) => updateVariant("material", value)}
-                            renderInput={(params) => (
-                                <MDInput {...params} variant="standard" />
-                            )}
-                        />
-                    </Grid>
-                    <Grid item xs={12} lg={5}>
-                        <MDBox mb={1.5} lineHeight={0} display="inline-block">
-                            <MDTypography
-                                component="label"
-                                variant="button"
-                                color="text"
-                                fontWeight="regular"
-                            >
-                                Color
-                            </MDTypography>
-                        </MDBox>
-                        <Autocomplete
-                            value={"Black"}
-                            options={[
-                                "Black",
-                                "Blue",
-                                "Grey",
-                                "Pink",
-                                "Red",
-                                "White",
-                            ]}
-                            onChange={(
-                                e: React.SyntheticEvent,
-                                value: string
-                            ) => updateVariant("color", value)}
-                            renderInput={(params) => (
-                                <MDInput {...params} variant="standard" />
-                            )}
-                        />
-                    </Grid>
-                    <Grid item xs={12} lg={3}>
-                        <MDBox mb={1.5} lineHeight={0} width={200}>
+                        <MDBox mb={1.5} lineHeight={0}>
                             <MDTypography
                                 component="label"
                                 variant="button"
@@ -266,7 +254,6 @@ function ProductInfo({ item }: IProps): JSX.Element {
                                 ) => setQuantity(Number(e.target.value)),
                             }}
                             value={quantity}
-                            width={250}
                             variant="standard"
                         />
                     </Grid>

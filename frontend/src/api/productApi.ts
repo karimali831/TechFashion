@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { baseApiUrl } from "./baseApi";
 import { IProductDetail } from "src/interface/IProductDetail";
 import { IProductCatalogue } from "src/interface/IProductCatalogue";
+import { IProductAttribute } from "src/interface/IProductAttribute";
 
 export const productApi = createApi({
     reducerPath: "productApi",
@@ -22,4 +23,5 @@ export const { useGetProductQuery } = productApi;
 export interface IProductResponse {
     catalogue: IProductCatalogue[];
     details: IProductDetail[];
+    variants: IProductAttribute[];
 }
