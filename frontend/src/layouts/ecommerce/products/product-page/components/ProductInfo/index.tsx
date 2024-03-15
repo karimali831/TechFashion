@@ -1,7 +1,8 @@
+import { LinearProgress } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import Grid from "@mui/material/Grid";
 import Icon from "@mui/material/Icon";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     useAddProductToCartMutation,
     useGetCartQuery,
@@ -18,6 +19,7 @@ import { IProductDetail } from "src/interface/IProductDetail";
 import { IProductVariantObj } from "src/interface/IProductVariantObj";
 import { useAppDispatch } from "src/state/Hooks";
 import { OpenCartOverlayAction } from "src/state/contexts/cart/Actions";
+import isEqual from "lodash.isequal";
 
 interface IProps {
     item: IProductDetail[];
@@ -37,6 +39,21 @@ function ProductInfo({ item }: IProps): JSX.Element {
 
     const dispatch = useAppDispatch();
 
+    const variants = products.variants.filter(
+        (x) => x.productId === item[0].id
+    );
+
+    useEffect(() => {
+        setVariations(
+            variants.map((x) => {
+                return {
+                    attribute: x.attribute,
+                    value: x.options[0],
+                };
+            })
+        );
+    }, [products]);
+
     const itemsInCart: ICartProductDetail[] = cart?.products ?? [];
 
     const itemInCart = itemsInCart.filter((x) =>
@@ -48,23 +65,13 @@ function ProductInfo({ item }: IProps): JSX.Element {
         )
     )[0];
 
-    const itemVariantInCart =
-        itemInCart &&
-        itemInCart.variationsList.filter((x) =>
-            variations.some(
-                (y) => y.attribute === x.attribute && y.value === x.value
-            )
-        );
-
-    // console.log("p1", itemInCart?.variationsList);
-    // console.log(
-    //     "p2",
-    //     products.variants.filter((x) => x.productId === item[0].id)
-    // );
-    console.log("itemVariantInCart: ", itemVariantInCart);
-    console.log("itemInCart", itemInCart);
-
     const addToCart = async () => {
+        let itemVariantInCart = false;
+
+        if (itemInCart) {
+            itemVariantInCart = isEqual(itemInCart.variationsList, variations);
+        }
+
         if (itemVariantInCart) {
             const totalQuantity = itemInCart.quantity + quantity;
 
@@ -78,11 +85,18 @@ function ProductInfo({ item }: IProps): JSX.Element {
                     console.error(error);
                 });
         } else {
+            console.log({
+                cartId: 1,
+                quantity,
+                productId: item[0].id,
+                variant: variations,
+            });
+
             await addProductToCart({
                 cartId: 1,
                 quantity,
                 productId: item[0].id,
-                productVariantId: itemInCart.productVariantId,
+                variant: variations,
             })
                 .unwrap()
                 .then((payload) => {})
@@ -96,19 +110,12 @@ function ProductInfo({ item }: IProps): JSX.Element {
     };
 
     const updateVariant = (key: string, value: string) => {
-        const exists = variations.filter((x) => x.attribute === key)[0];
-
-        if (exists) {
-            setVariations(
-                variations.map((v) =>
-                    v.attribute === key ? { ...v, value } : v
-                )
-            );
-        } else {
-            const newState = [...variations, { attribute: key, value }];
-            setVariations(newState);
-        }
+        setVariations(
+            variations.map((v) => (v.attribute === key ? { ...v, value } : v))
+        );
     };
+
+    if (variations.length === 0) return <LinearProgress />;
 
     return (
         <MDBox>
@@ -214,54 +221,46 @@ function ProductInfo({ item }: IProps): JSX.Element {
             </MDBox>
             <MDBox mt={3}>
                 <Grid container spacing={3}>
-                    {products.variants
-                        .filter((x) => x.productId === item[0].id)
-                        .map((variant, idx) => {
-                            const selectedVariant = variations.filter(
-                                (x) => x.attribute === variant.attribute
-                            )[0]?.value;
+                    {variants.map((variant, idx) => {
+                        const selectedVariant = variations.filter(
+                            (x) => x.attribute === variant.attribute
+                        )[0]?.value;
 
-                            return (
-                                <Grid key={idx} item xs={12} lg={5}>
-                                    <MDBox
-                                        mb={1.5}
-                                        lineHeight={0}
-                                        display="inline-block"
+                        return (
+                            <Grid key={idx} item xs={12} lg={5}>
+                                <MDBox
+                                    mb={1.5}
+                                    lineHeight={0}
+                                    display="inline-block"
+                                >
+                                    <MDTypography
+                                        component="label"
+                                        variant="button"
+                                        color="text"
+                                        fontWeight="regular"
                                     >
-                                        <MDTypography
-                                            component="label"
-                                            variant="button"
-                                            color="text"
-                                            fontWeight="regular"
-                                        >
-                                            {variant.attribute}
-                                        </MDTypography>
-                                    </MDBox>
-                                    <Autocomplete
-                                        value={
-                                            selectedVariant ??
-                                            variant.options[0]
-                                        }
-                                        options={variant.options}
-                                        onChange={(
-                                            e: React.SyntheticEvent,
-                                            value: string
-                                        ) =>
-                                            updateVariant(
-                                                variant.attribute,
-                                                value
-                                            )
-                                        }
-                                        renderInput={(params) => (
-                                            <MDInput
-                                                {...params}
-                                                variant="standard"
-                                            />
-                                        )}
-                                    />
-                                </Grid>
-                            );
-                        })}
+                                        {variant.attribute}
+                                    </MDTypography>
+                                </MDBox>
+                                <Autocomplete
+                                    value={selectedVariant}
+                                    options={variant.options}
+                                    onChange={(
+                                        e: React.SyntheticEvent,
+                                        value: string
+                                    ) =>
+                                        updateVariant(variant.attribute, value)
+                                    }
+                                    renderInput={(params) => (
+                                        <MDInput
+                                            {...params}
+                                            variant="standard"
+                                        />
+                                    )}
+                                />
+                            </Grid>
+                        );
+                    })}
 
                     <Grid item xs={12} lg={5}>
                         <MDBox mb={1.5} lineHeight={0}>

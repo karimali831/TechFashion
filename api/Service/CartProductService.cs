@@ -1,4 +1,6 @@
+using System.Text.Json;
 using api.Data;
+using api.Dto;
 using api.Helper;
 using api.Repository;
 using api.ViewModels;
@@ -7,7 +9,7 @@ namespace api.Service
 {
     public interface ICartProductService
     {
-        Task<bool> AddProductAsync(CartProduct model);
+        Task<bool> AddProductAsync(AddProductToCartDto dto);
         Task<bool> RemoveProductAsync(int id);
         Task<bool> UpdateProductQuantityAsync(int id, int quantity);
         Task<CartViewModel> GetBasketAsync();
@@ -20,9 +22,16 @@ namespace api.Service
         private readonly ICartRepository _cartRepository = cartRepository;
         private readonly ICartProductRepository _cartProductRepository = cartProductRepository;
 
-        public async Task<bool> AddProductAsync(CartProduct model)
+        public async Task<bool> AddProductAsync(AddProductToCartDto dto)
         {
-            return await _cartProductRepository.AddAsync(model);
+            return await _cartProductRepository.AddAsync(
+                new CartProduct
+                {
+                    CartId = dto.CartId,
+                    Quantity = dto.Quantity,
+                    ProductId = dto.ProductId,
+                    Variant = JsonSerializer.Serialize(dto.Variant)
+                });
         }
 
         public async Task<CartViewModel> GetBasketAsync()

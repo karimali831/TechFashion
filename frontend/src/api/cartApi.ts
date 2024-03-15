@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { ICartProduct } from "src/data/ICartProduct";
 import { ICartProductDetail } from "src/interface/ICartProductDetail";
 import { baseApiUrl } from "./baseApi";
+import { IProductVariantObj } from "src/interface/IProductVariantObj";
 
 export const cartApi = createApi({
     reducerPath: "cartApi",
@@ -15,14 +15,17 @@ export const cartApi = createApi({
             query: () => "Cart",
             providesTags: ["Cart"],
         }),
-        updateProductQuantity: builder.mutation<void, { id: number; quantity: number }>({
+        updateProductQuantity: builder.mutation<
+            void,
+            { id: number; quantity: number }
+        >({
             query: ({ id, quantity }) => ({
                 url: `Cart/UpdateProductQuantity/${id}/${quantity}`,
                 method: "GET",
             }),
             invalidatesTags: ["Cart"],
         }),
-        addProductToCart: builder.mutation<void, ICartProduct>({
+        addProductToCart: builder.mutation<void, IAddProductToCartRequest>({
             query: (body) => ({
                 url: "Cart/AddProduct",
                 method: "POST",
@@ -46,6 +49,13 @@ export interface ICartProductQuantityRequest {
 export interface ICartResponse {
     products: ICartProductDetail[];
     totalStr: string;
+}
+
+export interface IAddProductToCartRequest {
+    cartId: number;
+    quantity: number;
+    productId: number;
+    variant?: IProductVariantObj[];
 }
 
 export const {

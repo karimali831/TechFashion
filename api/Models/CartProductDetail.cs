@@ -7,11 +7,10 @@ namespace api.Models
     {
         public int Id { get; set; }
         public int ProductId { get; set; }
-        public int? ProductVariantId { get; set; }
-        public string Title { get; set; } = string.Empty;
-        public string ImageSrc { get; set; } = string.Empty;
-        public int Quantity { get; set; }
-        public string? Variations { get; set; }
+        public required string Title { get; set; }
+        public string? ImageSrc { get; set; }
+        public required int Quantity { get; set; }
+        public string? Variant { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal UnitTotal { get; set; }
         [DbIgnore]
@@ -19,7 +18,7 @@ namespace api.Models
         [DbIgnore]
         public string UnitTotalStr { get; set; } = string.Empty;
         [DbIgnore]
-        public IList<ProductVariantObj> VariationsList => string.IsNullOrEmpty(Variations) ? [] :
-            JsonConvert.DeserializeObject<List<ProductVariantObj>>(Variations) ?? [];
+        public IList<ProductVariantObj> VariantList => string.IsNullOrEmpty(Variant) ? [] :
+            JsonConvert.DeserializeObject<List<ProductVariantObj>>(Variant) ?? [];
     }
 }

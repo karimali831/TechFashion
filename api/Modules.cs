@@ -18,6 +18,7 @@ namespace api
             services.AddScoped<IProductEFRepository, ProductEFRepository>();
             services.AddScoped<ICartProductRepository, CartProductRepository>();
             services.AddScoped<ICartRepository, CartRepository>();
+            services.AddScoped<IProductVariantRepository, ProductVariantRepository>();
 
             return services;
         }
