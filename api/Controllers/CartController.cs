@@ -11,8 +11,8 @@ namespace api.Controllers
     {
         private readonly ICartProductService _cartProductService = cartProductService;
 
-        [HttpGet]
-        public async Task<IActionResult> Get()
+        [HttpGet("GetBasket")]
+        public async Task<IActionResult> GetBasket()
         {
             var basket = await _cartProductService.GetBasketAsync();
 

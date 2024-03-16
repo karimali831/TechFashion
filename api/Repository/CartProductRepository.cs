@@ -1,5 +1,4 @@
 using api.Data;
-using api.Dto;
 using api.Helper;
 using api.Infrastructure;
 using api.Models;
@@ -44,21 +43,19 @@ namespace api.Repository
                 ;SELECT 
                     cp.Id,
                     p.Id AS ProductId,
-                    NULL AS ProductVariantId,
+                    NULL AS VariantId,
                     p.Title, 
-                    PI.Url AS ImageSrc, 
                     cp.Quantity,
-                    NULL AS Variations,
+                    NULL AS Variant,
                     p.Price AS UnitPrice,
                     p.Price * cp.Quantity AS UnitTotal
                 FROM [Products] AS P
                 JOIN [CartProducts] AS CP
                 ON CP.ProductId = P.Id
-                LEFT JOIN [ProductImages] AS PI
-                ON PI.ProductId = P.Id
                 WHERE P.Active = 1 
                 AND CP.CartId = @cartId
                 AND CP.RemovedDate IS NULL
+                AND CP.VariantId IS NULL
 
                 UNION
 
@@ -67,18 +64,15 @@ namespace api.Repository
                     pv.ProductId,
                     pv.Id,
                     p.Title, 
-                    pi.Url, 
                     cp.Quantity,
-                    pv.Variations,
+                    pv.Variant,
                     pv.Price,
                     pv.Price * cp.Quantity
                 FROM [Products] AS P
                 JOIN [ProductVariants] AS PV
                 ON PV.ProductId = P.Id
-                LEFT JOIN [ProductImages] AS PI
-                ON pi.ProductVariantId = pv.Id
                 JOIN [CartProducts] CP 
-                ON CP.ProductVariantId = pv.Id
+                ON cp.VariantId = pv.Id
                 WHERE p.Active = 1
                 AND CP.CartId = @cartId
                 AND CP.RemovedDate IS NULL

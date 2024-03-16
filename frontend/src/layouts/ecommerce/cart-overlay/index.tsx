@@ -1,16 +1,32 @@
-import { Box, CircularProgress, Icon, LinearProgress } from "@mui/material";
+import {
+    Box,
+    CircularProgress,
+    Fade,
+    Icon,
+    LinearProgress,
+} from "@mui/material";
 import { useState } from "react";
-import { useGetCartQuery, useRemoveProductFromCartMutation, useUpdateProductQuantityMutation } from "src/api/cartApi";
+import {
+    useGetCartQuery,
+    useRemoveProductFromCartMutation,
+    useUpdateProductQuantityMutation,
+} from "src/api/cartApi";
 import { useGetProductQuery } from "src/api/productApi";
 import { ActionButton } from "src/components/Buttons/ActionButton";
-import MDInput from "src/components/MDInput";
+import "./styles.css";
 import MDTypography from "src/components/MDTypography";
 import useEffectSkipInitialRender from "src/hooks/useEffectSkipInitialRender";
 import { ICartProductDetail } from "src/interface/ICartProductDetail";
 import "src/styles/scrollbars.css";
 
+interface IProductCartQuantity {
+    id: number;
+    quantity: number;
+}
+
 export const CartOverlay = () => {
     const [updating, setUpdating] = useState<number | null>(null);
+    const [quantity, setQuantity] = useState<IProductCartQuantity | null>(null);
 
     const { data: cart } = useGetCartQuery();
     const { data: products, isLoading: loadingProducts } = useGetProductQuery();
@@ -18,12 +34,14 @@ export const CartOverlay = () => {
     // const cartId = 1;
     const itemsInCart: ICartProductDetail[] = cart?.products ?? [];
 
-    const [updateProductQuantity, { isLoading: updatingProductQuantity }] = useUpdateProductQuantityMutation();
+    const [updateProductQuantity, { isLoading: updatingProductQuantity }] =
+        useUpdateProductQuantityMutation();
 
     // const [addProductToCart, { isLoading: addingProduct }] =
     //     useAddProductToCartMutation();
 
-    const [removeProductFromCart, { isLoading: removingProduct }] = useRemoveProductFromCartMutation();
+    const [removeProductFromCart, { isLoading: removingProduct }] =
+        useRemoveProductFromCartMutation();
 
     useEffectSkipInitialRender(() => {
         if (!updatingProductQuantity && !removingProduct && updating) {
@@ -51,9 +69,7 @@ export const CartOverlay = () => {
 
         await removeProductFromCart(id)
             .unwrap()
-            .then((payload) => {
-                alert("success");
-            })
+            .then((payload) => {})
             .catch((error) => {
                 console.error(error);
             });
@@ -66,17 +82,38 @@ export const CartOverlay = () => {
     return (
         <Box display="flex" flexDirection="column" height="100%">
             {itemsInCart.length === 0 ? (
-                <Box display="flex" flexDirection="column" alignItems="center" height="100%" justifyContent="center">
-                    <h2 style={{ marginBottom: 10 }}>Your cart is empty</h2>
-                    <ActionButton size="large" text="Continue shopping" onClick={() => window.location.reload()} />
-                </Box>
+                <Fade
+                    in={true}
+                    timeout={500}
+                    mountOnEnter={true}
+                    unmountOnExit={true}
+                >
+                    <Box
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="center"
+                        height="100%"
+                        justifyContent="center"
+                    >
+                        <h2 style={{ marginBottom: 10 }}>Your cart is empty</h2>
+                        <ActionButton
+                            size="large"
+                            text="Continue shopping"
+                            onClick={() => window.location.reload()}
+                        />
+                    </Box>
+                </Fade>
             ) : (
                 <Box overflow="hidden">
                     <MDTypography mb={1}>
                         <h2>Your cart</h2>
                     </MDTypography>
 
-                    <Box display="flex" flexDirection="column" justifyContent="space-between">
+                    <Box
+                        display="flex"
+                        flexDirection="column"
+                        justifyContent="space-between"
+                    >
                         <Box>
                             <Box
                                 mt={1}
@@ -96,7 +133,9 @@ export const CartOverlay = () => {
                             <Box overflow="auto" height={600}>
                                 {itemsInCart.length > 0 &&
                                     itemsInCart.map((item, idx) => {
-                                        const product = products.catalogue.find((x) => x.id === item.productId);
+                                        const product = products.catalogue.find(
+                                            (x) => x.id === item.productId
+                                        );
 
                                         // const productDetails =
                                         //     products.details.filter(
@@ -104,105 +143,288 @@ export const CartOverlay = () => {
                                         //     );
 
                                         return (
-                                            <Box key={item.id} mb={4} display="flex">
-                                                <Box mr={2}>
-                                                    <img
-                                                        src={product.imageSrc}
-                                                        alt="Product Image"
-                                                        style={{
-                                                            width: 150,
-                                                            height: "aspect-ratio: auto 150 / 150",
-                                                            overflowClipMargin: "content-box",
-                                                            overflow: "clip",
-                                                        }}
-                                                    />
-                                                </Box>
+                                            <Fade
+                                                in={true}
+                                                timeout={500}
+                                                mountOnEnter={true}
+                                                unmountOnExit={true}
+                                                style={{
+                                                    transitionDelay:
+                                                        idx !== 0
+                                                            ? idx * 100 + "ms"
+                                                            : "0ms",
+                                                }}
+                                            >
                                                 <Box
+                                                    key={item.id}
+                                                    mb={4}
                                                     display="flex"
-                                                    flexDirection="column"
-                                                    height="100%"
-                                                    justifyContent="space-evenly"
                                                 >
-                                                    <Box display="flex" justifyContent="space-between">
-                                                        <MDTypography
-                                                            component="label"
-                                                            variant="button"
-                                                            color="text"
-                                                            fontWeight="medium"
-                                                        >
-                                                            {product.title}
-                                                        </MDTypography>
-                                                        <MDTypography
-                                                            component="label"
-                                                            variant="button"
-                                                            color="text"
-                                                            fontWeight="regular"
-                                                        >
-                                                            {updating === item.id ? (
-                                                                <CircularProgress size={16} />
-                                                            ) : (
-                                                                item.unitTotalStr
-                                                            )}
-                                                        </MDTypography>
+                                                    <Box mr={2}>
+                                                        <img
+                                                            src={
+                                                                product.imageSrc
+                                                            }
+                                                            alt="Product Image"
+                                                            style={{
+                                                                width: 120,
+                                                                height: "aspect-ratio: auto 150 / 150",
+                                                                overflowClipMargin:
+                                                                    "content-box",
+                                                                overflow:
+                                                                    "clip",
+                                                            }}
+                                                        />
                                                     </Box>
-                                                    <MDTypography
-                                                        component="label"
-                                                        variant="button"
-                                                        color="text"
-                                                        fontWeight="regular"
-                                                        mt={1}
-                                                        mb={1}
+                                                    <Box
+                                                        display="flex"
+                                                        flexDirection="column"
+                                                        overflow="hidden"
+                                                        width="100%"
                                                     >
-                                                        {product.priceStr}
-                                                    </MDTypography>
-                                                    {item.variationsList.map((variant, idx) => (
-                                                        <MDTypography variant="h7" key={idx}>
-                                                            {variant.attribute}
-                                                            {": " + variant.value}
-                                                        </MDTypography>
-                                                    ))}
-                                                    <Box mt={2} display="flex" justifyContent="space-between">
-                                                        <Box>
-                                                            <Box mb={1.5} lineHeight={0} display="inline-block">
+                                                        <Box
+                                                            display="flex"
+                                                            width={"100%"}
+                                                            justifyContent="space-between"
+                                                        >
+                                                            <MDTypography
+                                                                component="label"
+                                                                variant="button"
+                                                                color="text"
+                                                                fontWeight="medium"
+                                                                width={200}
+                                                            >
+                                                                {product.title}
+                                                            </MDTypography>
+                                                            {updating ===
+                                                            item.id ? (
+                                                                <CircularProgress
+                                                                    size={16}
+                                                                />
+                                                            ) : (
                                                                 <MDTypography
                                                                     component="label"
                                                                     variant="button"
                                                                     color="text"
                                                                     fontWeight="regular"
                                                                 >
-                                                                    Quantity
+                                                                    {
+                                                                        item.unitTotalStr
+                                                                    }
                                                                 </MDTypography>
+                                                            )}
+                                                        </Box>
+                                                        <MDTypography
+                                                            component="label"
+                                                            variant="button"
+                                                            color="text"
+                                                            fontWeight="regular"
+                                                            mt={1}
+                                                            mb={1}
+                                                        >
+                                                            {product.priceStr}
+                                                        </MDTypography>
+                                                        {item.variantList.map(
+                                                            (variant, idx) => (
+                                                                <MDTypography
+                                                                    variant="h7"
+                                                                    color="text"
+                                                                    key={idx}
+                                                                >
+                                                                    {
+                                                                        variant.attribute
+                                                                    }
+                                                                    {": " +
+                                                                        variant.value}
+                                                                </MDTypography>
+                                                            )
+                                                        )}
+                                                        <Box
+                                                            mt={2}
+                                                            display="flex"
+                                                            alignItems="center"
+                                                            justifyContent="space-between"
+                                                        >
+                                                            <Box
+                                                                sx={{
+                                                                    display:
+                                                                        "flex",
+                                                                    border: "1px solid darkgrey",
+                                                                    width: 150,
+                                                                    height: 47,
+                                                                    borderRadius: 0,
+                                                                }}
+                                                            >
+                                                                <Box
+                                                                    display="flex"
+                                                                    justifyContent="space-evenly"
+                                                                    alignItems="center"
+                                                                    width="100%"
+                                                                >
+                                                                    <Icon
+                                                                        style={{
+                                                                            color:
+                                                                                item.quantity ===
+                                                                                1
+                                                                                    ? "#333"
+                                                                                    : "#000",
+                                                                            cursor:
+                                                                                item.quantity !==
+                                                                                    1 &&
+                                                                                "pointer",
+                                                                        }}
+                                                                        onClick={() => {
+                                                                            if (
+                                                                                item.quantity ==
+                                                                                1
+                                                                            )
+                                                                                return;
+                                                                            setQuantity(
+                                                                                {
+                                                                                    id: item.id,
+                                                                                    quantity:
+                                                                                        item.quantity -
+                                                                                        1,
+                                                                                }
+                                                                            );
+                                                                            onQuantityChange(
+                                                                                item.id,
+                                                                                item.quantity -
+                                                                                    1
+                                                                            );
+                                                                        }}
+                                                                    >
+                                                                        remove
+                                                                    </Icon>
+                                                                    <input
+                                                                        type="number"
+                                                                        style={{
+                                                                            width: 40,
+                                                                            border: 0,
+                                                                            outline: 0,
+                                                                            fontSize: 20,
+                                                                            marginBottom: 6,
+                                                                            textAlign:
+                                                                                "center",
+                                                                        }}
+                                                                        disabled={
+                                                                            !!updating
+                                                                        }
+                                                                        value={
+                                                                            quantity?.id ===
+                                                                            item.id
+                                                                                ? quantity.quantity
+                                                                                : item.quantity
+                                                                        }
+                                                                        onChange={(
+                                                                            e: React.ChangeEvent<HTMLInputElement>
+                                                                        ) =>
+                                                                            setQuantity(
+                                                                                {
+                                                                                    id: item.id,
+                                                                                    quantity:
+                                                                                        Number(
+                                                                                            e
+                                                                                                .target
+                                                                                                .value
+                                                                                        ),
+                                                                                }
+                                                                            )
+                                                                        }
+                                                                        onBlur={(
+                                                                            e: React.ChangeEvent<HTMLInputElement>
+                                                                        ) => {
+                                                                            onQuantityChange(
+                                                                                item.id,
+                                                                                Number(
+                                                                                    e
+                                                                                        .target
+                                                                                        .value
+                                                                                )
+                                                                            );
+                                                                        }}
+                                                                    />
+
+                                                                    {/* <MDTypography fontSize="medium">
+                                                                        {
+                                                                            item.quantity
+                                                                        }
+                                                                    </MDTypography> */}
+                                                                    <Icon
+                                                                        sx={{
+                                                                            cursor: "pointer",
+                                                                        }}
+                                                                        onClick={() => {
+                                                                            setQuantity(
+                                                                                {
+                                                                                    id: item.id,
+                                                                                    quantity:
+                                                                                        item.quantity +
+                                                                                        1,
+                                                                                }
+                                                                            );
+                                                                            onQuantityChange(
+                                                                                item.id,
+                                                                                item.quantity +
+                                                                                    1
+                                                                            );
+                                                                        }}
+                                                                    >
+                                                                        add
+                                                                    </Icon>
+                                                                </Box>
                                                             </Box>
-                                                            <MDInput
+
+                                                            {/* <MDInput
                                                                 inputProps={{
                                                                     type: "number",
-                                                                    disabled: !!updating,
+                                                                    width: 100,
+                                                                    disabled:
+                                                                        !!updating,
                                                                     onChange: (
                                                                         e: React.ChangeEvent<HTMLInputElement>
                                                                     ) =>
                                                                         onQuantityChange(
                                                                             item.id,
-                                                                            Number(e.target.value)
+                                                                            Number(
+                                                                                e
+                                                                                    .target
+                                                                                    .value
+                                                                            )
                                                                         ),
                                                                 }}
-                                                                value={item.quantity}
+                                                                value={
+                                                                    item.quantity
+                                                                }
+                                                                size="small"
                                                                 variant="standard"
-                                                            />
-                                                        </Box>
-                                                        <Box onClick={() => !updating && removeItem(item.id)}>
-                                                            <Icon
-                                                                sx={{
-                                                                    cursor: !updating && "pointer",
-                                                                    color: "#121212",
-                                                                }}
-                                                                fontSize={"medium"}
+                                                            /> */}
+                                                            <Box
+                                                                onClick={() =>
+                                                                    !updating &&
+                                                                    removeItem(
+                                                                        item.id
+                                                                    )
+                                                                }
                                                             >
-                                                                delete
-                                                            </Icon>
+                                                                <Icon
+                                                                    sx={{
+                                                                        cursor:
+                                                                            !updating &&
+                                                                            "pointer",
+                                                                        color: "#121212",
+                                                                    }}
+                                                                    fontSize={
+                                                                        "medium"
+                                                                    }
+                                                                >
+                                                                    delete
+                                                                </Icon>
+                                                            </Box>
                                                         </Box>
                                                     </Box>
                                                 </Box>
-                                            </Box>
+                                            </Fade>
                                         );
                                     })}
                             </Box>
@@ -212,7 +434,12 @@ export const CartOverlay = () => {
                             // padding="1.5rem 0"
                             borderTop="0.1rem solid rgba(18,18,18, .2)"
                         >
-                            <Box mt={2} display="flex" justifyContent="space-between" alignItems="center">
+                            <Box
+                                mt={2}
+                                display="flex"
+                                justifyContent="space-between"
+                                alignItems="center"
+                            >
                                 <MDTypography
                                     variant="body2"
                                     color="text"
@@ -222,16 +449,22 @@ export const CartOverlay = () => {
                                 >
                                     Estimated total
                                 </MDTypography>
-                                <MDTypography
-                                    variant="body2"
-                                    color="text"
-                                    fontWeight="strong"
-                                    fontSize={16}
-                                    mt={1}
-                                    letterSpacing=".04rem"
+                                <Fade
+                                    in={true}
+                                    mountOnEnter={true}
+                                    unmountOnExit={true}
                                 >
-                                    £42.26 GBP
-                                </MDTypography>
+                                    <MDTypography
+                                        variant="body2"
+                                        color="text"
+                                        fontWeight="strong"
+                                        fontSize={16}
+                                        mt={1}
+                                        letterSpacing=".04rem"
+                                    >
+                                        {cart.totalStr}
+                                    </MDTypography>
+                                </Fade>
                             </Box>
 
                             <MDTypography
@@ -243,10 +476,14 @@ export const CartOverlay = () => {
                                 mt={1}
                                 mb={1}
                             >
-                                Taxes, discounts and shipping calculated at checkout
+                                Taxes, discounts and shipping calculated at
+                                checkout
                             </MDTypography>
 
-                            <ActionButton text={"check out"} onClick={() => console.log("checkout")} />
+                            <ActionButton
+                                text={"check out"}
+                                onClick={() => console.log("checkout")}
+                            />
                         </Box>
                     </Box>
                 </Box>

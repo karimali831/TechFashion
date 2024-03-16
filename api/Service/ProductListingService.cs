@@ -34,7 +34,13 @@ namespace api.Service
                 })
                 .ToList();
 
-            var productDetails = await _productRepository.GetAllAsync();
+            var productDetails = (await _productRepository.GetAllAsync())
+                .Select(x =>
+                {
+                    x.PriceStr = x.Price.ToCurrencyGbp();
+                    return x;
+                })
+                .ToList(); ;
 
             var productIds = productDetails
                 .DistinctBy(x => x.Id)
@@ -45,8 +51,8 @@ namespace api.Service
             foreach (var productId in productIds)
             {
                 var variations = productDetails
-                .Where(x => x.Id == productId)
-                .SelectMany(x => x.VariationsList);
+                    .Where(x => x.Id == productId)
+                    .SelectMany(x => x.VariantList);
 
                 var attributes = variations
                     .DistinctBy(x => x.Attribute)

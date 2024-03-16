@@ -1,7 +1,7 @@
-using System.Text.Json;
 using api.Data;
 using api.Dto;
 using api.Helper;
+using api.Infrastructure;
 using api.Repository;
 using api.ViewModels;
 
@@ -16,22 +16,25 @@ namespace api.Service
     }
 
     public class CartProductService(
+        AppDatabaseContext context,
         ICartRepository cartRepository,
-        ICartProductRepository cartProductRepository) : ICartProductService
+        ICartProductRepository cartProductRepository) : EFRepositoryBase<CartProduct>(context), ICartProductService
     {
         private readonly ICartRepository _cartRepository = cartRepository;
         private readonly ICartProductRepository _cartProductRepository = cartProductRepository;
 
         public async Task<bool> AddProductAsync(AddProductToCartDto dto)
         {
-            return await _cartProductRepository.AddAsync(
+            var create = await InsertAndReturnViewModelAsync<CartProduct>(
                 new CartProduct
                 {
                     CartId = dto.CartId,
                     Quantity = dto.Quantity,
                     ProductId = dto.ProductId,
-                    Variant = JsonSerializer.Serialize(dto.Variant)
+                    VariantId = dto.VariantId
                 });
+
+            return create.ErrorMsg is not null;
         }
 
         public async Task<CartViewModel> GetBasketAsync()
@@ -43,12 +46,21 @@ namespace api.Service
                 return new CartViewModel();
             }
 
-            var products = await _cartProductRepository.GetBasketAsync(cart.Id);
+            var products = (await _cartProductRepository.GetBasketAsync(cart.Id))
+                .Select(x =>
+                {
+                    x.UnitPriceStr = x.UnitPrice.ToCurrencyGbp();
+                    x.UnitTotalStr = x.UnitTotal.ToCurrencyGbp();
+                    return x;
+                })
+                .ToList();
+
+            var total = products.Sum(x => x.UnitTotal);
 
             return new CartViewModel
             {
                 Products = products,
-                TotalStr = cart.Total.ToCurrencyGbp()
+                TotalStr = total.ToCurrencyGbp()
             };
         }
 

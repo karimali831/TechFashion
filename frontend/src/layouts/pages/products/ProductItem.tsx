@@ -17,6 +17,8 @@ const ProductItem = ({ index, item }: IProps) => {
         <Box>
             <Fade
                 in={true}
+                mountOnEnter={true}
+                unmountOnExit={true}
                 style={{
                     transitionDelay: index !== 0 ? index * 100 + "ms" : "0ms",
                 }}

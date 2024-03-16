@@ -5,11 +5,11 @@ namespace api.Models
     public class ProductCatalogue
     {
         public int Id { get; set; }
-        public string Title { get; set; } = string.Empty;
+        public required string Title { get; set; }
         public string Slug { get; set; } = string.Empty;
-        public decimal Price { get; set; }
         public string? ImageSrc { get; set; }
-        public bool Variant { get; set; }
+        public required decimal Price { get; set; }
+        public required bool Variant { get; set; }
         [DbIgnore]
         public string PriceStr { get; set; } = string.Empty;
 

@@ -1,7 +1,8 @@
 export interface IProductImage {
     id: number;
-    url: string;
-    productId?: number;
-    productVariantId?: number;
+    productId: number;
+    imageSrc: string;
+    variantKey?: string;
+    variantValue?: string;
     main: boolean;
 }

@@ -1,4 +1,4 @@
-import { LinearProgress } from "@mui/material";
+import { Fade, LinearProgress } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import Grid from "@mui/material/Grid";
 import Icon from "@mui/material/Icon";
@@ -56,23 +56,20 @@ function ProductInfo({ item }: IProps): JSX.Element {
 
     const itemsInCart: ICartProductDetail[] = cart?.products ?? [];
 
-    const itemInCart = itemsInCart.filter((x) =>
+    const product = item.filter(
+        (x) => !x.variantId || isEqual(x.variantList, variations)
+    )[0];
+
+    let itemInCart = itemsInCart.filter((x) =>
         item.some(
             (i) =>
                 i.id === x.productId &&
-                (!i.productVariantId ||
-                    i.productVariantId === x.productVariantId)
+                (!i.variantId || isEqual(x.variantList, variations))
         )
     )[0];
 
     const addToCart = async () => {
-        let itemVariantInCart = false;
-
         if (itemInCart) {
-            itemVariantInCart = isEqual(itemInCart.variationsList, variations);
-        }
-
-        if (itemVariantInCart) {
             const totalQuantity = itemInCart.quantity + quantity;
 
             await updateProductQuantity({
@@ -80,33 +77,42 @@ function ProductInfo({ item }: IProps): JSX.Element {
                 quantity: totalQuantity,
             })
                 .unwrap()
-                .then((payload) => {})
+                .then((payload) => {
+                    dispatch(OpenCartOverlayAction(true));
+                    setQuantity(1);
+                })
                 .catch((error) => {
                     console.error(error);
                 });
         } else {
-            console.log({
-                cartId: 1,
-                quantity,
-                productId: item[0].id,
-                variant: variations,
-            });
+            // let variantId = null;
+
+            // if (itemInCart) {
+            //     // itemVariantInCart = variantId !== null;
+
+            //     for (let product of item) {
+            //         if (isEqual(product.variantList, variations)) {
+            //             variantId = product.variantId;
+            //             break;
+            //         }
+            //     }
+            // }
 
             await addProductToCart({
                 cartId: 1,
                 quantity,
-                productId: item[0].id,
-                variant: variations,
+                productId: product.id,
+                variantId: product?.variantId,
             })
                 .unwrap()
-                .then((payload) => {})
+                .then((payload) => {
+                    dispatch(OpenCartOverlayAction(true));
+                    setQuantity(1);
+                })
                 .catch((error) => {
                     console.error(error);
                 });
         }
-
-        dispatch(OpenCartOverlayAction(true));
-        setQuantity(1);
     };
 
     const updateVariant = (key: string, value: string) => {
@@ -115,13 +121,14 @@ function ProductInfo({ item }: IProps): JSX.Element {
         );
     };
 
-    if (variations.length === 0) return <LinearProgress />;
+    if (!product || (product.variantId && variations.length === 0))
+        return <LinearProgress />;
 
     return (
         <MDBox>
             <MDBox mb={1}>
                 <MDTypography variant="h3" fontWeight="bold">
-                    {item[0].title}
+                    {product.title}
                 </MDTypography>
             </MDBox>
             <MDTypography variant="h4" color="text">
@@ -138,7 +145,7 @@ function ProductInfo({ item }: IProps): JSX.Element {
             </MDBox>
             <MDBox mb={1}>
                 <MDTypography variant="h5" fontWeight="medium">
-                    {item[0].price}
+                    {product.priceStr}
                 </MDTypography>
             </MDBox>
             <MDBadge
@@ -220,76 +227,86 @@ function ProductInfo({ item }: IProps): JSX.Element {
                 </MDBox>
             </MDBox>
             <MDBox mt={3}>
-                <Grid container spacing={3}>
-                    {variants.map((variant, idx) => {
-                        const selectedVariant = variations.filter(
-                            (x) => x.attribute === variant.attribute
-                        )[0]?.value;
+                <Fade
+                    in={true}
+                    timeout={500}
+                    mountOnEnter={true}
+                    unmountOnExit={true}
+                >
+                    <Grid container spacing={3}>
+                        {variants.map((variant, idx) => {
+                            const selectedVariant = variations.filter(
+                                (x) => x.attribute === variant.attribute
+                            )[0]?.value;
 
-                        return (
-                            <Grid key={idx} item xs={12} lg={5}>
-                                <MDBox
-                                    mb={1.5}
-                                    lineHeight={0}
-                                    display="inline-block"
-                                >
-                                    <MDTypography
-                                        component="label"
-                                        variant="button"
-                                        color="text"
-                                        fontWeight="regular"
+                            return (
+                                <Grid key={idx} item xs={12} lg={5}>
+                                    <MDBox
+                                        mb={1.5}
+                                        lineHeight={0}
+                                        display="inline-block"
                                     >
-                                        {variant.attribute}
-                                    </MDTypography>
-                                </MDBox>
-                                <Autocomplete
-                                    value={selectedVariant}
-                                    options={variant.options}
-                                    onChange={(
-                                        e: React.SyntheticEvent,
-                                        value: string
-                                    ) =>
-                                        updateVariant(variant.attribute, value)
-                                    }
-                                    renderInput={(params) => (
-                                        <MDInput
-                                            {...params}
-                                            variant="standard"
-                                        />
-                                    )}
-                                />
-                            </Grid>
-                        );
-                    })}
+                                        <MDTypography
+                                            component="label"
+                                            variant="button"
+                                            color="text"
+                                            fontWeight="regular"
+                                        >
+                                            {variant.attribute}
+                                        </MDTypography>
+                                    </MDBox>
+                                    <Autocomplete
+                                        value={selectedVariant}
+                                        options={variant.options}
+                                        onChange={(
+                                            e: React.SyntheticEvent,
+                                            value: string
+                                        ) =>
+                                            updateVariant(
+                                                variant.attribute,
+                                                value
+                                            )
+                                        }
+                                        renderInput={(params) => (
+                                            <MDInput
+                                                {...params}
+                                                variant="standard"
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                            );
+                        })}
 
-                    <Grid item xs={12} lg={5}>
-                        <MDBox mb={1.5} lineHeight={0}>
-                            <MDTypography
-                                component="label"
-                                variant="button"
-                                color="text"
-                                fontWeight="regular"
-                            >
-                                Quantity{" "}
-                                {itemInCart &&
-                                    `(${itemInCart.quantity} in cart)`}
-                            </MDTypography>
-                        </MDBox>
-                        <MDInput
-                            inputProps={{
-                                type: "number",
-                                min: 1,
-                                max: 10,
-                                style: { width: 150 },
-                                onChange: (
-                                    e: React.ChangeEvent<HTMLInputElement>
-                                ) => setQuantity(Number(e.target.value)),
-                            }}
-                            value={quantity}
-                            variant="standard"
-                        />
+                        <Grid item xs={12} lg={5}>
+                            <MDBox mb={1.5} lineHeight={0}>
+                                <MDTypography
+                                    component="label"
+                                    variant="button"
+                                    color="text"
+                                    fontWeight="regular"
+                                >
+                                    Quantity{" "}
+                                    {itemInCart &&
+                                        `(${itemInCart.quantity} in cart)`}
+                                </MDTypography>
+                            </MDBox>
+                            <MDInput
+                                inputProps={{
+                                    type: "number",
+                                    min: 1,
+                                    max: 10,
+                                    style: { width: 150 },
+                                    onChange: (
+                                        e: React.ChangeEvent<HTMLInputElement>
+                                    ) => setQuantity(Number(e.target.value)),
+                                }}
+                                value={quantity}
+                                variant="standard"
+                            />
+                        </Grid>
                     </Grid>
-                </Grid>
+                </Fade>
             </MDBox>
             <MDBox mt={3}>
                 <Grid item xs={12} lg={5} container>

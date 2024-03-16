@@ -1,10 +1,7 @@
-import { IProductVariantObj } from "src/interface/IProductVariantObj";
-
 export interface ICartProduct {
     id: number;
     cartId: number;
+    productId?: number;
+    variantId?: number;
     quantity: number;
-    productId: number;
-    variant?: string;
-    variantList: IProductVariantObj[];
 }

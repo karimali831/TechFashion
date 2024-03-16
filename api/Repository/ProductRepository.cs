@@ -19,12 +19,12 @@ namespace api.Repository
                     p.Id, 
                     p.Title, 
                     p.Slug,
-                    PI.Url AS ImageSrc,
+                    pi.ImageSrc,
                     P.Price,
                     0 AS Variant
                 FROM [Products] AS P
-                JOIN [ProductImages] AS PI
-                ON PI.ProductId = P.Id and PI.Main = 1
+                LEFT JOIN [ProductImages] AS PI
+                ON pi.ProductId = p.Id and pi.Main = 1
                 LEFT JOIN [ProductVariants] AS PV 
                 ON PV.ProductId = P.Id
                 WHERE p.Active = 1 AND PV.Id IS NULL
@@ -33,7 +33,7 @@ namespace api.Repository
                     p.Id, 
                     p.Title, 
                     p.Slug,
-                    PI.Url,
+                    pi.ImageSrc,
                     pv.Price,
                     1
                 FROM [Products] AS P
@@ -45,8 +45,8 @@ namespace api.Repository
                     WHERE PV.ProductId = p.Id 
                     ORDER BY PV.Price ASC
                 ) AS PV
-                LEFT JOIN  [ProductImages] AS PI
-                ON PI.ProductVariantId = PV.Id and PI.Main = 1
+                LEFT JOIN [ProductImages] AS PI
+                ON pi.ProductId = p.Id and PI.Main = 1
                 WHERE p.Active = 1 
             ";
 
@@ -58,7 +58,7 @@ namespace api.Repository
             const string sqlTxt = $@"
                 ;SELECT 
                     p.Id, 
-                    pv.Id AS ProductVariantId,
+                    pv.Id AS VariantId,
                     p.Title, 
                     p.Description, 
                     p.Slug, 
@@ -66,16 +66,13 @@ namespace api.Repository
                     CASE WHEN pv.Stock IS NULL THEN p.Stock ELSE pv.Stock END AS Stock,
                     CASE WHEN pv.Sku IS NULL THEN p.Sku ELSE pv.Sku END AS Sku,
                     p.Active, 
-                    pv.Variations,
-                    CASE WHEN PV.Id IS NULL THEN PI1.Url ELSE PI2.Url END AS ImageSrc,
-                    CASE WHEN PV.Id IS NULL THEN PI1.Main ELSE PI2.Main END AS ImageMain
+                    pv.Variant,
+                    pi.ImageSrc
                 FROM [Products] AS P
                 LEFT JOIN [ProductVariants] AS PV
-                ON PV.ProductId = P.Id 
-                LEFT JOIN [ProductImages] AS PI1
-                ON PI1.ProductId = P.Id
-                LEFT JOIN [ProductImages] AS PI2
-                ON PI2.ProductVariantId = pv.Id
+                ON PV.ProductId = p.Id 
+                LEFT JOIN [ProductImages] AS pi
+                ON pi.ProductId = p.Id AND pi.Main = 1
                 WHERE p.Active = 1 
             ";
 

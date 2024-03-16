@@ -29,9 +29,12 @@ var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
-        policy =>
+        builder =>
         {
-            policy.WithOrigins("http://localhost:5173");
+            builder.WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowCredentials()
+            .AllowAnyMethod();
         });
 });
 
@@ -47,8 +50,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.MapControllers();
+
 app.UseCors(MyAllowSpecificOrigins);
+
+app.MapControllers();
+
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)

@@ -2,7 +2,7 @@ import { IProductVariantObj } from "./IProductVariantObj";
 
 export interface IProductDetail {
     id: number;
-    productVariantId?: number;
+    variantId?: number;
     title: string;
     description: string;
     slug: string;
@@ -10,8 +10,8 @@ export interface IProductDetail {
     stock?: number;
     sku: string;
     active: boolean;
-    variations?: string;
+    variant?: string;
     imageSrc?: string;
-    imageMain?: boolean;
-    variationsList: IProductVariantObj[];
+    priceStr: string;
+    variantList: IProductVariantObj[];
 }
