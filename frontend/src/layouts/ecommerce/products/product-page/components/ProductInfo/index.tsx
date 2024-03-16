@@ -124,6 +124,10 @@ function ProductInfo({ item }: IProps): JSX.Element {
     if (!product || (product.variantId && variations.length === 0))
         return <LinearProgress />;
 
+    const options = item.flatMap((x) => x.variantList);
+
+    console.log(variants);
+
     return (
         <MDBox>
             <MDBox mb={1}>
@@ -239,6 +243,27 @@ function ProductInfo({ item }: IProps): JSX.Element {
                                 (x) => x.attribute === variant.attribute
                             )[0]?.value;
 
+                            const variation = variations.filter(
+                                (x) => x.attribute === variant.attribute
+                            );
+
+                            const filter = item.filter((x) =>
+                                isEqual(x.variantList, variation)
+                            );
+
+                            let tt: IProductVariantObj[] = [];
+
+                            tt.push({
+                                attribute: variant.attribute,
+                                value: "",
+                            });
+
+                            // let options: string[] = [];
+
+                            // const options = exists.map(x => x.variantList.map(y => y.value))
+                            // console.log("catalogue", item[0].variantList);
+                            // console.log(variation);
+
                             return (
                                 <Grid key={idx} item xs={12} lg={5}>
                                     <MDBox
@@ -257,7 +282,7 @@ function ProductInfo({ item }: IProps): JSX.Element {
                                     </MDBox>
                                     <Autocomplete
                                         value={selectedVariant}
-                                        options={variant.options}
+                                        options={options}
                                         onChange={(
                                             e: React.SyntheticEvent,
                                             value: string
