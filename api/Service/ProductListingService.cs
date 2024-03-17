@@ -42,6 +42,24 @@ namespace api.Service
                 })
                 .ToList(); ;
 
+            //                 var variantAttributes = variants.Select(x => x.Attribute).Distinct();
+
+            // foreach (var attribute in variantAttributes)
+            // {
+            //     var options = variants
+            //         .Where(x => x.Attribute == attribute)
+            //         .Select(x => x.Value);
+
+
+            //     productVariants.Add(new ProductAttribute
+            //     {
+            //         ProductId = 1,
+            //         Attribute = attribute,
+            //         Options = options
+            //     });
+            // }
+
+
             var productIds = productDetails
                 .DistinctBy(x => x.Id)
                 .Select(x => x.Id);

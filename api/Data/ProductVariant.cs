@@ -9,6 +9,7 @@ namespace api.Data
         public required int Id { get; set; }
         public required int ProductId { get; set; }
         public required string Variant { get; set; }
+        public required string Variant2 { get; set; }
         public string Sku { get; set; } = string.Empty;
         public int? Stock { get; set; }
         public required decimal Price { get; set; }

@@ -15,6 +15,7 @@ namespace api.Models
         public string Sku { get; set; } = string.Empty;
         public bool Active { get; set; }
         public string? Variant { get; set; }
+        public string? Variant2 { get; set; }
         public string? ImageSrc { get; set; }
         [DbIgnore]
         public string PriceStr { get; set; } = string.Empty;

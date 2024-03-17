@@ -6,6 +6,7 @@ namespace api.Repository
 {
     public interface IProductVariantRepository
     {
+        Task<IEnumerable<Variant>> GetAllAttributesAsync();
         Task<IList<ProductVariant>> GetAllByProductIdsAsync(IList<int> productIds);
     }
 
@@ -14,6 +15,11 @@ namespace api.Repository
         private static readonly string TABLE = "ProductVariants";
         private static readonly string[] FIELDS = typeof(ProductVariant).DapperFields();
 
+
+        public async Task<IEnumerable<Variant>> GetAllAttributesAsync()
+        {
+            return await QueryAsync<Variant>(DapperHelper.Select("Variants", typeof(Variant).DapperFields()));
+        }
 
         public async Task<IList<ProductVariant>> GetAllByProductIdsAsync(IList<int> productIds)
         {

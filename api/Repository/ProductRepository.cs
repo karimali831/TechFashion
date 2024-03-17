@@ -67,6 +67,7 @@ namespace api.Repository
                     CASE WHEN pv.Sku IS NULL THEN p.Sku ELSE pv.Sku END AS Sku,
                     p.Active, 
                     pv.Variant,
+                    pv.Variant2,
                     pi.ImageSrc
                 FROM [Products] AS P
                 LEFT JOIN [ProductVariants] AS PV

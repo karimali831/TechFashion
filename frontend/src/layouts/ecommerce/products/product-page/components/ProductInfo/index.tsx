@@ -1,4 +1,4 @@
-import { Fade, LinearProgress } from "@mui/material";
+import { Box, Fade, LinearProgress } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import Grid from "@mui/material/Grid";
 import Icon from "@mui/material/Icon";
@@ -16,10 +16,13 @@ import MDInput from "src/components/MDInput";
 import MDTypography from "src/components/MDTypography";
 import { ICartProductDetail } from "src/interface/ICartProductDetail";
 import { IProductDetail } from "src/interface/IProductDetail";
-import { IProductVariantObj } from "src/interface/IProductVariantObj";
 import { useAppDispatch } from "src/state/Hooks";
 import { OpenCartOverlayAction } from "src/state/contexts/cart/Actions";
 import isEqual from "lodash.isequal";
+import { IVariant } from "src/data/IVariant";
+import { IProductVariantObj } from "src/interface/IProductVariantObj";
+import MDAlert from "src/components/MDAlert";
+import useEffectSkipInitialRender from "src/hooks/useEffectSkipInitialRender";
 
 interface IProps {
     item: IProductDetail[];
@@ -27,7 +30,9 @@ interface IProps {
 
 function ProductInfo({ item }: IProps): JSX.Element {
     const [quantity, setQuantity] = useState<number>(1);
-    const [variations, setVariations] = useState<IProductVariantObj[]>([]);
+    const [variations, setVariations] = useState<IVariant[]>([]);
+    const [productVariantUnavilable, setProductVariableUnavailable] =
+        useState<boolean>(false);
 
     const [addProductToCart, { isLoading: adding }] =
         useAddProductToCartMutation();
@@ -43,6 +48,21 @@ function ProductInfo({ item }: IProps): JSX.Element {
         (x) => x.productId === item[0].id
     );
 
+    const itemsInCart: ICartProductDetail[] = cart?.products ?? [];
+
+    const product =
+        item.filter(
+            (x) => !x.variantId || isEqual(x.variantList, variations)
+        )[0] ?? item[0];
+
+    let itemInCart = itemsInCart.filter((x) =>
+        item.some(
+            (i) =>
+                i.id === x.productId &&
+                (!i.variantId || isEqual(x.variantList, variations))
+        )
+    )[0];
+
     useEffect(() => {
         setVariations(
             variants.map((x) => {
@@ -54,19 +74,17 @@ function ProductInfo({ item }: IProps): JSX.Element {
         );
     }, [products]);
 
-    const itemsInCart: ICartProductDetail[] = cart?.products ?? [];
+    useEffectSkipInitialRender(() => {
+        const unavilableVariant =
+            item[0].variantId &&
+            !item.some((x) => isEqual(x.variantList, variations));
 
-    const product = item.filter(
-        (x) => !x.variantId || isEqual(x.variantList, variations)
-    )[0];
+        // if (unavilableVariant) {
+        //     setVariations(item[0].variantList);
+        // }
 
-    let itemInCart = itemsInCart.filter((x) =>
-        item.some(
-            (i) =>
-                i.id === x.productId &&
-                (!i.variantId || isEqual(x.variantList, variations))
-        )
-    )[0];
+        setProductVariableUnavailable(unavilableVariant);
+    }, [variations]);
 
     const addToCart = async () => {
         if (itemInCart) {
@@ -123,10 +141,6 @@ function ProductInfo({ item }: IProps): JSX.Element {
 
     if (!product || (product.variantId && variations.length === 0))
         return <LinearProgress />;
-
-    const options = item.flatMap((x) => x.variantList);
-
-    console.log(variants);
 
     return (
         <MDBox>
@@ -231,6 +245,17 @@ function ProductInfo({ item }: IProps): JSX.Element {
                 </MDBox>
             </MDBox>
             <MDBox mt={3}>
+                {productVariantUnavilable && (
+                    <Fade in={true} mountOnEnter={true} unmountOnExit={true}>
+                        <Box>
+                            <MDAlert dismissible={true} color="warning">
+                                <Icon sx={{ mr: 1 }}>warning</Icon>
+                                This variant is not current available, please
+                                make another selection.
+                            </MDAlert>
+                        </Box>
+                    </Fade>
+                )}
                 <Fade
                     in={true}
                     timeout={500}
@@ -247,16 +272,25 @@ function ProductInfo({ item }: IProps): JSX.Element {
                                 (x) => x.attribute === variant.attribute
                             );
 
-                            const filter = item.filter((x) =>
-                                isEqual(x.variantList, variation)
-                            );
-
                             let tt: IProductVariantObj[] = [];
 
-                            tt.push({
-                                attribute: variant.attribute,
-                                value: "",
+                            // console.log("variants", variants);
+
+                            variants.map((x) => {
+                                tt.push({
+                                    attribute: x.attribute,
+                                    value: x.options[0],
+                                });
                             });
+
+                            const filter = item.filter((x) =>
+                                isEqual(x.variantList, tt)
+                            );
+
+                            // console.log("tt1", item[0].variantList);
+                            // console.log("tt2", tt);
+
+                            console.log("filter", filter);
 
                             // let options: string[] = [];
 
@@ -282,7 +316,7 @@ function ProductInfo({ item }: IProps): JSX.Element {
                                     </MDBox>
                                     <Autocomplete
                                         value={selectedVariant}
-                                        options={options}
+                                        options={variant.options}
                                         onChange={(
                                             e: React.SyntheticEvent,
                                             value: string
@@ -336,7 +370,7 @@ function ProductInfo({ item }: IProps): JSX.Element {
             <MDBox mt={3}>
                 <Grid item xs={12} lg={5} container>
                     <ActionButton
-                        disabled={quantity === 0}
+                        disabled={quantity === 0 || productVariantUnavilable}
                         loading={adding}
                         text="add to cart"
                         onClick={addToCart}

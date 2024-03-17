@@ -11,6 +11,7 @@ namespace api.Models
         public required string Title { get; set; }
         public required int Quantity { get; set; }
         public string? Variant { get; set; }
+        public string? Variant2 { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal UnitTotal { get; set; }
         [DbIgnore]

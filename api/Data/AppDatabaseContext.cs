@@ -9,6 +9,7 @@ namespace api.Data
         public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductVariant> ProductVariants { get; set; }
+        public DbSet<Variant> Variants { get; set; }
 
 
         public override int SaveChanges()
