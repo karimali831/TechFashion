@@ -2,27 +2,22 @@ import { Box, Fade, LinearProgress } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import Grid from "@mui/material/Grid";
 import Icon from "@mui/material/Icon";
+import isEqual from "lodash.isequal";
 import { useEffect, useState } from "react";
-import {
-    useAddProductToCartMutation,
-    useGetCartQuery,
-    useUpdateProductQuantityMutation,
-} from "src/api/cartApi";
+import { useAddProductToCartMutation, useGetCartQuery, useUpdateProductQuantityMutation } from "src/api/cartApi";
 import { useGetProductQuery } from "src/api/productApi";
 import { ActionButton } from "src/components/Buttons/ActionButton";
+import MDAlert from "src/components/MDAlert";
 import MDBadge from "src/components/MDBadge";
 import MDBox from "src/components/MDBox";
 import MDInput from "src/components/MDInput";
 import MDTypography from "src/components/MDTypography";
+import { IVariant } from "src/data/IVariant";
+import useEffectSkipInitialRender from "src/hooks/useEffectSkipInitialRender";
 import { ICartProductDetail } from "src/interface/ICartProductDetail";
 import { IProductDetail } from "src/interface/IProductDetail";
 import { useAppDispatch } from "src/state/Hooks";
 import { OpenCartOverlayAction } from "src/state/contexts/cart/Actions";
-import isEqual from "lodash.isequal";
-import { IVariant } from "src/data/IVariant";
-import { IProductVariantObj } from "src/interface/IProductVariantObj";
-import MDAlert from "src/components/MDAlert";
-import useEffectSkipInitialRender from "src/hooks/useEffectSkipInitialRender";
 
 interface IProps {
     item: IProductDetail[];
@@ -31,11 +26,9 @@ interface IProps {
 function ProductInfo({ item }: IProps): JSX.Element {
     const [quantity, setQuantity] = useState<number>(1);
     const [variations, setVariations] = useState<IVariant[]>([]);
-    const [productVariantUnavilable, setProductVariableUnavailable] =
-        useState<boolean>(false);
+    const [productVariantUnavilable, setProductVariableUnavailable] = useState<boolean>(false);
 
-    const [addProductToCart, { isLoading: adding }] =
-        useAddProductToCartMutation();
+    const [addProductToCart, { isLoading: adding }] = useAddProductToCartMutation();
     const [updateProductQuantity] = useUpdateProductQuantityMutation();
 
     const { data: cart } = useGetCartQuery();
@@ -44,23 +37,14 @@ function ProductInfo({ item }: IProps): JSX.Element {
 
     const dispatch = useAppDispatch();
 
-    const variants = products.variants.filter(
-        (x) => x.productId === item[0].id
-    );
+    const variants = products.variants.filter((x) => x.productId === item[0].id);
 
     const itemsInCart: ICartProductDetail[] = cart?.products ?? [];
 
-    const product =
-        item.filter(
-            (x) => !x.variantId || isEqual(x.variantList, variations)
-        )[0] ?? item[0];
+    const product = item.filter((x) => !x.variantId || isEqual(x.variantList, variations))[0] ?? item[0];
 
     let itemInCart = itemsInCart.filter((x) =>
-        item.some(
-            (i) =>
-                i.id === x.productId &&
-                (!i.variantId || isEqual(x.variantList, variations))
-        )
+        item.some((i) => i.id === x.productId && (!i.variantId || isEqual(x.variantList, variations)))
     )[0];
 
     useEffect(() => {
@@ -75,14 +59,7 @@ function ProductInfo({ item }: IProps): JSX.Element {
     }, [products]);
 
     useEffectSkipInitialRender(() => {
-        const unavilableVariant =
-            item[0].variantId &&
-            !item.some((x) => isEqual(x.variantList, variations));
-
-        // if (unavilableVariant) {
-        //     setVariations(item[0].variantList);
-        // }
-
+        const unavilableVariant = item[0].variantId && !item.some((x) => isEqual(x.variantList, variations));
         setProductVariableUnavailable(unavilableVariant);
     }, [variations]);
 
@@ -103,19 +80,6 @@ function ProductInfo({ item }: IProps): JSX.Element {
                     console.error(error);
                 });
         } else {
-            // let variantId = null;
-
-            // if (itemInCart) {
-            //     // itemVariantInCart = variantId !== null;
-
-            //     for (let product of item) {
-            //         if (isEqual(product.variantList, variations)) {
-            //             variantId = product.variantId;
-            //             break;
-            //         }
-            //     }
-            // }
-
             await addProductToCart({
                 cartId: 1,
                 quantity,
@@ -134,13 +98,10 @@ function ProductInfo({ item }: IProps): JSX.Element {
     };
 
     const updateVariant = (key: string, value: string) => {
-        setVariations(
-            variations.map((v) => (v.attribute === key ? { ...v, value } : v))
-        );
+        setVariations(variations.map((v) => (v.attribute === key ? { ...v, value } : v)));
     };
 
-    if (!product || (product.variantId && variations.length === 0))
-        return <LinearProgress />;
+    if (!product || (product.variantId && variations.length === 0)) return <LinearProgress />;
 
     return (
         <MDBox>
@@ -166,83 +127,33 @@ function ProductInfo({ item }: IProps): JSX.Element {
                     {product.priceStr}
                 </MDTypography>
             </MDBox>
-            <MDBadge
-                variant="contained"
-                color="success"
-                badgeContent="in stock"
-                container
-            />
+            <MDBadge variant="contained" color="success" badgeContent="in stock" container />
             <MDBox mt={3} mb={1} ml={0.5}>
-                <MDTypography
-                    variant="button"
-                    fontWeight="regular"
-                    color="text"
-                >
+                <MDTypography variant="button" fontWeight="regular" color="text">
                     Description
                 </MDTypography>
             </MDBox>
             <MDBox component="ul" m={0} pl={4} mb={2}>
-                <MDBox
-                    component="li"
-                    color="text"
-                    fontSize="1.25rem"
-                    lineHeight={1}
-                >
-                    <MDTypography
-                        variant="body2"
-                        color="text"
-                        fontWeight="regular"
-                        verticalAlign="middle"
-                    >
-                        The most beautiful curves of this swivel stool adds an
-                        elegant touch to any environment
+                <MDBox color="text" fontSize="1.25rem" lineHeight={1}>
+                    <MDTypography variant="body2" color="text" fontWeight="regular" verticalAlign="middle">
+                        {product.description}
                     </MDTypography>
                 </MDBox>
-                <MDBox
-                    component="li"
-                    color="text"
-                    fontSize="1.25rem"
-                    lineHeight={1}
-                >
-                    <MDTypography
-                        variant="body2"
-                        color="text"
-                        fontWeight="regular"
-                        verticalAlign="middle"
-                    >
+                {/* <MDBox component="li" color="text" fontSize="1.25rem" lineHeight={1}>
+                    <MDTypography variant="body2" color="text" fontWeight="regular" verticalAlign="middle">
                         Memory swivel seat returns to original seat position
                     </MDTypography>
                 </MDBox>
-                <MDBox
-                    component="li"
-                    color="text"
-                    fontSize="1.25rem"
-                    lineHeight={1}
-                >
-                    <MDTypography
-                        variant="body2"
-                        color="text"
-                        fontWeight="regular"
-                        verticalAlign="middle"
-                    >
+                <MDBox component="li" color="text" fontSize="1.25rem" lineHeight={1}>
+                    <MDTypography variant="body2" color="text" fontWeight="regular" verticalAlign="middle">
                         Comfortable integrated layered chair seat cushion design
                     </MDTypography>
                 </MDBox>
-                <MDBox
-                    component="li"
-                    color="text"
-                    fontSize="1.25rem"
-                    lineHeight={1}
-                >
-                    <MDTypography
-                        variant="body2"
-                        color="text"
-                        fontWeight="regular"
-                        verticalAlign="middle"
-                    >
+                <MDBox component="li" color="text" fontSize="1.25rem" lineHeight={1}>
+                    <MDTypography variant="body2" color="text" fontWeight="regular" verticalAlign="middle">
                         Fully assembled! No assembly required
                     </MDTypography>
-                </MDBox>
+                </MDBox> */}
             </MDBox>
             <MDBox mt={3}>
                 {productVariantUnavilable && (
@@ -250,61 +161,20 @@ function ProductInfo({ item }: IProps): JSX.Element {
                         <Box>
                             <MDAlert dismissible={true} color="warning">
                                 <Icon sx={{ mr: 1 }}>warning</Icon>
-                                This variant is not current available, please
-                                make another selection.
+                                Variant not currently available, please make another selection.
                             </MDAlert>
                         </Box>
                     </Fade>
                 )}
-                <Fade
-                    in={true}
-                    timeout={500}
-                    mountOnEnter={true}
-                    unmountOnExit={true}
-                >
+                <Fade in={true} timeout={500} mountOnEnter={true} unmountOnExit={true}>
                     <Grid container spacing={3}>
                         {variants.map((variant, idx) => {
-                            const selectedVariant = variations.filter(
-                                (x) => x.attribute === variant.attribute
-                            )[0]?.value;
-
-                            const variation = variations.filter(
-                                (x) => x.attribute === variant.attribute
-                            );
-
-                            let tt: IProductVariantObj[] = [];
-
-                            // console.log("variants", variants);
-
-                            variants.map((x) => {
-                                tt.push({
-                                    attribute: x.attribute,
-                                    value: x.options[0],
-                                });
-                            });
-
-                            const filter = item.filter((x) =>
-                                isEqual(x.variantList, tt)
-                            );
-
-                            // console.log("tt1", item[0].variantList);
-                            // console.log("tt2", tt);
-
-                            console.log("filter", filter);
-
-                            // let options: string[] = [];
-
-                            // const options = exists.map(x => x.variantList.map(y => y.value))
-                            // console.log("catalogue", item[0].variantList);
-                            // console.log(variation);
+                            const selectedVariant = variations.filter((x) => x.attribute === variant.attribute)[0]
+                                ?.value;
 
                             return (
                                 <Grid key={idx} item xs={12} lg={5}>
-                                    <MDBox
-                                        mb={1.5}
-                                        lineHeight={0}
-                                        display="inline-block"
-                                    >
+                                    <MDBox mb={1.5} lineHeight={0} display="inline-block">
                                         <MDTypography
                                             component="label"
                                             variant="button"
@@ -317,21 +187,10 @@ function ProductInfo({ item }: IProps): JSX.Element {
                                     <Autocomplete
                                         value={selectedVariant}
                                         options={variant.options}
-                                        onChange={(
-                                            e: React.SyntheticEvent,
-                                            value: string
-                                        ) =>
-                                            updateVariant(
-                                                variant.attribute,
-                                                value
-                                            )
+                                        onChange={(e: React.SyntheticEvent, value: string) =>
+                                            updateVariant(variant.attribute, value)
                                         }
-                                        renderInput={(params) => (
-                                            <MDInput
-                                                {...params}
-                                                variant="standard"
-                                            />
-                                        )}
+                                        renderInput={(params) => <MDInput {...params} variant="standard" />}
                                     />
                                 </Grid>
                             );
@@ -339,15 +198,8 @@ function ProductInfo({ item }: IProps): JSX.Element {
 
                         <Grid item xs={12} lg={5}>
                             <MDBox mb={1.5} lineHeight={0}>
-                                <MDTypography
-                                    component="label"
-                                    variant="button"
-                                    color="text"
-                                    fontWeight="regular"
-                                >
-                                    Quantity{" "}
-                                    {itemInCart &&
-                                        `(${itemInCart.quantity} in cart)`}
+                                <MDTypography component="label" variant="button" color="text" fontWeight="regular">
+                                    Quantity {itemInCart && `(${itemInCart.quantity} in cart)`}
                                 </MDTypography>
                             </MDBox>
                             <MDInput
@@ -356,9 +208,8 @@ function ProductInfo({ item }: IProps): JSX.Element {
                                     min: 1,
                                     max: 10,
                                     style: { width: 150 },
-                                    onChange: (
-                                        e: React.ChangeEvent<HTMLInputElement>
-                                    ) => setQuantity(Number(e.target.value)),
+                                    onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+                                        setQuantity(Number(e.target.value)),
                                 }}
                                 value={quantity}
                                 variant="standard"
