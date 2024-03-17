@@ -13,7 +13,8 @@ namespace api.Repository
         Task<IList<CartProductDetail>> GetBasketAsync(int cartId);
     }
 
-    public class CartProductRepository(IConfiguration configuration) : DapperBaseRepository(configuration), ICartProductRepository
+    public class CartProductRepository(IConfiguration configuration) : DapperBaseRepository(configuration),
+        ICartProductRepository
     {
         private static readonly string TABLE = "CartProducts";
         private static readonly string[] FIELDS = typeof(CartProduct).DapperFields();
@@ -22,7 +23,7 @@ namespace api.Repository
         public async Task<bool> UpdateProductQuantityAsync(int id, int quantity)
         {
             return await ExecuteAsync(@$"
-                UPDATE {TABLE}
+                ;UPDATE {TABLE}
                 SET Quantity = @quantity
                 WHERE Id = @id
             ", new
@@ -39,7 +40,7 @@ namespace api.Repository
 
         public async Task<IList<CartProductDetail>> GetBasketAsync(int cartId)
         {
-            string sqlTxt = @$"
+            const string sqlTxt = @$"
                 ;SELECT 
                     cp.Id,
                     p.Id AS ProductId,
@@ -85,7 +86,7 @@ namespace api.Repository
         public async Task<bool> RemoveProductAsync(int id)
         {
             return await ExecuteAsync(@$"
-                UPDATE {TABLE}
+                ;UPDATE {TABLE}
                 SET RemovedDate = @date
                 WHERE Id = @id
             ", new

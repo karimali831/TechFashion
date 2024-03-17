@@ -5,7 +5,7 @@ namespace api.Helper
         public static string Base64Encode(this string plainText)
         {
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
-            return System.Convert.ToBase64String(plainTextBytes);
+            return Convert.ToBase64String(plainTextBytes);
         }
 
         public static string Base64Decode(this string base64EncodedData)

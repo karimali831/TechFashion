@@ -2,7 +2,6 @@ using System.Globalization;
 
 namespace api.Helper
 {
-
     public static class CurrencyHelper
     {
         public static decimal ConvertAmount(this long? value)

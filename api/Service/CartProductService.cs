@@ -12,7 +12,7 @@ namespace api.Service
         Task<bool> AddProductAsync(AddProductToCartDto dto);
         Task<bool> RemoveProductAsync(int id);
         Task<bool> UpdateProductQuantityAsync(int id, int quantity);
-        Task<CartViewModel> GetBasketAsync();
+        Task<CartViewModel?> GetBasketAsync();
     }
 
     public class CartProductService(
@@ -37,7 +37,7 @@ namespace api.Service
             return create.ErrorMsg is not null;
         }
 
-        public async Task<CartViewModel> GetBasketAsync()
+        public async Task<CartViewModel?> GetBasketAsync()
         {
             var cart = await _cartRepository.GetAsync();
 

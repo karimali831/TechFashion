@@ -1,6 +1,6 @@
-const { DEV } = import.meta.env;
+const { DEV, VITE_API_URL } = import.meta.env;
 
-const rootUrl: string = DEV ? "http://localhost:5253" : window.location.origin;
+const rootUrl: string = DEV ? VITE_API_URL : window.location.origin;
 
 export const getTokenFromLocalStorage = () => localStorage.getItem("token");
 

@@ -10,10 +10,11 @@ namespace api.Repository
         Task<IList<ProductVariant>> GetAllByProductIdsAsync(IList<int> productIds);
     }
 
-    public class ProductVariantRepository(IConfiguration configuration) : DapperBaseRepository(configuration), IProductVariantRepository
+    public class ProductVariantRepository(IConfiguration configuration) : DapperBaseRepository(configuration),
+        IProductVariantRepository
     {
-        private static readonly string TABLE = "ProductVariants";
-        private static readonly string[] FIELDS = typeof(ProductVariant).DapperFields();
+        private const string Table = "ProductVariants";
+        private static readonly string[] Fields = typeof(ProductVariant).DapperFields();
 
 
         public async Task<IEnumerable<Variant>> GetAllAttributesAsync()
@@ -24,7 +25,8 @@ namespace api.Repository
         public async Task<IList<ProductVariant>> GetAllByProductIdsAsync(IList<int> productIds)
         {
             return (
-                await QueryAsync<ProductVariant>($"{DapperHelper.Select(TABLE, FIELDS)} WHERE ProductId IN @productIds", new { productIds })
+                await QueryAsync<ProductVariant>($"{DapperHelper.Select(Table, Fields)} WHERE ProductId IN @productIds",
+                    new { productIds })
             ).ToList();
         }
     }

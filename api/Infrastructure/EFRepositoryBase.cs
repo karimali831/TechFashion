@@ -5,7 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Infrastructure
 {
-    public abstract class EFRepositoryBase<TEntity>(AppDatabaseContext context) : IRepositorySimple<TEntity> where TEntity : class
+    public abstract class EFRepositoryBase<TEntity>(AppDatabaseContext context) : IRepositorySimple<TEntity>
+        where TEntity : class
     {
         protected AppDatabaseContext _context = context;
         protected readonly DbSet<TEntity> dbSet = context.Set<TEntity>();
@@ -30,17 +31,14 @@ namespace api.Infrastructure
             };
         }
 
-        public virtual bool Insert(TEntity item)
+        public virtual bool Insert(TEntity? item)
         {
-            if (item != null)
-            {
-                dbSet.Add(item);
-                return true;
-            }
-            return false;
+            if (item is null) return false;
+            dbSet.Add(item);
+            return true;
         }
 
-        public async Task<ApiResponse<TViewModel>> InsertAndReturnViewModelAsync<TViewModel>(TEntity item)
+        protected async Task<ApiResponse<TViewModel>> InsertAndReturnViewModelAsync<TViewModel>(TEntity item)
         {
             try
             {
@@ -51,7 +49,6 @@ namespace api.Infrastructure
                 {
                     Data = item.ToViewModel<TViewModel, TEntity>()
                 };
-
             }
             catch (Exception exp)
             {
@@ -69,20 +66,16 @@ namespace api.Infrastructure
             return item;
         }
 
-        public virtual bool Update(TEntity item)
+        public virtual bool Update(TEntity? item)
         {
-            if (item is not null)
-            {
-                dbSet.Attach(item);
-                _context.Entry(item).State = EntityState.Modified;
+            if (item is null) return false;
+            dbSet.Attach(item);
+            _context.Entry(item).State = EntityState.Modified;
 
-                return true;
-            }
-
-            return false;
+            return true;
         }
 
-        public async Task<ApiResponse<TViewModel>> UpdateAndReturnViewModelAsync<TViewModel>(TEntity item)
+        protected async Task<ApiResponse<TViewModel>> UpdateAndReturnViewModelAsync<TViewModel>(TEntity item)
         {
             try
             {
@@ -104,14 +97,12 @@ namespace api.Infrastructure
             }
         }
 
-        public async Task<ApiResponse<bool>> RemoveAsync(int id)
+        protected async Task<ApiResponse<bool>> RemoveAsync(int id)
         {
-
             var entity = await GetByKeyAsync(id);
 
             if (entity is not null)
             {
-
                 dbSet.Remove(entity);
                 await _context.SaveChangesAsync();
 
@@ -127,7 +118,6 @@ namespace api.Infrastructure
                     ErrorMsg = "An error occurred"
                 };
             }
-
         }
 
         public virtual bool Delete(TEntity entity)
@@ -138,8 +128,8 @@ namespace api.Infrastructure
 
         public virtual bool Delete(int id)
         {
-            TEntity? entity = dbSet.Find(id)
-                ?? throw new ApplicationException("Cannot delete entity. Does not exist: " + id);
+            var entity = dbSet.Find(id)
+                         ?? throw new ApplicationException("Cannot delete entity. Does not exist: " + id);
 
             dbSet.Remove(entity);
             return true;
@@ -147,7 +137,7 @@ namespace api.Infrastructure
 
         public virtual void Delete(Expression<Func<TEntity, bool>> where)
         {
-            IEnumerable<TEntity> objects = dbSet.Where(where).AsEnumerable();
+            var objects = dbSet.Where(where).AsEnumerable();
 
             foreach (TEntity obj in objects)
             {
@@ -157,38 +147,43 @@ namespace api.Infrastructure
 
         public virtual ICollection<TEntity> GetAll()
         {
-            return [.. dbSet];
+            return [
+            .. dbSet];
         }
 
         public virtual ICollection<TEntity> GetAll(params Expression<Func<TEntity, object>>[] includeProperties)
         {
             var query = dbSet.AsQueryable();
 
-            foreach (var includeProperty in includeProperties)
-            {
-                query = query.Include(includeProperty);
-            }
+            query = includeProperties.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
 
-            return [.. query];
+            // old way:        
+            // foreach (var includeProperty in includeProperties)
+            // {
+            //     query = query.Include(includeProperty);
+            // }
+
+            return [
+            .. query];
         }
 
         public virtual ICollection<TEntity> Find(Expression<Func<TEntity, bool>> where)
         {
-            return [.. dbSet.Where(where)];
+            return [
+            .. dbSet.Where(where)];
         }
+
         public TEntity? FindOne(Expression<Func<TEntity, bool>> where)
         {
             return dbSet.Where(where).FirstOrDefault();
         }
 
-        public TEntity? FindOneWithRelations(Expression<Func<TEntity, bool>> where, params Expression<Func<TEntity, object>>[] relations)
+        public TEntity? FindOneWithRelations(Expression<Func<TEntity, bool>> where,
+            params Expression<Func<TEntity, object>>[] relations)
         {
             var query = dbSet.Where(where);
 
-            foreach (var relation in relations)
-            {
-                query = query.Include(relation);
-            }
+            query = relations.Aggregate(query, (current, relation) => current.Include(relation));
 
             return query.FirstOrDefault();
         }
@@ -197,25 +192,29 @@ namespace api.Infrastructure
         {
             return dbSet.Where(where).SingleOrDefault();
         }
-        public IEnumerable<TEntity> GetManyWithRelations(Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, object>> relations)
+
+        public IEnumerable<TEntity> GetManyWithRelations(Expression<Func<TEntity, bool>> where,
+            Expression<Func<TEntity, object>> relations)
         {
-            return [.. dbSet.Where(where).Include(relations)];
-        }
-        public IEnumerable<TEntity> GetManyWithRelations(Expression<Func<TEntity, bool>> where, string relations)
-        {
-            return [.. dbSet.Where(where).Include(relations)];
+            return [
+            .. dbSet.Where(where).Include(relations)];
         }
 
-        public IEnumerable<TEntity> GetManyWithRelations(Expression<Func<TEntity, bool>> where, params Expression<Func<TEntity, object>>[] relations)
+        public IEnumerable<TEntity> GetManyWithRelations(Expression<Func<TEntity, bool>> where, string relations)
+        {
+            return [
+            .. dbSet.Where(where).Include(relations)];
+        }
+
+        public IEnumerable<TEntity> GetManyWithRelations(Expression<Func<TEntity, bool>> where,
+            params Expression<Func<TEntity, object>>[] relations)
         {
             var query = dbSet.Where(where);
 
-            foreach (var relation in relations)
-            {
-                query = query.Include(relation);
-            }
+            query = relations.Aggregate(query, (current, relation) => current.Include(relation));
 
-            return [.. query];
+            return [
+            .. query];
         }
 
         protected virtual IQueryable<TEntity> QueryNoTracking()
@@ -227,26 +226,25 @@ namespace api.Infrastructure
         {
             return dbSet;
         }
+
         protected virtual DbSet<TEntity> DbSet()
         {
             return dbSet;
         }
+
         [Obsolete("Use GetManyWithRelations, which does not expose IQueryable")]
-        public IQueryable<TEntity> Find(Expression<Func<TEntity, bool>> where, params Expression<Func<TEntity, object>>[] includeProperties)
+        public IQueryable<TEntity> Find(Expression<Func<TEntity, bool>> where,
+            params Expression<Func<TEntity, object>>[] includeProperties)
         {
-            IQueryable<TEntity> query = dbSet.Where(where);
+            var query = dbSet.Where(where);
 
-            foreach (var includeProperty in includeProperties)
-            {
-                query = query.Include(includeProperty);
-            }
-
-            return query;
+            return includeProperties.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
         }
 
         public ICollection<TEntity> Find(Expression<Func<TEntity, bool>> searchPredicate, int pageNumber, int pageSize)
         {
-            return [.. dbSet.Where(searchPredicate).Skip(pageNumber * pageSize).Take(pageSize)];
+            return [
+            .. dbSet.Where(searchPredicate).Skip(pageNumber * pageSize).Take(pageSize)];
         }
 
         // public ICollection<TEntity> Find(Expression<Func<TEntity, bool>> searchPredicate, string columnToOrderBy, int pageNumber, int pageSize, bool orderByDescending = false)
@@ -258,15 +256,11 @@ namespace api.Infrastructure
         //     return [.. query.Skip(pageNumber * pageSize).Take(pageSize)];
         // }
 
-        public bool InsertIfNotExists(TEntity item, Expression<Func<TEntity, bool>> searchPredicate)
+        public bool InsertIfNotExists(TEntity? item, Expression<Func<TEntity, bool>> searchPredicate)
         {
-            if (item != null && !dbSet.Any(searchPredicate))
-            {
-                dbSet.Add(item);
-                return true;
-            }
-
-            return false;
+            if (item is null || dbSet.Any(searchPredicate)) return false;
+            dbSet.Add(item);
+            return true;
         }
 
         public bool Insert(IEnumerable<TEntity> items)
@@ -285,22 +279,16 @@ namespace api.Infrastructure
             {
                 InsertOrUpdate(item);
             }
+
             return true;
         }
 
-        public bool InsertOrUpdate(TEntity item)
+        private bool InsertOrUpdate(TEntity item)
         {
             var key = GetKey(item);
             var entity = GetByKey(key);
 
-            if (entity == null)
-            {
-                return Insert(item);
-            }
-            else
-            {
-                return Update(item);
-            }
+            return entity == null ? Insert(item) : Update(item);
         }
 
         /// <summary>
@@ -325,20 +313,19 @@ namespace api.Infrastructure
             );
         }
 
-
-        public virtual TEntity? GetByKey(int id)
+        private TEntity? GetByKey(int id)
         {
             return ((DbSet<TEntity>)Query()).Find(id);
         }
 
-        public virtual async Task<TEntity?> GetByKeyAsync(int id)
+        protected virtual async Task<TEntity?> GetByKeyAsync(int id)
         {
             return await ((DbSet<TEntity>)Query()).FindAsync(id);
         }
 
-        public int Count(Expression<Func<TEntity, bool>>? Predicate = null)
+        public int Count(Expression<Func<TEntity, bool>>? predicate = null)
         {
-            return Predicate is null ? dbSet.Count() : dbSet.Count(Predicate);
+            return predicate is null ? dbSet.Count() : dbSet.Count(predicate);
         }
 
         public bool Delete(IEnumerable<TEntity> items)
@@ -347,12 +334,14 @@ namespace api.Infrastructure
             {
                 dbSet.Remove(item);
             }
+
             return true;
         }
 
         public ICollection<TEntity> GetAll(int pageNum, int pageSize)
         {
-            return [.. dbSet.Skip(pageSize * pageNum).Take(pageSize)];
+            return [
+            .. dbSet.Skip(pageSize * pageNum).Take(pageSize)];
         }
 
         public async Task<IList<TEntity>> GetListAsync(Expression<Func<TEntity, bool>>? where = null)
@@ -365,7 +354,7 @@ namespace api.Infrastructure
             return await dbSet.ToListAsync();
         }
 
-        public async Task<ApiResponse<TViewModel>> GetViewModelAsync<TViewModel>(int id)
+        protected async Task<ApiResponse<TViewModel>> GetViewModelAsync<TViewModel>(int id)
         {
             var entity = await GetByKeyAsync(id);
 
@@ -383,7 +372,8 @@ namespace api.Infrastructure
             };
         }
 
-        public async Task<IList<TViewModel>> GetViewModelAsync<TViewModel>(Expression<Func<TEntity, bool>>? where = null)
+        protected async Task<IList<TViewModel>> GetViewModelAsync<TViewModel>(
+            Expression<Func<TEntity, bool>>? where = null)
         {
             if (where is not null)
             {

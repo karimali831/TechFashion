@@ -16,7 +16,7 @@ import { getCartState } from "src/state/contexts/cart/Selectors";
 import { OverlaySlider, OverlaySliderSize } from "src/components/OverlaySlider";
 import { navData } from "src/assets/data/navData";
 import { NavigateFunction, useNavigate } from "react-router-dom";
-import { CartOverlay } from "../ecommerce/cart-overlay";
+import { CartOverlay } from "../ecommerce/cart/Overlay";
 import { useGetCartQuery } from "src/api/cartApi";
 import { ICartProductDetail } from "src/interface/ICartProductDetail";
 

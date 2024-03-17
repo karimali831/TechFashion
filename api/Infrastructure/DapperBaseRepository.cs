@@ -1,4 +1,3 @@
-
 using Microsoft.Data.SqlClient;
 using System.Data;
 using Dapper;
@@ -41,9 +40,8 @@ namespace api.Infrastructure
         {
             try
             {
-                return await _dbConnection.ExecuteScalarAsync<bool>($"SELECT count(1) FROM {table} WHERE Id = @id",
+                return await _dbConnection.ExecuteScalarAsync<bool>($";SELECT count(1) FROM {table} WHERE Id = @id",
                     new { id });
-
             }
             catch (Exception exp)
             {
@@ -89,7 +87,6 @@ namespace api.Infrastructure
 
         public async Task<bool> ExecuteAsync(string query, object? parameters = null)
         {
-
             try
             {
                 await _dbConnection.ExecuteAsync(query, parameters);
@@ -103,7 +100,6 @@ namespace api.Infrastructure
 
         public async Task<T?> ExecuteScalarAsync<T>(string query, object? parameters = null)
         {
-
             try
             {
                 return await _dbConnection.ExecuteScalarAsync<T>(query, parameters);
@@ -119,7 +115,6 @@ namespace api.Infrastructure
             try
             {
                 return await _dbConnection.QuerySingleAsync<T>(query, parameters);
-
             }
             catch (Exception exp)
             {

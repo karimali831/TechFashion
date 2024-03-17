@@ -11,7 +11,7 @@ namespace api.Helper
             return
                 type
                     .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy)
-                    .Where(x => !x.CustomAttributes.Any(a => a.AttributeType == typeof(DbIgnoreAttribute)))
+                    .Where(x => x.CustomAttributes.All(a => a.AttributeType != typeof(DbIgnoreAttribute)))
                     .Select(x => x.Name).ToArray();
         }
 
@@ -56,12 +56,14 @@ namespace api.Helper
 
         public static string Update(string table, string[] fields, string? primaryKey = "Id")
         {
-            return $"UPDATE {table} SET {string.Join(", ", fields.Where(f => f != primaryKey).Select(f => $"{f}=@{f}"))}";
+            return
+                $"UPDATE {table} SET {string.Join(", ", fields.Where(f => f != primaryKey).Select(f => $"{f}=@{f}"))}";
         }
 
         public static string Insert(string table, string[] fields)
         {
-            return $";INSERT INTO {table} ({string.Join(", ", fields)}) VALUES ({string.Join(", ", fields.Select(f => $"@{f}"))})";
+            return
+                $";INSERT INTO {table} ({string.Join(", ", fields)}) VALUES ({string.Join(", ", fields.Select(f => $"@{f}"))})";
         }
 
         public static string Delete(string table)
@@ -69,7 +71,8 @@ namespace api.Helper
             return $";DELETE FROM {table}";
         }
 
-        public static StringBuilder Filter(this DynamicParameters parameters, (string[] Fields, string[] Values) searchTerm, string where = "")
+        public static StringBuilder Filter(this DynamicParameters parameters,
+            (string[] Fields, string[] Values) searchTerm, string where = "")
         {
             var sqlTxt = new StringBuilder();
 
@@ -99,6 +102,7 @@ namespace api.Helper
 
                     z++;
                 }
+
                 sqlTxt.Append(')');
             }
 
@@ -106,7 +110,9 @@ namespace api.Helper
         }
     }
 
-    public class DbIgnoreAttribute : Attribute { }
+    public class DbIgnoreAttribute : Attribute
+    {
+    }
 
     public abstract class HasColumnNameAttribute(string columnName) : Attribute
     {

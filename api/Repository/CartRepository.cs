@@ -11,13 +11,13 @@ namespace api.Repository
 
     public class CartRepository(IConfiguration configuration) : DapperBaseRepository(configuration), ICartRepository
     {
-        private static readonly string TABLE = "Carts";
-        private static readonly string[] FIELDS = typeof(Cart).DapperFields();
+        private const string Table = "Carts";
+        private static readonly string[] Fields = typeof(Cart).DapperFields();
 
         public async Task<Cart?> GetAsync()
         {
             return await QueryFirstOrDefaultAsync<Cart>(
-                DapperHelper.Select(TABLE, FIELDS)
+                DapperHelper.Select(Table, Fields)
             );
         }
     }

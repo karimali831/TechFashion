@@ -23,7 +23,7 @@ namespace api.Infrastructure
         ICollection<TEntity> GetAll();
         ICollection<TEntity> GetAll(params Expression<Func<TEntity, object>>[] includeProperties);
         ICollection<TEntity> GetAll(int pageNum, int pageSize);
-        bool InsertIfNotExists(TEntity item, Expression<Func<TEntity, bool>> SearchPredicate);
+        bool InsertIfNotExists(TEntity item, Expression<Func<TEntity, bool>> searchPredicate);
         bool Insert(IEnumerable<TEntity> items);
         bool Insert(TEntity item);
         TEntity InsertAndReturnItem(TEntity item);

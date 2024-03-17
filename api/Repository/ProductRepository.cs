@@ -9,9 +9,9 @@ namespace api.Repository
         Task<IList<ProductCatalogue>> GetCatalogueAsync();
     }
 
-    public class ProductRepository(IConfiguration configuration) : DapperBaseRepository(configuration), IProductRepository
+    public class ProductRepository(IConfiguration configuration) : DapperBaseRepository(configuration),
+        IProductRepository
     {
-
         public async Task<IList<ProductCatalogue>> GetCatalogueAsync()
         {
             const string sqlTxt = $@"
@@ -50,7 +50,8 @@ namespace api.Repository
                 WHERE p.Active = 1 
             ";
 
-            return (await QueryAsync<ProductCatalogue>(sqlTxt)).ToList(); ;
+            return (await QueryAsync<ProductCatalogue>(sqlTxt)).ToList();
+            ;
         }
 
         public async Task<IList<ProductDetail>> GetAllAsync()
@@ -77,7 +78,8 @@ namespace api.Repository
                 WHERE p.Active = 1 
             ";
 
-            return (await QueryAsync<ProductDetail>(sqlTxt)).ToList(); ;
+            return (await QueryAsync<ProductDetail>(sqlTxt)).ToList();
+            ;
         }
     }
 }
