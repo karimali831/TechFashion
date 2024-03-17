@@ -9,9 +9,6 @@ export default defineConfig({
         emptyOutDir: true,
         assetsDir: "src/assets",
         rollupOptions: {
-            input: {
-                main: "src/main.tsx",
-            },
             output: {
                 entryFileNames: "[name].js",
                 chunkFileNames: "[name].js",
