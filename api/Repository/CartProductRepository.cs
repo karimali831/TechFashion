@@ -47,6 +47,7 @@ namespace api.Repository
                     NULL AS VariantId,
                     p.Title, 
                     cp.Quantity,
+                    p.Stock,
                     NULL AS Variant,
                     p.Price AS UnitPrice,
                     p.Price * cp.Quantity AS UnitTotal
@@ -66,6 +67,7 @@ namespace api.Repository
                     pv.Id,
                     p.Title, 
                     cp.Quantity,
+                    pv.Stock,
                     pv.Variant,
                     pv.Price,
                     pv.Price * cp.Quantity

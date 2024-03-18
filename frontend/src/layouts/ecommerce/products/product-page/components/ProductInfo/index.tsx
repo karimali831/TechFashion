@@ -4,7 +4,11 @@ import Grid from "@mui/material/Grid";
 import Icon from "@mui/material/Icon";
 import isEqual from "lodash.isequal";
 import { useEffect, useState } from "react";
-import { useAddProductToCartMutation, useGetCartQuery, useUpdateProductQuantityMutation } from "src/api/cartApi";
+import {
+    useAddProductToCartMutation,
+    useGetCartQuery,
+    useUpdateProductQuantityMutation,
+} from "src/api/cartApi";
 import { useGetProductQuery } from "src/api/productApi";
 import { ActionButton } from "src/components/Buttons/ActionButton";
 import MDAlert from "src/components/MDAlert";
@@ -23,12 +27,19 @@ interface IProps {
     item: IProductDetail[];
 }
 
+interface IProductVariableUnavailable {
+    reason: "out-of-stock" | "deleted" | "quantity-exceeds-stock";
+    text: string;
+}
+
 function ProductInfo({ item }: IProps): JSX.Element {
     const [quantity, setQuantity] = useState<number>(1);
     const [variations, setVariations] = useState<IVariant[]>([]);
-    const [productVariantUnavilable, setProductVariableUnavailable] = useState<boolean>(false);
+    const [productVariantUnavailable, setProductVariantUnavailable] =
+        useState<IProductVariableUnavailable | null>(null);
 
-    const [addProductToCart, { isLoading: adding }] = useAddProductToCartMutation();
+    const [addProductToCart, { isLoading: adding }] =
+        useAddProductToCartMutation();
     const [updateProductQuantity] = useUpdateProductQuantityMutation();
 
     const { data: cart } = useGetCartQuery();
@@ -37,14 +48,23 @@ function ProductInfo({ item }: IProps): JSX.Element {
 
     const dispatch = useAppDispatch();
 
-    const variants = products.variants.filter((x) => x.productId === item[0].id);
+    const variants = products.variants.filter(
+        (x) => x.productId === item[0].id
+    );
 
     const itemsInCart: ICartProductDetail[] = cart?.products ?? [];
 
-    const product = item.filter((x) => !x.variantId || isEqual(x.variantList, variations))[0] ?? item[0];
+    const product =
+        item.filter(
+            (x) => !x.variantId || isEqual(x.variantList, variations)
+        )[0] ?? item[0];
 
     let itemInCart = itemsInCart.filter((x) =>
-        item.some((i) => i.id === x.productId && (!i.variantId || isEqual(x.variantList, variations)))
+        item.some(
+            (i) =>
+                i.id === x.productId &&
+                (!i.variantId || isEqual(x.variantList, variations))
+        )
     )[0];
 
     useEffect(() => {
@@ -59,13 +79,55 @@ function ProductInfo({ item }: IProps): JSX.Element {
     }, [products]);
 
     useEffectSkipInitialRender(() => {
-        const unavilableVariant = item[0].variantId && !item.some((x) => isEqual(x.variantList, variations));
-        setProductVariableUnavailable(unavilableVariant);
-    }, [variations]);
+        const productVariant = item.filter((x) =>
+            isEqual(x.variantList, variations)
+        )[0];
+
+        if (!productVariant) {
+            setProductVariantUnavailable({
+                reason: "deleted",
+                text: "Variant not currently available, please make another selection.",
+            });
+        } else {
+            if (productVariant.stock === 0) {
+                setProductVariantUnavailable({
+                    reason: "out-of-stock",
+                    text: "Out of stock, please make another selection.",
+                });
+            } else if (
+                itemInCart &&
+                itemInCart.stock < itemInCart.quantity + quantity
+            ) {
+                setProductVariantUnavailable({
+                    reason: "quantity-exceeds-stock",
+                    text:
+                        "You already have " +
+                        itemInCart.quantity +
+                        " in your cart and cannot add no more.",
+                });
+            } else {
+                setProductVariantUnavailable(null);
+            }
+        }
+    }, [variations, itemInCart]);
 
     const addToCart = async () => {
         if (itemInCart) {
             const totalQuantity = itemInCart.quantity + quantity;
+
+            console.log("stock", itemInCart.stock);
+            console.log("quantity", totalQuantity);
+
+            if (itemInCart.stock < totalQuantity) {
+                setProductVariantUnavailable({
+                    reason: "quantity-exceeds-stock",
+                    text:
+                        "You already have " +
+                        itemInCart.stock +
+                        " in your cart and cannot add no more.",
+                });
+                return;
+            }
 
             await updateProductQuantity({
                 id: itemInCart.id,
@@ -98,10 +160,39 @@ function ProductInfo({ item }: IProps): JSX.Element {
     };
 
     const updateVariant = (key: string, value: string) => {
-        setVariations(variations.map((v) => (v.attribute === key ? { ...v, value } : v)));
+        setVariations(
+            variations.map((v) => (v.attribute === key ? { ...v, value } : v))
+        );
     };
 
-    if (!product || (product.variantId && variations.length === 0)) return <LinearProgress />;
+    const updateQuantity = (value: number) => {
+        if (value == 0) return;
+
+        if (
+            (product.stock && product.stock < value) ||
+            (itemInCart && itemInCart.stock < value)
+        ) {
+            setProductVariantUnavailable({
+                reason: "quantity-exceeds-stock",
+                text:
+                    itemInCart?.stock && itemInCart.stock < value
+                        ? "You already have " +
+                          itemInCart.stock +
+                          " in your cart and cannot add no more."
+                        : "Please select a maximum quantity of " +
+                          product.stock,
+            });
+        } else {
+            if (productVariantUnavailable.reason === "quantity-exceeds-stock") {
+                setProductVariantUnavailable(null);
+            }
+        }
+
+        setQuantity(value);
+    };
+
+    if (!product || (product.variantId && variations.length === 0))
+        return <LinearProgress />;
 
     return (
         <MDBox>
@@ -127,15 +218,45 @@ function ProductInfo({ item }: IProps): JSX.Element {
                     {product.priceStr}
                 </MDTypography>
             </MDBox>
-            <MDBadge variant="contained" color="success" badgeContent="in stock" container />
+            {!!productVariantUnavailable &&
+            productVariantUnavailable.reason !== "quantity-exceeds-stock" ? (
+                <MDBadge
+                    variant="contained"
+                    color="error"
+                    badgeContent={
+                        productVariantUnavailable.reason === "out-of-stock"
+                            ? "out of stock"
+                            : "unavailable"
+                    }
+                    container
+                />
+            ) : (
+                <MDBadge
+                    variant="contained"
+                    color="success"
+                    badgeContent={
+                        (product.stock ? product.stock : "") + " in stock"
+                    }
+                    container
+                />
+            )}
             <MDBox mt={3} mb={1} ml={0.5}>
-                <MDTypography variant="button" fontWeight="regular" color="text">
+                <MDTypography
+                    variant="button"
+                    fontWeight="regular"
+                    color="text"
+                >
                     Description
                 </MDTypography>
             </MDBox>
             <MDBox component="ul" m={0} pl={4} mb={2}>
                 <MDBox color="text" fontSize="1.25rem" lineHeight={1}>
-                    <MDTypography variant="body2" color="text" fontWeight="regular" verticalAlign="middle">
+                    <MDTypography
+                        variant="body2"
+                        color="text"
+                        fontWeight="regular"
+                        verticalAlign="middle"
+                    >
                         {product.description}
                     </MDTypography>
                 </MDBox>
@@ -156,25 +277,35 @@ function ProductInfo({ item }: IProps): JSX.Element {
                 </MDBox> */}
             </MDBox>
             <MDBox mt={3}>
-                {productVariantUnavilable && (
+                {productVariantUnavailable && (
                     <Fade in={true} mountOnEnter={true} unmountOnExit={true}>
                         <Box>
                             <MDAlert dismissible={true} color="warning">
                                 <Icon sx={{ mr: 1 }}>warning</Icon>
-                                Variant not currently available, please make another selection.
+                                {productVariantUnavailable.text}
                             </MDAlert>
                         </Box>
                     </Fade>
                 )}
-                <Fade in={true} timeout={500} mountOnEnter={true} unmountOnExit={true}>
+                <Fade
+                    in={true}
+                    timeout={500}
+                    mountOnEnter={true}
+                    unmountOnExit={true}
+                >
                     <Grid container spacing={3}>
                         {variants.map((variant, idx) => {
-                            const selectedVariant = variations.filter((x) => x.attribute === variant.attribute)[0]
-                                ?.value;
+                            const selectedVariant = variations.filter(
+                                (x) => x.attribute === variant.attribute
+                            )[0]?.value;
 
                             return (
                                 <Grid key={idx} item xs={12} lg={5}>
-                                    <MDBox mb={1.5} lineHeight={0} display="inline-block">
+                                    <MDBox
+                                        mb={1.5}
+                                        lineHeight={0}
+                                        display="inline-block"
+                                    >
                                         <MDTypography
                                             component="label"
                                             variant="button"
@@ -187,10 +318,21 @@ function ProductInfo({ item }: IProps): JSX.Element {
                                     <Autocomplete
                                         value={selectedVariant}
                                         options={variant.options}
-                                        onChange={(e: React.SyntheticEvent, value: string) =>
-                                            updateVariant(variant.attribute, value)
+                                        onChange={(
+                                            e: React.SyntheticEvent,
+                                            value: string
+                                        ) =>
+                                            updateVariant(
+                                                variant.attribute,
+                                                value
+                                            )
                                         }
-                                        renderInput={(params) => <MDInput {...params} variant="standard" />}
+                                        renderInput={(params) => (
+                                            <MDInput
+                                                {...params}
+                                                variant="standard"
+                                            />
+                                        )}
                                     />
                                 </Grid>
                             );
@@ -198,18 +340,24 @@ function ProductInfo({ item }: IProps): JSX.Element {
 
                         <Grid item xs={12} lg={5}>
                             <MDBox mb={1.5} lineHeight={0}>
-                                <MDTypography component="label" variant="button" color="text" fontWeight="regular">
-                                    Quantity {itemInCart && `(${itemInCart.quantity} in cart)`}
+                                <MDTypography
+                                    component="label"
+                                    variant="button"
+                                    color="text"
+                                    fontWeight="regular"
+                                >
+                                    Quantity{" "}
+                                    {itemInCart &&
+                                        `(${itemInCart.quantity} in cart)`}
                                 </MDTypography>
                             </MDBox>
                             <MDInput
                                 inputProps={{
                                     type: "number",
-                                    min: 1,
-                                    max: 10,
                                     style: { width: 150 },
-                                    onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-                                        setQuantity(Number(e.target.value)),
+                                    onChange: (
+                                        e: React.ChangeEvent<HTMLInputElement>
+                                    ) => updateQuantity(Number(e.target.value)),
                                 }}
                                 value={quantity}
                                 variant="standard"
@@ -221,7 +369,7 @@ function ProductInfo({ item }: IProps): JSX.Element {
             <MDBox mt={3}>
                 <Grid item xs={12} lg={5} container>
                     <ActionButton
-                        disabled={quantity === 0 || productVariantUnavilable}
+                        disabled={quantity === 0 || !!productVariantUnavailable}
                         loading={adding}
                         text="add to cart"
                         onClick={addToCart}

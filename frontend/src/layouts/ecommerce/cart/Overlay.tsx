@@ -30,14 +30,10 @@ export const CartOverlay = () => {
     const { data: cart } = useGetCartQuery();
     const { data: products, isLoading: loadingProducts } = useGetProductQuery();
 
-    // const cartId = 1;
     const itemsInCart: ICartProductDetail[] = cart?.products ?? [];
 
     const [updateProductQuantity, { isLoading: updatingProductQuantity }] =
         useUpdateProductQuantityMutation();
-
-    // const [addProductToCart, { isLoading: addingProduct }] =
-    //     useAddProductToCartMutation();
 
     const [removeProductFromCart, { isLoading: removingProduct }] =
         useRemoveProductFromCartMutation();
@@ -48,10 +44,14 @@ export const CartOverlay = () => {
         }
     }, [updatingProductQuantity, removingProduct]);
 
-    const onQuantityChange = async (id: number, quantity: number) => {
-        if (updatingProductQuantity) return;
+    const onQuantityChange = async (
+        id: number,
+        quantity: number,
+        stock?: number
+    ) => {
+        if (updatingProductQuantity || quantity === 0) return;
 
-        setUpdating(id);
+        if (quantity) setUpdating(id);
         await updateProductQuantity({
             id,
             quantity,
@@ -123,22 +123,16 @@ export const CartOverlay = () => {
                             borderBottom="0.1rem solid rgba(18,18,18, .08)"
                             color="#121212BF"
                             fontSize={14}
-                            // overflow="hidden"
                         >
                             <span>Product</span>
                             <span>Total</span>
                         </Box>
-                        <Box overflow="auto" height="calc(100vh - 300px)">
+                        <Box overflow="auto" height="calc(100vh - 320px)">
                             {itemsInCart.length > 0 &&
                                 itemsInCart.map((item, idx) => {
                                     const product = products.catalogue.find(
                                         (x) => x.id === item.productId
                                     );
-
-                                    // const productDetails =
-                                    //     products.details.filter(
-                                    //         (x) => x.id === item.productId
-                                    //     );
 
                                     return (
                                         <Fade
@@ -234,6 +228,7 @@ export const CartOverlay = () => {
                                                             </MDTypography>
                                                         )
                                                     )}
+
                                                     <Box
                                                         mt={2}
                                                         display="flex"
@@ -273,94 +268,146 @@ export const CartOverlay = () => {
                                                                             1
                                                                         )
                                                                             return;
+
+                                                                        const quantity =
+                                                                            item.quantity -
+                                                                            1;
+
+                                                                        if (
+                                                                            item.stock &&
+                                                                            quantity >
+                                                                                item.stock
+                                                                        ) {
+                                                                            return;
+                                                                        }
                                                                         setQuantity(
                                                                             {
                                                                                 id: item.id,
-                                                                                quantity:
-                                                                                    item.quantity -
-                                                                                    1,
+                                                                                quantity,
                                                                             }
                                                                         );
                                                                         onQuantityChange(
                                                                             item.id,
-                                                                            item.quantity -
-                                                                                1
+                                                                            quantity,
+                                                                            item.stock
                                                                         );
                                                                     }}
                                                                 >
                                                                     remove
                                                                 </Icon>
-                                                                <input
-                                                                    type="number"
-                                                                    style={{
-                                                                        width: 40,
-                                                                        border: 0,
-                                                                        outline: 0,
-                                                                        fontSize: 20,
-                                                                        marginBottom: 6,
-                                                                        textAlign:
-                                                                            "center",
-                                                                    }}
-                                                                    disabled={
-                                                                        !!updating
-                                                                    }
-                                                                    value={
-                                                                        quantity?.id ===
-                                                                        item.id
-                                                                            ? quantity.quantity
-                                                                            : item.quantity
-                                                                    }
-                                                                    onChange={(
-                                                                        e: React.ChangeEvent<HTMLInputElement>
-                                                                    ) =>
-                                                                        setQuantity(
-                                                                            {
-                                                                                id: item.id,
-                                                                                quantity:
-                                                                                    Number(
-                                                                                        e
-                                                                                            .target
-                                                                                            .value
-                                                                                    ),
-                                                                            }
-                                                                        )
-                                                                    }
-                                                                    onBlur={(
-                                                                        e: React.ChangeEvent<HTMLInputElement>
-                                                                    ) => {
-                                                                        onQuantityChange(
-                                                                            item.id,
-                                                                            Number(
-                                                                                e
-                                                                                    .target
-                                                                                    .value
-                                                                            )
-                                                                        );
-                                                                    }}
-                                                                />
-
-                                                                {/* <MDTypography fontSize="medium">
-                                                                        {
-                                                                            item.quantity
+                                                                <Box>
+                                                                    <input
+                                                                        type="number"
+                                                                        style={{
+                                                                            position:
+                                                                                "relative",
+                                                                            width: 40,
+                                                                            border: 0,
+                                                                            outline: 0,
+                                                                            fontSize: 20,
+                                                                            marginBottom: 6,
+                                                                            textAlign:
+                                                                                "center",
+                                                                        }}
+                                                                        disabled={
+                                                                            !!updating
                                                                         }
-                                                                    </MDTypography> */}
+                                                                        value={
+                                                                            quantity?.id ===
+                                                                            item.id
+                                                                                ? quantity.quantity
+                                                                                : item.quantity
+                                                                        }
+                                                                        onChange={(
+                                                                            e: React.ChangeEvent<HTMLInputElement>
+                                                                        ) => {
+                                                                            const value =
+                                                                                Number(
+                                                                                    e
+                                                                                        .target
+                                                                                        .value
+                                                                                );
+
+                                                                            if (
+                                                                                value ===
+                                                                                0
+                                                                            )
+                                                                                return;
+
+                                                                            setQuantity(
+                                                                                {
+                                                                                    id: item.id,
+                                                                                    quantity:
+                                                                                        value,
+                                                                                }
+                                                                            );
+                                                                        }}
+                                                                        onBlur={(
+                                                                            e: React.ChangeEvent<HTMLInputElement>
+                                                                        ) => {
+                                                                            const value =
+                                                                                Number(
+                                                                                    e
+                                                                                        .target
+                                                                                        .value
+                                                                                );
+
+                                                                            if (
+                                                                                value ===
+                                                                                0
+                                                                            )
+                                                                                return;
+
+                                                                            onQuantityChange(
+                                                                                item.id,
+                                                                                Number(
+                                                                                    e
+                                                                                        .target
+                                                                                        .value
+                                                                                ),
+                                                                                item.stock
+                                                                            );
+                                                                        }}
+                                                                    />
+                                                                    <span
+                                                                        style={{
+                                                                            position:
+                                                                                "relative",
+                                                                            right: "20%",
+                                                                        }}
+                                                                    >
+                                                                        {"/ " +
+                                                                            item.stock ??
+                                                                            99}
+                                                                    </span>
+                                                                </Box>
                                                                 <Icon
                                                                     sx={{
                                                                         cursor: "pointer",
                                                                     }}
                                                                     onClick={() => {
+                                                                        const quantity =
+                                                                            item.quantity +
+                                                                            1;
+
+                                                                        if (
+                                                                            item.stock &&
+                                                                            quantity >
+                                                                                item.stock
+                                                                        ) {
+                                                                            return;
+                                                                        }
+
                                                                         setQuantity(
                                                                             {
                                                                                 id: item.id,
-                                                                                quantity:
-                                                                                    item.quantity +
-                                                                                    1,
+                                                                                quantity,
                                                                             }
                                                                         );
                                                                         onQuantityChange(
                                                                             item.id,
-                                                                            item.quantity +
-                                                                                1
+                                                                            quantity,
+                                                                            item.stock
                                                                         );
                                                                     }}
                                                                 >
@@ -368,31 +415,6 @@ export const CartOverlay = () => {
                                                                 </Icon>
                                                             </Box>
                                                         </Box>
-
-                                                        {/* <MDInput
-                                                                inputProps={{
-                                                                    type: "number",
-                                                                    width: 100,
-                                                                    disabled:
-                                                                        !!updating,
-                                                                    onChange: (
-                                                                        e: React.ChangeEvent<HTMLInputElement>
-                                                                    ) =>
-                                                                        onQuantityChange(
-                                                                            item.id,
-                                                                            Number(
-                                                                                e
-                                                                                    .target
-                                                                                    .value
-                                                                            )
-                                                                        ),
-                                                                }}
-                                                                value={
-                                                                    item.quantity
-                                                                }
-                                                                size="small"
-                                                                variant="standard"
-                                                            /> */}
                                                         <Box
                                                             onClick={() =>
                                                                 !updating &&
@@ -424,12 +446,14 @@ export const CartOverlay = () => {
                         </Box>
                     </Box>
                     <Box
-                        // overflow="hidden"
+                        overflow="hidden"
                         display="flex"
                         flexDirection={"column"}
                         justifyContent={"flex-end"}
                         sx={{ position: "absolute", bottom: 15 }}
                         // padding="1.5rem 0"
+
+                        bgcolor={"white"}
                         borderTop="0.1rem solid rgba(18,18,18, .2)"
                     >
                         <Box

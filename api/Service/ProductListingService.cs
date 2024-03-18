@@ -41,40 +41,21 @@ namespace api.Service
                     return x;
                 })
                 .ToList();
-            ;
-
-            //                 var variantAttributes = variants.Select(x => x.Attribute).Distinct();
-
-            // foreach (var attribute in variantAttributes)
-            // {
-            //     var options = variants
-            //         .Where(x => x.Attribute == attribute)
-            //         .Select(x => x.Value);
-
-
-            //     productVariants.Add(new ProductAttribute
-            //     {
-            //         ProductId = 1,
-            //         Attribute = attribute,
-            //         Options = options
-            //     });
-            // }
-
 
             var productIds = productDetails
                 .DistinctBy(x => x.Id)
                 .Select(x => x.Id);
 
             var productVariants = (from productId in productIds
-                    let variations = productDetails.Where(x => x.Id == productId)
-                        .SelectMany(x => x.VariantList)
-                    let attributes = variations.DistinctBy(x => x.Attribute)
-                        .Select(x => x.Attribute)
-                    from attribute in attributes
-                    let options = variations.Where(x => x.Attribute == attribute)
-                        .DistinctBy(x => x.Value)
-                        .Select(x => x.Value)
-                    select new ProductAttribute { ProductId = productId, Attribute = attribute, Options = options })
+                                   let variations = productDetails.Where(x => x.Id == productId)
+                                       .SelectMany(x => x.VariantList)
+                                   let attributes = variations.DistinctBy(x => x.Attribute)
+                                       .Select(x => x.Attribute)
+                                   from attribute in attributes
+                                   let options = variations.Where(x => x.Attribute == attribute)
+                                       .DistinctBy(x => x.Value)
+                                       .Select(x => x.Value)
+                                   select new ProductAttribute { ProductId = productId, Attribute = attribute, Options = options })
                 .ToList();
 
             return new ProductViewModel

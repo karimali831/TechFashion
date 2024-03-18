@@ -1,6 +1,7 @@
 import "./styles.less";
 import { FC, ReactElement, useState } from "react";
 import { Box, Icon, Slide } from "@mui/material";
+import { isMobile } from "react-device-detect";
 
 interface IProps {
     size: OverlaySliderSize;
@@ -35,7 +36,9 @@ export const OverlaySlider: FC<IProps> = ({
             >
                 <Box
                     id="component-inner"
-                    style={{ width: customWidth ?? size }}
+                    style={{
+                        width: customWidth ?? isMobile ? size - 50 : size,
+                    }}
                 >
                     {children}
                     <Box className="close" onClick={() => setSlide(false)}>

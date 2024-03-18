@@ -10,6 +10,7 @@ namespace api.Models
         public int? VariantId { get; set; }
         public required string Title { get; set; }
         public required int Quantity { get; set; }
+        public int? Stock { get; set; }
         public string? Variant { get; set; }
         public string? Variant2 { get; set; }
         public decimal UnitPrice { get; set; }

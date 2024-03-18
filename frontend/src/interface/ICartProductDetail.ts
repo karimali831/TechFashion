@@ -6,6 +6,7 @@ export interface ICartProductDetail {
     variantId?: number;
     title: string;
     quantity: number;
+    stock?: number;
     variant?: string;
     unitPrice: number;
     unitTotal: number;
