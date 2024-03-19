@@ -33,6 +33,7 @@ builder.Services.AddCors(options =>
         {
             builder.WithOrigins(
                 "http://localhost:5173",
+                "http://techfashion.netlify.app",
                 "https://techfashion.netlify.app"
             )
             .AllowAnyHeader()
