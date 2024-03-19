@@ -95,7 +95,7 @@ function ProductInfo({ item }: IProps): JSX.Element {
                     text: "Out of stock, please make another selection.",
                 });
             } else if (
-                itemInCart &&
+                itemInCart?.stock &&
                 itemInCart.stock < itemInCart.quantity + quantity
             ) {
                 setProductVariantUnavailable({
@@ -115,10 +115,7 @@ function ProductInfo({ item }: IProps): JSX.Element {
         if (itemInCart) {
             const totalQuantity = itemInCart.quantity + quantity;
 
-            console.log("stock", itemInCart.stock);
-            console.log("quantity", totalQuantity);
-
-            if (itemInCart.stock < totalQuantity) {
+            if (itemInCart.stock && itemInCart.stock < totalQuantity) {
                 setProductVariantUnavailable({
                     reason: "quantity-exceeds-stock",
                     text:
@@ -170,7 +167,7 @@ function ProductInfo({ item }: IProps): JSX.Element {
 
         if (
             (product.stock && product.stock < value) ||
-            (itemInCart && itemInCart.stock < value)
+            (itemInCart?.stock && itemInCart.stock < value)
         ) {
             setProductVariantUnavailable({
                 reason: "quantity-exceeds-stock",

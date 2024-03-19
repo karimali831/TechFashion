@@ -306,6 +306,7 @@ export const CartOverlay = () => {
                                                                             outline: 0,
                                                                             fontSize: 20,
                                                                             marginBottom: 6,
+                                                                            marginRight: 6,
                                                                             textAlign:
                                                                                 "center",
                                                                         }}
@@ -369,17 +370,18 @@ export const CartOverlay = () => {
                                                                             );
                                                                         }}
                                                                     />
-                                                                    <span
-                                                                        style={{
-                                                                            position:
-                                                                                "relative",
-                                                                            right: "20%",
-                                                                        }}
-                                                                    >
-                                                                        {"/ " +
-                                                                            item.stock ??
-                                                                            99}
-                                                                    </span>
+                                                                    {item.stock && (
+                                                                        <span
+                                                                            style={{
+                                                                                position:
+                                                                                    "relative",
+                                                                                right: "25%",
+                                                                            }}
+                                                                        >
+                                                                            {"/ " +
+                                                                                item.stock}
+                                                                        </span>
+                                                                    )}
                                                                 </Box>
                                                                 <Icon
                                                                     sx={{

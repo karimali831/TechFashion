@@ -7,7 +7,7 @@ namespace api.Data
         public string? Sku { get; set; }
         public required string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public required decimal Price { get; set; }
+        public decimal? Price { get; set; }
         public int? Stock { get; set; }
         public required bool Active { get; set; } = true;
         public DateTime CreatedDate => DateTime.UtcNow;

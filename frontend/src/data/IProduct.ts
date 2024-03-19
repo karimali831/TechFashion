@@ -4,6 +4,6 @@ export interface IProduct {
     sku?: string;
     title: string;
     description: string;
-    price: number;
+    price?: number;
     stock?: number;
 }
