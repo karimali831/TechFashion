@@ -60,6 +60,7 @@ namespace api.Service
             return new CartViewModel
             {
                 Products = products,
+                Total = total,
                 TotalStr = total.ToCurrencyGbp()
             };
         }

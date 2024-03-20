@@ -1,36 +1,37 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using api.Data.Stripe;
+using api.Dto.Stripe;
+using api.Helper;
+using Stripe;
 
 namespace api.Service.Stripe
 {
-    public interface IStripePaymentService
+    public interface IStripePaymentIntentService
     {
-        Task<PaymentIntentResponse> CreatePaymentIntent(string priceId, string customerId,
-            Model.Db.Coupon? coupon = null, string? promoCode = null);
+        Task<PaymentIntentResponse> CreateAsync(string customerId,
+            StripeCoupon? coupon = null, string? promoCode = null);
     }
 
-    public class StripePaymentService : IStripePaymentService
+    public class StripePaymentIntentService : IStripePaymentIntentService
     {
         private readonly PaymentIntentService _paymentIntentService;
-        private readonly IStripePriceService _stripePriceService;
+        private readonly ICartProductService _cartProductService;
 
-        public StripePaymentService(IStripePriceService stripePriceService)
+        public StripePaymentIntentService(ICartProductService cartProductService)
         {
-            _stripePriceService = stripePriceService;
             _paymentIntentService = new PaymentIntentService();
+            _cartProductService = cartProductService;
         }
 
-        public async Task<PaymentIntentResponse> CreatePaymentIntent(string priceId,
-            string customerId, Model.Db.Coupon? coupon = null, string? promoCode = null)
+        public async Task<PaymentIntentResponse> CreateAsync(string customerId, StripeCoupon? coupon = null, string? promoCode = null)
         {
-            var price = await _stripePriceService.GetAsync(priceId);
-            var amount = price.UnitAmount ?? 0;
             long discountedAmount = 0;
 
-            if (amount == 0)
-                throw new Exception("An error occurred");
+            var cartProducts = await _cartProductService.GetBasketAsync();
+
+            if (cartProducts is null || cartProducts.Total <= 0)
+                throw new ApplicationException("An error occurred");
+
+            long amount = (long)cartProducts.Total * 100;
 
             if (coupon is not null)
             {
@@ -50,7 +51,7 @@ namespace api.Service.Stripe
             {
                 var metaData = new Dictionary<string, string>
                 {
-                    { "Tokens", price.TransformQuantity.DivideBy.ToString() }
+                    // { "Tokens", price.TransformQuantity.DivideBy.ToString() }
                 };
 
                 if (promoCode is not null)
