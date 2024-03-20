@@ -17,18 +17,27 @@ import MDTypography from "src/components/MDTypography";
 import useEffectSkipInitialRender from "src/hooks/useEffectSkipInitialRender";
 import { ICartProductDetail } from "src/interface/ICartProductDetail";
 import "./styles.css";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "src/state/Hooks";
+import { OpenCartOverlayAction } from "src/state/contexts/cart/Actions";
 
 interface IProductCartQuantity {
     id: number;
     quantity: number;
 }
 
-export const CartOverlay = () => {
+interface IProps {
+    isOverlay: boolean;
+}
+
+export const CartOverlay = ({ isOverlay }: IProps) => {
     const [updating, setUpdating] = useState<number | null>(null);
     const [quantity, setQuantity] = useState<IProductCartQuantity | null>(null);
 
     const { data: cart } = useGetCartQuery();
     const { data: products, isLoading: loadingProducts } = useGetProductQuery();
+
+    const dispatch = useAppDispatch();
 
     const itemsInCart: ICartProductDetail[] = cart?.products ?? [];
 
@@ -37,6 +46,8 @@ export const CartOverlay = () => {
 
     const [removeProductFromCart, { isLoading: removingProduct }] =
         useRemoveProductFromCartMutation();
+
+    const navigate = useNavigate();
 
     useEffectSkipInitialRender(() => {
         if (!updatingProductQuantity && !removingProduct && updating) {
@@ -88,10 +99,10 @@ export const CartOverlay = () => {
                     unmountOnExit={true}
                 >
                     <Box
+                        height="100%"
                         display="flex"
                         flexDirection="column"
                         alignItems="center"
-                        height="100%"
                         justifyContent="center"
                     >
                         <h2 style={{ marginBottom: 10 }}>Your cart is empty</h2>
@@ -103,8 +114,15 @@ export const CartOverlay = () => {
                     </Box>
                 </Fade>
             ) : (
-                <Box sx={{ height: "100%" }}>
-                    <MDTypography mb={1}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        height: "100%",
+                        justifyContent: "space-between",
+                    }}
+                >
+                    <MDTypography>
                         <h2>Your cart</h2>
                     </MDTypography>
 
@@ -127,7 +145,7 @@ export const CartOverlay = () => {
                             <span>Product</span>
                             <span>Total</span>
                         </Box>
-                        <Box overflow="auto" height="calc(100vh - 320px)">
+                        <Box overflow={"auto"} height="calc(100vh - 320px)">
                             {itemsInCart.length > 0 &&
                                 itemsInCart.map((item, idx) => {
                                     const product = products.catalogue.find(
@@ -136,6 +154,7 @@ export const CartOverlay = () => {
 
                                     return (
                                         <Fade
+                                            key={idx}
                                             in={true}
                                             timeout={500}
                                             mountOnEnter={true}
@@ -233,7 +252,7 @@ export const CartOverlay = () => {
                                                         mt={2}
                                                         display="flex"
                                                         alignItems="center"
-                                                        justifyContent="space-between"
+                                                        // justifyContent="space-between"
                                                     >
                                                         <Box
                                                             sx={{
@@ -427,16 +446,17 @@ export const CartOverlay = () => {
                                                         >
                                                             <Icon
                                                                 sx={{
+                                                                    ml: 5,
                                                                     cursor:
                                                                         !updating &&
                                                                         "pointer",
                                                                     color: "#121212",
                                                                 }}
                                                                 fontSize={
-                                                                    "medium"
+                                                                    "small"
                                                                 }
                                                             >
-                                                                delete
+                                                                delete_outline
                                                             </Icon>
                                                         </Box>
                                                     </Box>
@@ -447,67 +467,66 @@ export const CartOverlay = () => {
                                 })}
                         </Box>
                     </Box>
-                    <Box
-                        overflow="hidden"
-                        display="flex"
-                        flexDirection={"column"}
-                        justifyContent={"flex-end"}
-                        sx={{ position: "absolute", bottom: 15 }}
-                        // padding="1.5rem 0"
-
-                        bgcolor={"white"}
-                        borderTop="0.1rem solid rgba(18,18,18, .2)"
-                    >
+                    {isOverlay && (
                         <Box
-                            mt={2}
-                            display="flex"
-                            alignItems={"center"}
-                            justifyContent={"space-between"}
+                            bgcolor={"white"}
+                            borderTop="0.1rem solid rgba(18,18,18, .2)"
                         >
-                            <MDTypography
-                                variant="body2"
-                                color="text"
-                                fontWeight="strong"
-                                fontSize={16}
-                                letterSpacing=".04rem"
-                            >
-                                Estimated total
-                            </MDTypography>
-                            <Fade
-                                in={true}
-                                mountOnEnter={true}
-                                unmountOnExit={true}
+                            <Box
+                                mt={2}
+                                display="flex"
+                                alignItems={"center"}
+                                justifyContent={"space-between"}
                             >
                                 <MDTypography
                                     variant="body2"
                                     color="text"
                                     fontWeight="strong"
                                     fontSize={16}
-                                    mt={1}
                                     letterSpacing=".04rem"
                                 >
-                                    {cart.totalStr}
+                                    Estimated total
                                 </MDTypography>
-                            </Fade>
+                                <Fade
+                                    in={true}
+                                    mountOnEnter={true}
+                                    unmountOnExit={true}
+                                >
+                                    <MDTypography
+                                        variant="body2"
+                                        color="text"
+                                        fontWeight="strong"
+                                        fontSize={16}
+                                        mt={1}
+                                        letterSpacing=".04rem"
+                                    >
+                                        {cart.totalStr}
+                                    </MDTypography>
+                                </Fade>
+                            </Box>
+
+                            <MDTypography
+                                variant="body2"
+                                color="text"
+                                fontSize={14}
+                                fontWeight={"regular"}
+                                letterSpacing=".04rem"
+                                mt={1}
+                                mb={1}
+                            >
+                                Taxes, discounts and shipping calculated at
+                                checkout
+                            </MDTypography>
+
+                            <ActionButton
+                                text={"check out"}
+                                onClick={() => {
+                                    dispatch(OpenCartOverlayAction(false));
+                                    navigate("/cart");
+                                }}
+                            />
                         </Box>
-
-                        <MDTypography
-                            variant="body2"
-                            color="text"
-                            fontSize={14}
-                            fontWeight={"regular"}
-                            letterSpacing=".04rem"
-                            mt={1}
-                            mb={1}
-                        >
-                            Taxes, discounts and shipping calculated at checkout
-                        </MDTypography>
-
-                        <ActionButton
-                            text={"check out"}
-                            onClick={() => console.log("checkout")}
-                        />
-                    </Box>
+                    )}
                 </Box>
             )}
         </Box>

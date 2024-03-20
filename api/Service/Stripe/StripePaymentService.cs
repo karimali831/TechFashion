@@ -1,28 +1,32 @@
 using api.Data.Stripe;
 using api.Dto.Stripe;
 using api.Helper;
+using api.Repository.Stripe;
 using Stripe;
 
 namespace api.Service.Stripe
 {
-    public interface IStripePaymentIntentService
+    public interface IStripePaymentService
     {
-        Task<PaymentIntentResponse> CreateAsync(string customerId,
+        Task<bool> AddAsync(StripePayment model);
+        Task<PaymentIntentResponse> CreateIntentAsync(string customerId,
             StripeCoupon? coupon = null, string? promoCode = null);
     }
 
-    public class StripePaymentIntentService : IStripePaymentIntentService
+    public class StripePaymentService(
+        ICartProductService cartProductService,
+        IStripePaymentRepository stripePaymentRepository) : IStripePaymentService
     {
-        private readonly PaymentIntentService _paymentIntentService;
-        private readonly ICartProductService _cartProductService;
+        private readonly PaymentIntentService _paymentIntentService = new();
+        private readonly ICartProductService _cartProductService = cartProductService;
+        private readonly IStripePaymentRepository _stripePaymentRepository = stripePaymentRepository;
 
-        public StripePaymentIntentService(ICartProductService cartProductService)
+        public async Task<bool> AddAsync(StripePayment model)
         {
-            _paymentIntentService = new PaymentIntentService();
-            _cartProductService = cartProductService;
+            return await _stripePaymentRepository.AddAsync(model);
         }
 
-        public async Task<PaymentIntentResponse> CreateAsync(string customerId, StripeCoupon? coupon = null, string? promoCode = null)
+        public async Task<PaymentIntentResponse> CreateIntentAsync(string customerId, StripeCoupon? coupon = null, string? promoCode = null)
         {
             long discountedAmount = 0;
 

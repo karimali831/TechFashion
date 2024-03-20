@@ -3,6 +3,7 @@ using api.Config;
 using api.Data;
 using Ebaysharp;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddMemoryCache();
 
 // Container for dependency injection
 builder.Services.Modules();
@@ -23,6 +25,13 @@ builder.Services.AddDbContext<AppDatabaseContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+// Stripe
+var stripeConfig = builder.Configuration.GetSection("Stripe");
+builder.Services.Configure<StripeConfig>(stripeConfig);
+
+StripeConfiguration.ApiKey = stripeConfig["SecretKey"];
+// StripeConfiguration.ApiVersion <- f12 to see version
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
@@ -41,6 +50,7 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod();
         });
 });
+
 
 EnvironemntManager.Environemnt = EnvironemntManager.Environments.Sandbox;
 

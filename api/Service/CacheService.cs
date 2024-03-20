@@ -22,7 +22,6 @@ namespace api.Service
     {
         private readonly IMemoryCache _memoryCache = memoryCache;
         private readonly ConcurrentDictionary<string, DateTime?> _allKeys = new();
-
         public ConcurrentDictionary<string, DateTime?> GetAll() => _allKeys;
 
         public async Task<T?> GetOrCreateAsync<T>(

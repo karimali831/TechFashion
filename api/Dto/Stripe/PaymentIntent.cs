@@ -8,4 +8,11 @@ namespace api.Dto.Stripe
         public string? DiscountedAmount { get; set; }
         public string? Amount { get; set; }
     }
+
+    public class PaymentIntentRequest
+    {
+        public string? FirebaseUid { get; set; }
+        public string? GuestEmail { get; set; }
+        public string? PromoCode { get; set; }
+    }
 }

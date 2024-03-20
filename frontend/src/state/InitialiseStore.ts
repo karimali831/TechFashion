@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import rootReducer from "./RootReducer";
 import { cartApi } from "src/api/cartApi";
 import { productApi } from "src/api/productApi";
+import { orderApi } from "src/api/orderApi";
 // import { onAuthStateChanged } from "firebase/auth";
 // import { auth } from "../config/firebase";
 // import {
@@ -18,6 +19,7 @@ const store = configureStore({
         getDefaultMiddleware({ serializableCheck: false }).concat([
             cartApi.middleware,
             productApi.middleware,
+            orderApi.middleware,
         ]),
 });
 

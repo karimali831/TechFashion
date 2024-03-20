@@ -1,4 +1,3 @@
-using api.Repository.Stripe;
 using Stripe;
 
 namespace api.Service.Stripe
@@ -13,11 +12,10 @@ namespace api.Service.Stripe
     }
 
     public class StripeCustomerService(
-        CustomerService customerService,
         IHostEnvironment hostEnvironment,
         IUserService userService) : IStripeCustomerService
     {
-        private readonly CustomerService _customerService = customerService;
+        private readonly CustomerService _customerService = new();
         private readonly IHostEnvironment _hostEnvironment = hostEnvironment;
         private readonly IUserService _userService = userService;
 

@@ -16,6 +16,7 @@ import Sportsware from "../ecommerce/category/sportsware";
 import Womans from "../ecommerce/category/womans";
 import ProductPage from "../ecommerce/products/product-page";
 import { Cart } from "../ecommerce/cart";
+import { Success } from "../ecommerce/payment/Success";
 
 export const AnimatedRoutes = () => {
     return (
@@ -29,6 +30,7 @@ export const AnimatedRoutes = () => {
                 <Route path="/product/:slug" element={<ProductPage />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/contacts" element={<Contact />} />
+                <Route path="/ordersuccess" element={<Success />} />
                 <Route
                     path="/store/category/accessories"
                     element={<Accessories />}

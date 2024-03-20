@@ -1,3 +1,5 @@
+using api.ExceptionHandler;
+using api.ExceptionHandler.Sentry;
 using api.Repository;
 using api.Repository.EF;
 using api.Repository.Stripe;
@@ -13,14 +15,15 @@ namespace api
         {
             // Singleton
             services.AddSingleton<ICacheService, CacheService>();
+            services.AddSingleton<IExceptionHandlerService, ExceptionHandlerService>();
 
             // Services
             services.AddScoped<IEbayFeedService, EbayFeedService>();
 
-            services.AddScoped<IStripeBillingCustomerService, StripeBillingCustomerService>();
             services.AddScoped<IStripeCouponService, StripeCouponService>();
             services.AddScoped<IStripeCustomerService, StripeCustomerService>();
-            services.AddScoped<IStripePaymentIntentService, StripePaymentIntentService>();
+            services.AddScoped<IStripePaymentService, StripePaymentService>();
+            services.AddScoped<IStripePaymentMethodService, StripePaymentMethodService>();
             services.AddScoped<IStripePromotionService, StripePromotionService>();
 
             services.AddScoped<ICartProductService, CartProductService>();
@@ -31,7 +34,7 @@ namespace api
             services.AddScoped<IProductEFRepository, ProductEFRepository>();
 
             services.AddScoped<IStripeCouponRepository, StripeCouponRepository>();
-            services.AddScoped<IStripeCustomerRepository, StripeCustomerRepository>();
+            services.AddScoped<IStripePaymentRepository, StripePaymentRepository>();
             services.AddScoped<IStripePromotionRepository, StripePromotionRepository>();
 
             services.AddScoped<ICartProductRepository, CartProductRepository>();

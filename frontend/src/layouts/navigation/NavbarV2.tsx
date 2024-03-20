@@ -68,7 +68,7 @@ function NavbarV2() {
                     size={OverlaySliderSize.Small}
                     onClose={() => dispatch(OpenCartOverlayAction(false))}
                 >
-                    <CartOverlay />
+                    <CartOverlay isOverlay={true} />
                 </OverlaySlider>
             )}
             <AppBar
