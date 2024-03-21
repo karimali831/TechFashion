@@ -12,11 +12,13 @@ namespace api.Service
 
     public class StripeOrderService(
         IUserService userService,
+        ICartService cartService,
         IStripePaymentService stripePaymentService,
         IStripeCustomerService stripeCustomerService,
         IStripePromotionService stripePromotionService) : IStripeOrderService
     {
         private readonly IUserService _userService = userService;
+        private readonly ICartService _cartService = cartService;
         private readonly IStripePaymentService _stripePaymentService = stripePaymentService;
         private readonly IStripeCustomerService _stripeCustomerService = stripeCustomerService;
         private readonly IStripePromotionService _stripePromotionService = stripePromotionService;
@@ -46,12 +48,19 @@ namespace api.Service
                         {
                             await _userService.SetEmailAsync(userByGuestCheckout.Email, request.CartUser.GuestCheckoutId.Value);
                         }
+
                         user = userByGuestCheckout;
                     }
                     else
                     {
                         user = await _userService.CreateGuestAccountAsync(request.GuestEmail, request.CartUser.GuestCheckoutId.Value);
+
                     }
+
+                    if (user is null)
+                        throw new ApplicationException("An error occurred");
+
+                    await _cartService.SetUserIdAsync(user.Id, request.CartUser.GuestCheckoutId.Value);
                 }
             }
 

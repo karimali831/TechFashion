@@ -9,9 +9,10 @@ namespace api.Service
 {
     public interface ICartService
     {
-        Task EmptyAsync(int userId);
         Task<CartViewModel?> GetAsync(int userId);
         Task<CartViewModel?> GetAsync(CartUserDto dto);
+        Task EmptyAsync(int userId);
+        Task SetUserIdAsync(int userId, Guid guestCheckoutId);
     }
 
     public class CartService(
@@ -33,8 +34,7 @@ namespace api.Service
                 throw new ApplicationException("Unhandled error");
             }
 
-            Cart? cart = null;
-
+            Cart? cart;
             if (user.GuestCheckoutId.HasValue)
             {
                 cart = await _cartRepository.GetByGuestCheckoutIdAsync(user.GuestCheckoutId.Value);
@@ -79,6 +79,11 @@ namespace api.Service
             }
 
             return await GetViewModelAsync(cart);
+        }
+
+        public async Task SetUserIdAsync(int userId, Guid guestCheckoutId)
+        {
+            await _cartRepository.SetUserIdAsync(userId, guestCheckoutId);
         }
 
         private async Task<CartViewModel> GetViewModelAsync(Cart? cart)

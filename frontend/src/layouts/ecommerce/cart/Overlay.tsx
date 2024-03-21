@@ -18,8 +18,6 @@ import useEffectSkipInitialRender from "src/hooks/useEffectSkipInitialRender";
 import { ICartProductDetail } from "src/interface/ICartProductDetail";
 import "./styles.css";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
-import { MDModal } from "src/components/MDModal";
-import MDInput from "src/components/MDInput";
 import { getCartState } from "src/state/contexts/cart/Selectors";
 import {
     OpenCartAccountModalAction,

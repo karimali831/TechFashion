@@ -25,7 +25,6 @@ import { useGetCartQuery } from "src/api/cartApi";
 import { ICartProductDetail } from "src/interface/ICartProductDetail";
 import { MDModal } from "src/components/MDModal";
 import MDInput from "src/components/MDInput";
-import MDButton from "src/components/MDButton";
 import { ActionButton } from "src/components/Buttons/ActionButton";
 
 // const pages = ["Home", "Shop", "Blog", "Contact"];
