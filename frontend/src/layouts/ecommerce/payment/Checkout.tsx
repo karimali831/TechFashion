@@ -6,7 +6,6 @@ import {
     useStripe,
 } from "@stripe/react-stripe-js";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
 import { ClipLoader } from "react-spinners";
 import PaymentIcon from "@mui/icons-material/Payment";
 import { Alert, Button } from "@mui/material";
@@ -22,6 +21,8 @@ export const Checkout = ({ clientSecret }: IProps) => {
     const [processing, setProcessing] = useState<boolean>();
     const [disabled, setDisabled] = useState<boolean>(true);
     const [email, setEmail] = useState<string | null>(null);
+
+    console.log(email);
 
     const stripe = useStripe();
     const elements = useElements();

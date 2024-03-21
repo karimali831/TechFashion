@@ -9,7 +9,7 @@ namespace api.Service
         Task<User?> GetByFirebaseUIdAsync(string id);
         Task<User?> GetByEmailAsync(string email);
         Task<User?> GetByCustomerIdAsync(string customerId);
-        Task<User> CreateAsync(string email);
+        Task<User?> CreateAsync(string email);
         Task SetCustomerIdAsync(string customerId, int userId);
         Task SetStripeCustomerDeletedAsync(string customerId, DateTime? deletedDate);
     }
@@ -38,15 +38,10 @@ namespace api.Service
             return await _userRepository.GetByCustomerIdAsync(customerId);
         }
 
-        public async Task<User> CreateAsync(string email)
+        public async Task<User?> CreateAsync(string email)
         {
-            var model = new User
-            {
-                Email = email
-            };
-
-            await _userRepository.CreateAsync(model);
-            return model;
+            await _userRepository.CreateAsync(email);
+            return await GetByEmailAsync(email);
         }
 
         public async Task SetCustomerIdAsync(string customerId, int userId)

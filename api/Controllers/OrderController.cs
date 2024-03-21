@@ -58,7 +58,7 @@ namespace api.Controllers
                 coupon = couponByPromoCode;
             }
 
-            var response = await _stripePaymentService.CreateIntentAsync(user.StripeCustomerId, coupon, request.PromoCode);
+            var response = await _stripePaymentService.CreateIntentAsync(user, coupon, request.PromoCode);
             return Ok(response);
         }
     }

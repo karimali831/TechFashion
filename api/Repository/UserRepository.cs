@@ -10,7 +10,7 @@ namespace api.Repository
         Task<User?> GetByFirebaseUidAsync(string id);
         Task<User?> GetByEmailAsync(string email);
         Task<User?> GetByCustomerIdAsync(string customerId);
-        Task CreateAsync(User model);
+        Task CreateAsync(string email);
         Task SetStripeCustomerIdAsync(string customerId, int userId);
         Task SetStripeCustomerDeletedAsync(string customerId, DateTime? deletedDate);
     }
@@ -41,9 +41,10 @@ namespace api.Repository
             return await QuerySingleOrDefaultAsync<User>($"{DapperHelper.Select(Table, Fields)} WHERE StripeCustomerId = @customerId", new { customerId });
         }
 
-        public async Task CreateAsync(User model)
+        public async Task CreateAsync(string email)
         {
-            await ExecuteAsync(DapperHelper.Insert(Table, Fields), model);
+            await ExecuteAsync($"INSERT INTO {Table} (Email) VALUES (@email)", new { email });
+            // await ExecuteAsync(DapperHelper.Insert(Table, Fields), model);
         }
 
         public async Task SetStripeCustomerIdAsync(string customerId, int userId)

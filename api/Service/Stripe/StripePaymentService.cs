@@ -1,3 +1,4 @@
+using api.Data;
 using api.Data.Stripe;
 using api.Dto.Stripe;
 using api.Helper;
@@ -9,7 +10,7 @@ namespace api.Service.Stripe
     public interface IStripePaymentService
     {
         Task<bool> AddAsync(StripePayment model);
-        Task<PaymentIntentResponse> CreateIntentAsync(string customerId,
+        Task<PaymentIntentResponse> CreateIntentAsync(User user,
             StripeCoupon? coupon = null, string? promoCode = null);
     }
 
@@ -26,11 +27,11 @@ namespace api.Service.Stripe
             return await _stripePaymentRepository.AddAsync(model);
         }
 
-        public async Task<PaymentIntentResponse> CreateIntentAsync(string customerId, StripeCoupon? coupon = null, string? promoCode = null)
+        public async Task<PaymentIntentResponse> CreateIntentAsync(User user, StripeCoupon? coupon = null, string? promoCode = null)
         {
             long discountedAmount = 0;
 
-            var cartProducts = await _cartProductService.GetBasketAsync();
+            var cartProducts = await _cartProductService.GetBasketAsync(user.Id);
 
             if (cartProducts is null || cartProducts.Total <= 0)
                 throw new ApplicationException("An error occurred");
@@ -67,7 +68,7 @@ namespace api.Service.Stripe
                     new PaymentIntentCreateOptions
                     {
                         Amount = amount,
-                        Customer = customerId,
+                        Customer = user.StripeCustomerId,
                         Currency = "gbp",
                         Metadata = metaData
                     });
