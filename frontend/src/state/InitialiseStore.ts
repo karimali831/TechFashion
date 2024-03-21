@@ -3,12 +3,16 @@ import rootReducer from "./RootReducer";
 import { cartApi } from "src/api/cartApi";
 import { productApi } from "src/api/productApi";
 import { orderApi } from "src/api/orderApi";
+import { SetGuestCheckoutIdAction } from "./contexts/cart/Actions";
 // import { onAuthStateChanged } from "firebase/auth";
 // import { auth } from "../config/firebase";
 // import {
 //     FirebaseAuthEmptyAction,
 //     FirebaseAuthenticatedAction,
 // } from "./contexts/user/Actions";
+
+export const GuestCheckoutKey = "GuestCheckoutId";
+export const GuestCheckoutId = localStorage.getItem(GuestCheckoutKey);
 
 const store = configureStore({
     reducer: rootReducer,
@@ -22,6 +26,14 @@ const store = configureStore({
             orderApi.middleware,
         ]),
 });
+
+if (GuestCheckoutId) {
+    store.dispatch(SetGuestCheckoutIdAction(GuestCheckoutId));
+} else {
+    const id = window.crypto.randomUUID();
+    localStorage.setItem(GuestCheckoutKey, id);
+    store.dispatch(SetGuestCheckoutIdAction(id));
+}
 
 // onAuthStateChanged(auth, (user) => {
 //     if (user) {

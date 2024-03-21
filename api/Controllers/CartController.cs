@@ -9,10 +9,13 @@ namespace api.Controllers
     [ApiController]
     public class CartController(
         IUserService userService,
+        ICartService cartService,
         ICartProductService cartProductService) : ControllerBase
     {
         private readonly IUserService _userService = userService;
+        private readonly ICartService _cartService = cartService;
         private readonly ICartProductService _cartProductService = cartProductService;
+
 
         [HttpPost("GetBasket")]
         public async Task<IActionResult> GetBasket([FromBody] CartUserDto dto)
@@ -22,7 +25,7 @@ namespace api.Controllers
                 return NoContent();
             }
 
-            var basket = await _cartProductService.GetBasketAsync(dto);
+            var basket = await _cartService.GetAsync(dto);
 
             if (basket is null)
             {

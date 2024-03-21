@@ -15,11 +15,11 @@ namespace api.Service.Stripe
     }
 
     public class StripePaymentService(
-        ICartProductService cartProductService,
+        ICartService cartService,
         IStripePaymentRepository stripePaymentRepository) : IStripePaymentService
     {
         private readonly PaymentIntentService _paymentIntentService = new();
-        private readonly ICartProductService _cartProductService = cartProductService;
+        private readonly ICartService _cartService = cartService;
         private readonly IStripePaymentRepository _stripePaymentRepository = stripePaymentRepository;
 
         public async Task<bool> AddAsync(StripePayment model)
@@ -31,7 +31,7 @@ namespace api.Service.Stripe
         {
             long discountedAmount = 0;
 
-            var cartProducts = await _cartProductService.GetBasketAsync(user.Id);
+            var cartProducts = await _cartService.GetAsync(user.Id);
 
             if (cartProducts is null || cartProducts.Total <= 0)
                 throw new ApplicationException("An error occurred");

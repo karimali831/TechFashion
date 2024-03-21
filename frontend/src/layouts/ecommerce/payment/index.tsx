@@ -42,21 +42,17 @@ const CheckoutPage = ({ clientSecret }: CheckoutProps) => (
 );
 
 export const Payment = () => {
-    const { guestCheckoutId } = useAppSelector(getCartState);
+    const { guestCheckoutId, guestCheckoutEmail } =
+        useAppSelector(getCartState);
 
     const { data: paymentIntent, isLoading: paymentIntentLoading } =
-        useCreatePaymentIntentQuery(
-            {
-                cartUser: {
-                    firebaseUid: "",
-                    guestCheckoutId,
-                },
-                guestEmail: "karimali831@googlemail.com",
+        useCreatePaymentIntentQuery({
+            cartUser: {
+                firebaseUid: null,
+                guestCheckoutId,
             },
-            {
-                // skip: !email,
-            }
-        );
+            guestEmail: guestCheckoutEmail,
+        });
 
     if (paymentIntentLoading || !stripePromise) return <LinearProgress />;
 

@@ -28,7 +28,9 @@ namespace api
             services.AddScoped<IStripePromotionService, StripePromotionService>();
 
             services.AddScoped<ICartProductService, CartProductService>();
+            services.AddScoped<ICartService, CartService>();
             services.AddScoped<IProductListingService, ProductListingService>();
+            services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IUserService, UserService>();
 
             // Repositories

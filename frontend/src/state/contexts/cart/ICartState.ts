@@ -1,9 +1,13 @@
 export interface ICartState {
     openOverlay: boolean;
-    guestCheckoutId: string;
+    openAccountModal: boolean;
+    guestCheckoutId: string | null;
+    guestCheckoutEmail: string;
 }
 
 export const cartInitialState: ICartState = {
     openOverlay: false,
-    guestCheckoutId: window.crypto.randomUUID(),
+    openAccountModal: false,
+    guestCheckoutId: null,
+    guestCheckoutEmail: "",
 };

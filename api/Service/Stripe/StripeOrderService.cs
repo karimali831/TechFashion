@@ -38,13 +38,15 @@ namespace api.Service
                 }
                 else
                 {
-                    var userByGuestCheckoutId = await _userService.GetByGuestCheckoutIdAsync(request.CartUser.GuestCheckoutId.Value);
+                    var userByGuestCheckout = await _userService.GetByGuestCheckoutIdAsync(request.CartUser.GuestCheckoutId.Value);
 
-                    if (userByGuestCheckoutId is not null)
+                    if (userByGuestCheckout is not null)
                     {
-                        // update email
-                        await _userService.SetEmailAsync(userByGuestCheckoutId.Email, request.CartUser.GuestCheckoutId.Value);
-                        user = userByGuestCheckoutId;
+                        if (userByGuestCheckout.Email == "")
+                        {
+                            await _userService.SetEmailAsync(userByGuestCheckout.Email, request.CartUser.GuestCheckoutId.Value);
+                        }
+                        user = userByGuestCheckout;
                     }
                     else
                     {

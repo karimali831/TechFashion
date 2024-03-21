@@ -11,7 +11,11 @@ import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import { Badge, Icon } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
-import { OpenCartOverlayAction } from "src/state/contexts/cart/Actions";
+import {
+    OpenCartAccountModalAction,
+    OpenCartOverlayAction,
+    SetGuestCheckoutEmailAction,
+} from "src/state/contexts/cart/Actions";
 import { getCartState } from "src/state/contexts/cart/Selectors";
 import { OverlaySlider, OverlaySliderSize } from "src/components/OverlaySlider";
 import { navData } from "src/assets/data/navData";
@@ -19,6 +23,10 @@ import { NavigateFunction, useNavigate } from "react-router-dom";
 import { CartOverlay } from "../ecommerce/cart/Overlay";
 import { useGetCartQuery } from "src/api/cartApi";
 import { ICartProductDetail } from "src/interface/ICartProductDetail";
+import { MDModal } from "src/components/MDModal";
+import MDInput from "src/components/MDInput";
+import MDButton from "src/components/MDButton";
+import { ActionButton } from "src/components/Buttons/ActionButton";
 
 // const pages = ["Home", "Shop", "Blog", "Contact"];
 // const settings = ["Profile", "Account", "Dashboard", "Logout"];
@@ -26,6 +34,14 @@ import { ICartProductDetail } from "src/interface/ICartProductDetail";
 function NavbarV2() {
     const navigate: NavigateFunction = useNavigate();
 
+    const {
+        guestCheckoutId,
+        guestCheckoutEmail,
+        openOverlay,
+        openAccountModal,
+    } = useAppSelector(getCartState);
+
+    const [email, setEmail] = React.useState<string>(guestCheckoutEmail);
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
         null
     );
@@ -34,8 +50,6 @@ function NavbarV2() {
     // );
 
     const dispatch = useAppDispatch();
-
-    const { guestCheckoutId, openOverlay } = useAppSelector(getCartState);
 
     const { data: cart } = useGetCartQuery({
         firebaseUid: null,
@@ -64,8 +78,38 @@ function NavbarV2() {
     //     setAnchorElUser(null);
     // };
 
+    const goToPayment = () => {
+        dispatch(SetGuestCheckoutEmailAction(email));
+        navigate("/cart");
+    };
+
     return (
         <Box>
+            <MDModal
+                title="Account"
+                content={
+                    <Box mt={2}>
+                        <MDInput
+                            value={email}
+                            label={"Guest Email"}
+                            variant="standard"
+                            fullWidth={true}
+                            onChange={(
+                                e: React.ChangeEvent<HTMLInputElement>
+                            ) => setEmail(e.target.value)}
+                        />
+                        <Box mt={2}>
+                            <ActionButton
+                                disabled={email.length < 4}
+                                text="go to payment"
+                                onClick={goToPayment}
+                            />
+                        </Box>
+                    </Box>
+                }
+                open={openAccountModal}
+                onClose={() => dispatch(OpenCartAccountModalAction(false))}
+            />
             {openOverlay && (
                 <OverlaySlider
                     size={OverlaySliderSize.Small}

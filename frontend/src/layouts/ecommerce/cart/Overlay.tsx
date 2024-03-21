@@ -17,10 +17,14 @@ import MDTypography from "src/components/MDTypography";
 import useEffectSkipInitialRender from "src/hooks/useEffectSkipInitialRender";
 import { ICartProductDetail } from "src/interface/ICartProductDetail";
 import "./styles.css";
-import { useAppSelector } from "src/state/Hooks";
+import { useAppDispatch, useAppSelector } from "src/state/Hooks";
 import { MDModal } from "src/components/MDModal";
 import MDInput from "src/components/MDInput";
 import { getCartState } from "src/state/contexts/cart/Selectors";
+import {
+    OpenCartAccountModalAction,
+    OpenCartOverlayAction,
+} from "src/state/contexts/cart/Actions";
 
 interface IProductCartQuantity {
     id: number;
@@ -34,10 +38,10 @@ interface IProps {
 export const CartOverlay = ({ isOverlay }: IProps) => {
     const [updating, setUpdating] = useState<number | null>(null);
     const [quantity, setQuantity] = useState<IProductCartQuantity | null>(null);
-    const [openAccountModal, setOpenAccountModal] = useState<boolean>(false);
     // const [email, setEmail] = useState<string>("");
 
     const { guestCheckoutId } = useAppSelector(getCartState);
+    const dispatch = useAppDispatch();
 
     const { data: cart } = useGetCartQuery({
         firebaseUid: null,
@@ -94,9 +98,8 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
     };
 
     const onCheckoutClick = () => {
-        setOpenAccountModal(true);
-        // dispatch(OpenCartOverlayAction(false));
-        // navigate("/cart");
+        dispatch(OpenCartOverlayAction(false));
+        dispatch(OpenCartAccountModalAction(true));
     };
 
     if (loadingProducts) {
@@ -105,19 +108,6 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
 
     return (
         <Box display="flex" flexDirection="column" height="100%">
-            <MDModal
-                title="Account"
-                content={
-                    <Box>
-                        <MDInput
-                            value={"testestsetse email"}
-                            label={"Guest Email"}
-                        />
-                    </Box>
-                }
-                open={openAccountModal}
-                onClose={() => setOpenAccountModal(false)}
-            />
             {itemsInCart.length === 0 ? (
                 <Fade
                     in={true}

@@ -11,6 +11,8 @@ import PaymentIcon from "@mui/icons-material/Payment";
 import { Alert, Button } from "@mui/material";
 import MDTypography from "src/components/MDTypography";
 import { StripePaymentElementChangeEvent } from "@stripe/stripe-js";
+import { useAppSelector } from "src/state/Hooks";
+import { getCartState } from "src/state/contexts/cart/Selectors";
 
 interface IProps {
     clientSecret: string;
@@ -23,6 +25,8 @@ export const Checkout = ({ clientSecret }: IProps) => {
     const [email, setEmail] = useState<string | null>(null);
 
     console.log(email);
+
+    const { guestCheckoutEmail } = useAppSelector(getCartState);
 
     const stripe = useStripe();
     const elements = useElements();
@@ -54,33 +58,6 @@ export const Checkout = ({ clientSecret }: IProps) => {
         }
     };
 
-    // const cardStyle = {
-    //     style: {
-    //         base: {
-    //             color: "#fff",
-    //             fontFamily: "Arial, sans-serif",
-    //             fontSmoothing: "antialiased",
-    //             fontSize: "16px",
-    //             "::placeholder": {
-    //                 color: "grey",
-    //             },
-    //             iconColor: "#fff",
-    //         },
-    //         invalid: {
-    //             fontFamily: "Arial, sans-serif",
-    //             color: "#fa755a",
-    //             iconColor: "#fa755a",
-    //         },
-    //     },
-    // };
-
-    // const handleChange = async (event: StripeCardElementChangeEvent) => {
-    //     // Listen for changes in the CardElement
-    //     // and display any errors as the customer types their card details
-    //     setDisabled(event.empty);
-    //     setError(event.error ? event.error.message : "");
-    // };
-
     const handleChange = async (event: StripePaymentElementChangeEvent) => {
         // Listen for changes in the CardElement
         // and display any errors as the customer types their card details
@@ -98,7 +75,7 @@ export const Checkout = ({ clientSecret }: IProps) => {
                     // Optional prop for prefilling customer information
                     options={{
                         defaultValues: {
-                            email: "karimali831@googlemail.com",
+                            email: guestCheckoutEmail,
                         },
                     }}
                     onChange={(event) => {
