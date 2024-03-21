@@ -11,7 +11,7 @@ namespace api.Dto.Stripe
 
     public class PaymentIntentRequest
     {
-        public string? FirebaseUid { get; set; }
+        public required CartUserDto CartUser { get; set; }
         public string? GuestEmail { get; set; }
         public string? PromoCode { get; set; }
     }

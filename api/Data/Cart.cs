@@ -2,9 +2,10 @@ namespace api.Data
 {
     public class Cart
     {
-        public required int Id { get; set; }
-        public required int UserId { get; set; }
-        public DateTime CreatedDate => DateTime.UtcNow;
+        public int Id { get; set; }
+        public int? UserId { get; set; }
+        public Guid? GuestCheckoutId { get; set; }
+        public DateTime CreatedDate { get; set; }
         public DateTime? ArchiveDate { get; set; }
     }
 }

@@ -6,7 +6,9 @@ namespace api.Repository
 {
     public interface ICartRepository
     {
-        Task<Cart?> GetAsync(int userId);
+        Task EmptyAsync(int cartId);
+        Task<Cart?> GetByUserIdAsync(int userId);
+        Task<Cart?> GetByGuestCheckoutIdAsync(Guid guestCheckoutId);
     }
 
     public class CartRepository(IConfiguration configuration) : DapperBaseRepository(configuration), ICartRepository
@@ -14,11 +16,23 @@ namespace api.Repository
         private const string Table = "Carts";
         private static readonly string[] Fields = typeof(Cart).DapperFields();
 
-        public async Task<Cart?> GetAsync(int userId)
+        public async Task<Cart?> GetByUserIdAsync(int userId)
         {
             return await QueryFirstOrDefaultAsync<Cart>(
                 $"{DapperHelper.Select(Table, Fields)} WHERE UserId = @userId AND ArchiveDate IS NULL", new { userId }
             );
+        }
+
+        public async Task<Cart?> GetByGuestCheckoutIdAsync(Guid guestCheckoutId)
+        {
+            return await QueryFirstOrDefaultAsync<Cart>(
+                $"{DapperHelper.Select(Table, Fields)} WHERE GuestCheckoutId = @guestCheckoutId AND ArchiveDate IS NULL", new { guestCheckoutId }
+            );
+        }
+
+        public async Task EmptyAsync(int cartId)
+        {
+            await ExecuteAsync($"UPDATE {Table} SET ArchiveDate = GETDATE() WHERE Id = @cartId", new { cartId });
         }
     }
 }

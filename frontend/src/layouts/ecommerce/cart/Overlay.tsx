@@ -17,9 +17,10 @@ import MDTypography from "src/components/MDTypography";
 import useEffectSkipInitialRender from "src/hooks/useEffectSkipInitialRender";
 import { ICartProductDetail } from "src/interface/ICartProductDetail";
 import "./styles.css";
-import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "src/state/Hooks";
-import { OpenCartOverlayAction } from "src/state/contexts/cart/Actions";
+import { useAppSelector } from "src/state/Hooks";
+import { MDModal } from "src/components/MDModal";
+import MDInput from "src/components/MDInput";
+import { getCartState } from "src/state/contexts/cart/Selectors";
 
 interface IProductCartQuantity {
     id: number;
@@ -33,11 +34,18 @@ interface IProps {
 export const CartOverlay = ({ isOverlay }: IProps) => {
     const [updating, setUpdating] = useState<number | null>(null);
     const [quantity, setQuantity] = useState<IProductCartQuantity | null>(null);
+    const [openAccountModal, setOpenAccountModal] = useState<boolean>(false);
+    // const [email, setEmail] = useState<string>("");
 
-    const { data: cart } = useGetCartQuery();
+    const { guestCheckoutId } = useAppSelector(getCartState);
+
+    const { data: cart } = useGetCartQuery({
+        firebaseUid: null,
+        guestCheckoutId,
+    });
     const { data: products, isLoading: loadingProducts } = useGetProductQuery();
 
-    const dispatch = useAppDispatch();
+    // const dispatch = useAppDispatch();
 
     const itemsInCart: ICartProductDetail[] = cart?.products ?? [];
 
@@ -47,7 +55,7 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
     const [removeProductFromCart, { isLoading: removingProduct }] =
         useRemoveProductFromCartMutation();
 
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     useEffectSkipInitialRender(() => {
         if (!updatingProductQuantity && !removingProduct && updating) {
@@ -85,12 +93,31 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
             });
     };
 
+    const onCheckoutClick = () => {
+        setOpenAccountModal(true);
+        // dispatch(OpenCartOverlayAction(false));
+        // navigate("/cart");
+    };
+
     if (loadingProducts) {
         return <LinearProgress />;
     }
 
     return (
         <Box display="flex" flexDirection="column" height="100%">
+            <MDModal
+                title="Account"
+                content={
+                    <Box>
+                        <MDInput
+                            value={"testestsetse email"}
+                            label={"Guest Email"}
+                        />
+                    </Box>
+                }
+                open={openAccountModal}
+                onClose={() => setOpenAccountModal(false)}
+            />
             {itemsInCart.length === 0 ? (
                 <Fade
                     in={true}
@@ -520,10 +547,7 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
 
                             <ActionButton
                                 text={"check out"}
-                                onClick={() => {
-                                    dispatch(OpenCartOverlayAction(false));
-                                    navigate("/cart");
-                                }}
+                                onClick={onCheckoutClick}
                             />
                         </Box>
                     )}

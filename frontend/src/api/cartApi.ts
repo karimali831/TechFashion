@@ -10,8 +10,12 @@ export const cartApi = createApi({
         // headers: { Authorization: `Bearer ${getTokenFromLocalStorage()}` },
     }),
     endpoints: (builder) => ({
-        getCart: builder.query<ICartResponse, void>({
-            query: () => "Cart/GetBasket",
+        getCart: builder.query<ICartResponse, ICartUserRequest>({
+            query: (body) => ({
+                url: "Cart/GetBasket",
+                method: "POST",
+                body,
+            }),
             providesTags: ["Cart"],
         }),
         updateProductQuantity: builder.mutation<
@@ -42,6 +46,11 @@ export const cartApi = createApi({
     }),
 });
 
+export interface ICartUserRequest {
+    firebaseUid?: string;
+    guestCheckoutId?: string;
+}
+
 export interface ICartProductQuantityRequest {
     id: number;
     quantity: number;
@@ -53,7 +62,7 @@ export interface ICartResponse {
 }
 
 export interface IAddProductToCartRequest {
-    cartId: number;
+    cartUser: ICartUserRequest;
     quantity: number;
     productId: number;
     variantId?: number;

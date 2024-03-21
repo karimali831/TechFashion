@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { baseApiUrl } from "./baseApi";
+import { ICartUserRequest } from "./cartApi";
 
 export const orderApi = createApi({
     reducerPath: "orderApi",
@@ -24,7 +25,7 @@ export const orderApi = createApi({
 export const { useCreatePaymentIntentQuery } = orderApi;
 
 export interface IPaymentIntentRequest {
-    firebaseUid?: string;
+    cartUser: ICartUserRequest;
     guestEmail?: string;
     promoCode?: string;
 }

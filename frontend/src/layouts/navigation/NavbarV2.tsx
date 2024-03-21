@@ -35,9 +35,12 @@ function NavbarV2() {
 
     const dispatch = useAppDispatch();
 
-    const { data: cart } = useGetCartQuery();
+    const { guestCheckoutId, openOverlay } = useAppSelector(getCartState);
 
-    const { openOverlay } = useAppSelector(getCartState);
+    const { data: cart } = useGetCartQuery({
+        firebaseUid: null,
+        guestCheckoutId,
+    });
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);

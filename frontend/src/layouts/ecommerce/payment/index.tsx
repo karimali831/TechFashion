@@ -5,6 +5,8 @@ import Checkout from "./Checkout";
 import { useCreatePaymentIntentQuery } from "src/api/orderApi";
 import MDAlert from "src/components/MDAlert";
 import MDTypography from "src/components/MDTypography";
+import { useAppSelector } from "src/state/Hooks";
+import { getCartState } from "src/state/contexts/cart/Selectors";
 
 const stripePromise = loadStripe(
     "pk_test_51MF29cB4n2CpwCrekms5MYYiKzNBOpA20kCPNvON4clMPEwh84j1Mv5rljEj1VHEAUGL9moIjteZZpIcmymsggYw00cJJfvH2O"
@@ -40,9 +42,15 @@ const CheckoutPage = ({ clientSecret }: CheckoutProps) => (
 );
 
 export const Payment = () => {
+    const { guestCheckoutId } = useAppSelector(getCartState);
+
     const { data: paymentIntent, isLoading: paymentIntentLoading } =
         useCreatePaymentIntentQuery(
             {
+                cartUser: {
+                    firebaseUid: "",
+                    guestCheckoutId,
+                },
                 guestEmail: "karimali831@googlemail.com",
             },
             {

@@ -7,14 +7,22 @@ namespace api.Controllers
 {
     [Route("api/cart")]
     [ApiController]
-    public class CartController(ICartProductService cartProductService) : ControllerBase
+    public class CartController(
+        IUserService userService,
+        ICartProductService cartProductService) : ControllerBase
     {
+        private readonly IUserService _userService = userService;
         private readonly ICartProductService _cartProductService = cartProductService;
 
-        [HttpGet("GetBasket")]
-        public async Task<IActionResult> GetBasket()
+        [HttpPost("GetBasket")]
+        public async Task<IActionResult> GetBasket([FromBody] CartUserDto dto)
         {
-            var basket = await _cartProductService.GetBasketAsync();
+            if (!dto.GuestCheckoutId.HasValue && dto.FirebaseUid is null)
+            {
+                return NoContent();
+            }
+
+            var basket = await _cartProductService.GetBasketAsync(dto);
 
             if (basket is null)
             {

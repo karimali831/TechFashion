@@ -22,6 +22,7 @@ namespace api
 
             services.AddScoped<IStripeCouponService, StripeCouponService>();
             services.AddScoped<IStripeCustomerService, StripeCustomerService>();
+            services.AddScoped<IStripeOrderService, StripeOrderService>();
             services.AddScoped<IStripePaymentService, StripePaymentService>();
             services.AddScoped<IStripePaymentMethodService, StripePaymentMethodService>();
             services.AddScoped<IStripePromotionService, StripePromotionService>();
