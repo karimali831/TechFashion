@@ -6,6 +6,7 @@ using api.Service.Stripe;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Validations;
 using Stripe;
 
 namespace api.Controllers
@@ -79,6 +80,8 @@ namespace api.Controllers
                             // {
                             //     await _userService.SetCustomerIdAsync(paymentIntent.CustomerId, user.Id);
                             // }
+
+                            var shipping = paymentIntent.Shipping;
 
                             var paymentMethod = await _stripePaymentMethodService.GetAsync(paymentIntent.PaymentMethodId);
 

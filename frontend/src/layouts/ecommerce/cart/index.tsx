@@ -1,8 +1,8 @@
 import { Card, Grid } from "@mui/material";
-import { Payment } from "../payment";
 import MDBox from "src/components/MDBox";
-import { CartOverlay } from "./Overlay";
 import MDTypography from "src/components/MDTypography";
+import { Payment } from "../payment";
+import { CartOverlay } from "./Overlay";
 
 export const Cart = () => {
     return (
@@ -16,11 +16,7 @@ export const Cart = () => {
                     justifyContent: "space-between",
                 }}
             >
-                <Grid
-                    container
-                    rowSpacing={1}
-                    columnSpacing={{ xs: 1, sm: 2, md: 6 }}
-                >
+                <Grid alignItems={"flex-start"} container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 6 }}>
                     <Grid item xs={12} md={12} lg={6}>
                         <MDTypography mb={1}>
                             <h2>Checkout</h2>

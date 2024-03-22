@@ -46,11 +46,11 @@ namespace api.Service
         {
             var user = await _userRepository.GetByCustomerIdAsync(customerId);
 
-            if (user is null)
-                throw new ApplicationException("Error");
+            // if (user is null)
+            //     throw new ApplicationException("Error");
 
-            var customer = await _customerService.GetAsync(user.StripeCustomerId);
-            user.Stripe = customer;
+            // var customer = await _customerService.GetAsync(user.StripeCustomerId);
+            // user.Stripe = customer;
 
             return user;
         }
