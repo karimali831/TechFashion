@@ -1,7 +1,25 @@
 import { Alert, Card } from "@mui/material";
+import { useEffect } from "react";
 import MDBox from "src/components/MDBox";
+import { useAppDispatch, useAppSelector } from "src/state/Hooks";
+import { SetGuestCheckoutAction } from "src/state/contexts/cart/Actions";
+import { getCartState } from "src/state/contexts/cart/Selectors";
 
 export const Success = () => {
+    const { guestCheckout } = useAppSelector(getCartState);
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        if (!!guestCheckout) {
+            dispatch(
+                SetGuestCheckoutAction({
+                    ...guestCheckout,
+                    id: window.crypto.randomUUID(),
+                })
+            );
+        }
+    }, []);
+
     return (
         <MDBox className="home">
             <Card>
