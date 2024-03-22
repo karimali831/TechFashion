@@ -8,6 +8,6 @@ export interface ICartState {
 export const cartInitialState: ICartState = {
     openOverlay: false,
     openAccountModal: false,
-    guestCheckoutId: null,
+    guestCheckoutId: window.crypto.randomUUID(),
     guestCheckoutEmail: "",
 };

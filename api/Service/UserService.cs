@@ -1,5 +1,6 @@
 using api.Data;
 using api.Repository;
+using Stripe;
 
 namespace api.Service
 {
@@ -19,6 +20,7 @@ namespace api.Service
     public class UserService(IUserRepository userRepository) : IUserService
     {
         private readonly IUserRepository _userRepository = userRepository;
+        private readonly CustomerService _customerService = new();
 
         public Task<User?> GetByFirebaseUIdAsync(string id)
         {
@@ -42,7 +44,15 @@ namespace api.Service
 
         public async Task<User?> GetByCustomerIdAsync(string customerId)
         {
-            return await _userRepository.GetByCustomerIdAsync(customerId);
+            var user = await _userRepository.GetByCustomerIdAsync(customerId);
+
+            if (user is null)
+                throw new ApplicationException("Error");
+
+            var customer = await _customerService.GetAsync(user.StripeCustomerId);
+            user.Stripe = customer;
+
+            return user;
         }
 
         public async Task<User?> CreateGuestAccountAsync(string email, Guid guestCheckoutId)

@@ -4,7 +4,7 @@ import { baseApiUrl } from "./baseApi";
 
 export const cartApi = createApi({
     reducerPath: "cartApi",
-    tagTypes: ["Cart"],
+    tagTypes: ["Cart", "PaymentIntent"],
     baseQuery: fetchBaseQuery({
         baseUrl: baseApiUrl,
         // headers: { Authorization: `Bearer ${getTokenFromLocalStorage()}` },
@@ -18,6 +18,17 @@ export const cartApi = createApi({
             }),
             providesTags: ["Cart"],
         }),
+        createPaymentIntent: builder.query<
+            IPaymentIntentResponse,
+            IPaymentIntentRequest
+        >({
+            query: (body) => ({
+                url: "Order/CreatePaymentIntent",
+                method: "POST",
+                body,
+            }),
+            providesTags: ["PaymentIntent"],
+        }),
         updateProductQuantity: builder.mutation<
             void,
             { id: number; quantity: number }
@@ -26,7 +37,7 @@ export const cartApi = createApi({
                 url: `Cart/UpdateProductQuantity/${id}/${quantity}`,
                 method: "GET",
             }),
-            invalidatesTags: ["Cart"],
+            invalidatesTags: ["Cart", "PaymentIntent"],
         }),
         addProductToCart: builder.mutation<void, IAddProductToCartRequest>({
             query: (body) => ({
@@ -34,14 +45,14 @@ export const cartApi = createApi({
                 method: "POST",
                 body,
             }),
-            invalidatesTags: ["Cart"],
+            invalidatesTags: ["Cart", "PaymentIntent"],
         }),
         removeProductFromCart: builder.mutation<void, number>({
             query: (id) => ({
                 url: `Cart/RemoveProduct/${id}`,
                 method: "GET",
             }),
-            invalidatesTags: ["Cart"],
+            invalidatesTags: ["Cart", "PaymentIntent"],
         }),
     }),
 });
@@ -68,9 +79,24 @@ export interface IAddProductToCartRequest {
     variantId?: number;
 }
 
+export interface IPaymentIntentRequest {
+    cartUser: ICartUserRequest;
+    guestEmail?: string;
+    promoCode?: string;
+}
+
+export interface IPaymentIntentResponse {
+    clientSecret: string | null;
+    errorMsg: string | null;
+    coupon: string | null;
+    discountedAmount: string | null;
+    amount: string | null;
+}
+
 export const {
     useGetCartQuery,
     useUpdateProductQuantityMutation,
     useAddProductToCartMutation,
     useRemoveProductFromCartMutation,
+    useCreatePaymentIntentQuery,
 } = cartApi;

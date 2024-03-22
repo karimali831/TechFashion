@@ -1,3 +1,6 @@
+using api.Helper;
+using Stripe;
+
 namespace api.Data
 {
     public class User
@@ -9,5 +12,7 @@ namespace api.Data
         public Guid? GuestCheckoutId { get; set; }
         public string? StripeCustomerId { get; set; }
         public DateTime? StripeCustomerDeleted { get; set; }
+        [DbIgnore]
+        public Customer? Stripe { get; set; }
     }
 }

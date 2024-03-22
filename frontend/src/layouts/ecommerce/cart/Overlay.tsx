@@ -105,6 +105,12 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
         }
     };
 
+    const onContinueShoppingClick = () => {
+        // window.location.reload()
+        dispatch(OpenCartOverlayAction(false));
+        navigate("./products");
+    };
+
     if (loadingProducts) {
         return <LinearProgress />;
     }
@@ -129,7 +135,7 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
                         <ActionButton
                             size="large"
                             text="Continue shopping"
-                            onClick={() => window.location.reload()}
+                            onClick={onContinueShoppingClick}
                         />
                     </Box>
                 </Fade>

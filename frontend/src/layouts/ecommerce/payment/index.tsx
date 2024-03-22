@@ -2,11 +2,11 @@ import { Box, Fade, Icon, LinearProgress } from "@mui/material";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import Checkout from "./Checkout";
-import { useCreatePaymentIntentQuery } from "src/api/orderApi";
 import MDAlert from "src/components/MDAlert";
 import MDTypography from "src/components/MDTypography";
 import { useAppSelector } from "src/state/Hooks";
 import { getCartState } from "src/state/contexts/cart/Selectors";
+import { useCreatePaymentIntentQuery } from "src/api/cartApi";
 
 const stripePromise = loadStripe(
     "pk_test_51MF29cB4n2CpwCrekms5MYYiKzNBOpA20kCPNvON4clMPEwh84j1Mv5rljEj1VHEAUGL9moIjteZZpIcmymsggYw00cJJfvH2O"

@@ -1,9 +1,19 @@
 import { configureStore } from "@reduxjs/toolkit";
 import rootReducer from "./RootReducer";
+import {
+    persistStore,
+    persistReducer,
+    FLUSH,
+    REHYDRATE,
+    PAUSE,
+    PERSIST,
+    PURGE,
+    REGISTER,
+} from "redux-persist";
+
 import { cartApi } from "src/api/cartApi";
 import { productApi } from "src/api/productApi";
-import { orderApi } from "src/api/orderApi";
-import { SetGuestCheckoutIdAction } from "./contexts/cart/Actions";
+import storage from "redux-persist/lib/storage";
 // import { onAuthStateChanged } from "firebase/auth";
 // import { auth } from "../config/firebase";
 // import {
@@ -11,29 +21,33 @@ import { SetGuestCheckoutIdAction } from "./contexts/cart/Actions";
 //     FirebaseAuthenticatedAction,
 // } from "./contexts/user/Actions";
 
-export const GuestCheckoutKey = "GuestCheckoutId";
-export const GuestCheckoutId = localStorage.getItem(GuestCheckoutKey);
+const persistConfig: any = {
+    key: "root",
+    whitelist: ["cart"],
+    // blacklist: [],
 
-const store = configureStore({
-    reducer: rootReducer,
+    storage,
+};
+
+export const store = configureStore({
+    reducer: persistReducer(persistConfig, rootReducer),
     devTools: import.meta.env.NODE_ENV !== "production",
     // ? Adding the api middleware enables caching, invalidation, polling,
     // and other useful features of `rtk-query`.
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware({ serializableCheck: false }).concat([
-            cartApi.middleware,
-            productApi.middleware,
-            orderApi.middleware,
-        ]),
+        getDefaultMiddleware({
+            serializableCheck: {
+                ignoredActions: [
+                    FLUSH,
+                    REHYDRATE,
+                    PAUSE,
+                    PERSIST,
+                    PURGE,
+                    REGISTER,
+                ],
+            },
+        }).concat([cartApi.middleware, productApi.middleware]),
 });
-
-if (GuestCheckoutId) {
-    store.dispatch(SetGuestCheckoutIdAction(GuestCheckoutId));
-} else {
-    const id = window.crypto.randomUUID();
-    localStorage.setItem(GuestCheckoutKey, id);
-    store.dispatch(SetGuestCheckoutIdAction(id));
-}
 
 // onAuthStateChanged(auth, (user) => {
 //     if (user) {
@@ -43,7 +57,7 @@ if (GuestCheckoutId) {
 //     }
 // });
 
-export default store;
-
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type AppDispatch = typeof store.dispatch;
+
+export const persistor = persistStore(store);
