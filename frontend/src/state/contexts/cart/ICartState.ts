@@ -1,13 +1,17 @@
+import { IGuestCheckout } from "src/interface/IGuestCheckout";
+
 export interface ICartState {
     openOverlay: boolean;
     openAccountModal: boolean;
-    guestCheckoutId: string | null;
-    guestCheckoutEmail: string;
+    guestCheckout: IGuestCheckout | null;
 }
 
 export const cartInitialState: ICartState = {
     openOverlay: false,
     openAccountModal: false,
-    guestCheckoutId: window.crypto.randomUUID(),
-    guestCheckoutEmail: "",
+    guestCheckout: {
+        id: window.crypto.randomUUID(),
+        name: "",
+        email: "",
+    },
 };

@@ -10,6 +10,9 @@ import PaymentIcon from "@mui/icons-material/Payment";
 import { Alert, Button } from "@mui/material";
 import MDTypography from "src/components/MDTypography";
 import { StripePaymentElementChangeEvent } from "@stripe/stripe-js";
+import { useAppSelector } from "src/state/Hooks";
+import { getCartState } from "src/state/contexts/cart/Selectors";
+import { baseWebUrl } from "src/api/baseApi";
 
 interface IProps {
     clientSecret: string;
@@ -19,6 +22,8 @@ export const Checkout = ({ clientSecret }: IProps) => {
     const [error, setError] = useState<string | null>(null);
     const [processing, setProcessing] = useState<boolean>();
     const [disabled, setDisabled] = useState<boolean>(true);
+
+    const { guestCheckout } = useAppSelector(getCartState);
 
     const stripe = useStripe();
     const elements = useElements();
@@ -37,16 +42,13 @@ export const Checkout = ({ clientSecret }: IProps) => {
             elements,
             clientSecret,
             confirmParams: {
-                return_url: "http://localhost:5173/ordersuccess",
+                return_url: `${baseWebUrl}/ordersuccess`,
             },
         });
 
         if (error) {
             setError(`Payment failed ${error.message}`);
             setProcessing(false);
-        } else {
-            alert("success");
-            // dispatch(SetDashboardSection(DashboardSection.PaymentSuccessful));
         }
     };
 
@@ -67,18 +69,26 @@ export const Checkout = ({ clientSecret }: IProps) => {
                     // Optional prop for prefilling customer information
                     options={{
                         defaultValues: {
-                            email: guestCheckoutEmail,
+                            email: guestCheckout.email,
                         },
                     }}
-                    onChange={(event) => {
-                        setEmail(event.value.email);
-                    }}
+                    // onChange={(event) => {
+                    //     setEmail(event.value.email);
+                    // }}
                 /> */}
                 <MDTypography mt={2} mb={1} variant="h6">
                     Shipping
                 </MDTypography>
                 <AddressElement
-                    options={{ mode: "shipping", allowedCountries: ["UK"] }}
+                    options={{
+                        mode: "shipping",
+
+                        allowedCountries: ["UK"],
+                        defaultValues: {
+                            name: guestCheckout.name,
+                            address: { country: "UK" },
+                        },
+                    }}
                 />
                 <MDTypography mt={2} mb={1} variant="h6">
                     Payment

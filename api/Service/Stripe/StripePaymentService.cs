@@ -9,8 +9,8 @@ namespace api.Service.Stripe
 {
     public interface IStripePaymentService
     {
-        Task<bool> AddAsync(StripePayment model);
-        Task<PaymentIntentResponse> CreateIntentAsync(User user,
+        Task<int> AddAsync(StripePayment model);
+        Task<PaymentIntentResponse> CreateIntentAsync(User user, int cartId,
             StripeCoupon? coupon = null, string? promoCode = null);
     }
 
@@ -22,12 +22,12 @@ namespace api.Service.Stripe
         private readonly ICartService _cartService = cartService;
         private readonly IStripePaymentRepository _stripePaymentRepository = stripePaymentRepository;
 
-        public async Task<bool> AddAsync(StripePayment model)
+        public async Task<int> AddAsync(StripePayment model)
         {
             return await _stripePaymentRepository.AddAsync(model);
         }
 
-        public async Task<PaymentIntentResponse> CreateIntentAsync(User user, StripeCoupon? coupon = null, string? promoCode = null)
+        public async Task<PaymentIntentResponse> CreateIntentAsync(User user, int cartId, StripeCoupon? coupon = null, string? promoCode = null)
         {
             long discountedAmount = 0;
 
@@ -43,7 +43,7 @@ namespace api.Service.Stripe
                 if (coupon.PercentOff > 0)
                 {
                     discountedAmount = amount * coupon.PercentOff.Value / 100;
-                    amount -= amount * (long)coupon.PercentOff.Value / 100;
+                    amount -= amount * coupon.PercentOff.Value / 100;
                 }
 
                 if (coupon.FixedAmountOff is > 0)
@@ -56,7 +56,7 @@ namespace api.Service.Stripe
             {
                 var metaData = new Dictionary<string, string>
                 {
-                    // { "Tokens", price.TransformQuantity.DivideBy.ToString() }
+                    { "CartId", cartId.ToString() }
                 };
 
                 if (promoCode is not null)

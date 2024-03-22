@@ -1,4 +1,5 @@
 using api.Data;
+using api.Dto;
 using api.Helper;
 using api.Infrastructure;
 
@@ -11,7 +12,7 @@ namespace api.Repository
         Task<User?> GetByEmailAsync(string email);
         Task<User?> GetByGuestCheckoutIdAsync(Guid guestCheckoutId);
         Task<User?> GetByCustomerIdAsync(string customerId);
-        Task CreateGuestAccountAsync(string email, Guid guestCheckoutId);
+        Task CreateGuestAccountAsync(GuestCheckoutDto dto);
         Task SetStripeCustomerIdAsync(string customerId, int userId);
         Task SetStripeCustomerDeletedAsync(string customerId, DateTime? deletedDate);
         Task SetEmailAsync(string email, Guid guestCheckoutId);
@@ -48,9 +49,15 @@ namespace api.Repository
             return await QuerySingleOrDefaultAsync<User>($"{DapperHelper.Select(Table, Fields)} WHERE StripeCustomerId = @customerId AND RemovedDate IS NULL", new { customerId });
         }
 
-        public async Task CreateGuestAccountAsync(string email, Guid guestCheckoutId)
+        public async Task CreateGuestAccountAsync(GuestCheckoutDto dto)
         {
-            await ExecuteAsync($"INSERT INTO {Table} (Email, GuestCheckoutId) VALUES (@email, @guestCheckoutId)", new { email, guestCheckoutId });
+            await ExecuteAsync($"INSERT INTO {Table} (Name, Email, GuestCheckoutId) VALUES (@name, @email, @guestCheckoutId)",
+                new
+                {
+                    guestCheckoutId = dto.Id,
+                    name = dto.Name,
+                    email = dto.Email
+                });
             // await ExecuteAsync(DapperHelper.Insert(Table, Fields), model);
         }
 

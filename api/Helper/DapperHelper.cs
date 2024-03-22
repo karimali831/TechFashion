@@ -63,7 +63,7 @@ namespace api.Helper
         public static string Insert(string table, string[] fields)
         {
             return
-                $";INSERT INTO {table} ({string.Join(", ", fields)}) VALUES ({string.Join(", ", fields.Select(f => $"@{f}"))})";
+                $";INSERT INTO {table} ({string.Join(", ", fields.Skip(1))}) VALUES ({string.Join(", ", fields.Skip(1).Select(f => $"@{f}"))}); SELECT CAST(SCOPE_IDENTITY() as int)";
         }
 
         public static string Delete(string table)

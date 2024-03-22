@@ -1,4 +1,5 @@
 using api.Data;
+using api.Dto;
 using api.Repository;
 using Stripe;
 
@@ -11,7 +12,7 @@ namespace api.Service
         Task<User?> GetByEmailAsync(string email);
         Task<User?> GetByGuestCheckoutIdAsync(Guid guestCheckoutId);
         Task<User?> GetByCustomerIdAsync(string customerId);
-        Task<User?> CreateGuestAccountAsync(string email, Guid guestCheckoutId);
+        Task<User?> CreateGuestAccountAsync(GuestCheckoutDto dto);
         Task SetCustomerIdAsync(string customerId, int userId);
         Task SetStripeCustomerDeletedAsync(string customerId, DateTime? deletedDate);
         Task SetEmailAsync(string email, Guid guestCheckoutId);
@@ -55,10 +56,10 @@ namespace api.Service
             return user;
         }
 
-        public async Task<User?> CreateGuestAccountAsync(string email, Guid guestCheckoutId)
+        public async Task<User?> CreateGuestAccountAsync(GuestCheckoutDto dto)
         {
-            await _userRepository.CreateGuestAccountAsync(email, guestCheckoutId);
-            return await GetByEmailAsync(email);
+            await _userRepository.CreateGuestAccountAsync(dto);
+            return await GetByEmailAsync(dto.Email);
         }
 
         public async Task SetCustomerIdAsync(string customerId, int userId)

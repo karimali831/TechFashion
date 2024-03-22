@@ -12,26 +12,26 @@ namespace api.Service.Ebay
 {
     public interface IEbayFeedService
     {
-        Task<EbayList<Order, EbayFilter>> GetItemsAsync();
+        // Task<EbayList<Order, EbayFilter>> GetItemsAsync();
     }
 
     public class EbayFeedService(IOptions<EbayConfig> configuration) : EbayBaseService(configuration), IEbayFeedService
     {
-        public async Task<EbayList<Order, EbayFilter>> GetItemsAsync()
-        {
-            var clientToken = GetClientToken();
-            var accessToken = await GetAccessTokenAsync("");
+        // public async Task<EbayList<Order, EbayFilter>> GetItemsAsync()
+        // {
+        //     var clientToken = GetClientToken();
+        //     var accessToken = await GetAccessTokenAsync("");
 
-            var limit = 10; //getting 10 records at a time
-            var orderService = new OrderService(clientToken, accessToken);
-            EbayList<Order, EbayFilter>? orders = null;
-            do
-            {
-                var filter = orders != null ? orders.GetNextPageFilter() : new EbayFilter(limit);
-                orders = await orderService.GetAllAsync(filter);
-            } while (orders.HasNextPage());
+        //     var limit = 10; //getting 10 records at a time
+        //     var orderService = new OrderService(clientToken, accessToken);
+        //     EbayList<Order, EbayFilter>? orders = null;
+        //     do
+        //     {
+        //         var filter = orders != null ? orders.GetNextPageFilter() : new EbayFilter(limit);
+        //         orders = await orderService.GetAllAsync(filter);
+        //     } while (orders.HasNextPage());
 
-            return orders;
-        }
+        //     return orders;
+        // }
     }
 }

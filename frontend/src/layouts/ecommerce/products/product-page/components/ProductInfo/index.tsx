@@ -43,11 +43,11 @@ function ProductInfo({ item }: IProps): JSX.Element {
         useAddProductToCartMutation();
     const [updateProductQuantity] = useUpdateProductQuantityMutation();
 
-    const { guestCheckoutId } = useAppSelector(getCartState);
+    const { guestCheckout } = useAppSelector(getCartState);
 
     const { data: cart } = useGetCartQuery({
         firebaseUid: null,
-        guestCheckoutId,
+        guestCheckoutId: guestCheckout.id,
     });
 
     const { data: products } = useGetProductQuery();
@@ -148,7 +148,7 @@ function ProductInfo({ item }: IProps): JSX.Element {
             await addProductToCart({
                 cartUser: {
                     firebaseUid: null,
-                    guestCheckoutId,
+                    guestCheckoutId: guestCheckout.id,
                 },
                 quantity,
                 productId: product.id,

@@ -6,7 +6,7 @@ namespace api.Repository.Stripe
 {
     public interface IStripePaymentRepository
     {
-        Task<bool> AddAsync(StripePayment model);
+        Task<int> AddAsync(StripePayment model);
     }
 
     public class StripePaymentRepository(IConfiguration configuration) : DapperBaseRepository(configuration),
@@ -16,9 +16,10 @@ namespace api.Repository.Stripe
         private static readonly string[] Fields = typeof(StripePayment).SqlFields();
 
 
-        public async Task<bool> AddAsync(StripePayment model)
+        public async Task<int> AddAsync(StripePayment model)
         {
-            return await ExecuteAsync(DapperHelper.Insert(Table, Fields), model);
+            var result = await QueryAsync<int>(DapperHelper.Insert(Table, Fields), model);
+            return result.Single();
         }
     }
 }

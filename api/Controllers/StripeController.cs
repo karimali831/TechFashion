@@ -1,12 +1,13 @@
 using api.Config;
+using api.Data;
 using api.Data.Stripe;
+using api.Enum;
 using api.ExceptionHandler;
 using api.Service;
 using api.Service.Stripe;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Validations;
 using Stripe;
 
 namespace api.Controllers
@@ -20,14 +21,18 @@ namespace api.Controllers
         IStripePaymentService stripePaymentService,
         IExceptionHandlerService exceptionHandlerService,
         IStripePaymentMethodService stripePaymentMethodService,
-        ICartProductService cartProductService) : Controller
+        ICustomerAddressService customerAddressService,
+        IOrderService orderService,
+        ICartService cartService) : Controller
     {
         private readonly IOptions<StripeConfig> _stripeConfig = stripeConfig;
         private readonly IUserService _userService = userService;
         private readonly IStripePaymentService _stripePaymentService = stripePaymentService;
         private readonly IExceptionHandlerService _exceptionHandlerService = exceptionHandlerService;
         private readonly IStripePaymentMethodService _stripePaymentMethodService = stripePaymentMethodService;
-        private readonly ICartProductService _cartProductService = cartProductService;
+        private readonly ICustomerAddressService _customerAddressService = customerAddressService;
+        private readonly IOrderService _orderService = orderService;
+        private readonly ICartService _cartService = cartService;
 
 
         [HttpPost("Webhook")]
@@ -49,16 +54,6 @@ namespace api.Controllers
                     {
                         await _userService.SetStripeCustomerDeletedAsync(customer.Id, DateTime.UtcNow);
                     }
-
-                    if (stripeEvent.Type == Events.CustomerCreated)
-                    {
-                        // var user = await _userService.GetByCustomerIdAsync(customer.Id);
-
-                        // if (user is not null && (user.StripeCustomerId is null || user.StripeCustomerId != customer.Id))
-                        // {
-                        //     await _userService.SetCustomerIdAsync(customer.Id, user.Id);
-                        // }
-                    }
                 }
 
                 if (stripeEvent.Data.Object is PaymentIntent paymentIntent)
@@ -76,16 +71,10 @@ namespace api.Controllers
                                 throw exp;
                             }
 
-                            // if (paymentIntent.CustomerId is not null && user.StripeCustomerId != paymentIntent.CustomerId)
-                            // {
-                            //     await _userService.SetCustomerIdAsync(paymentIntent.CustomerId, user.Id);
-                            // }
-
-                            var shipping = paymentIntent.Shipping;
-
                             var paymentMethod = await _stripePaymentMethodService.GetAsync(paymentIntent.PaymentMethodId);
 
-                            await _stripePaymentService.AddAsync(
+
+                            var paymentId = await _stripePaymentService.AddAsync(
                                 new StripePayment
                                 {
                                     UserId = user.Id,
@@ -97,8 +86,34 @@ namespace api.Controllers
 
                                 });
 
-                            // Empty card
-                            // await _cartProductService.RemoveProductAsync()
+                            var shippingName = paymentIntent.Shipping.Name;
+                            var shippingAddress = paymentIntent.Shipping.Address;
+
+                            var shippingAddressId = await _customerAddressService.AddAsync(
+                                new CustomerAddress
+                                {
+                                    UserId = user.Id,
+                                    Name = shippingName,
+                                    Line1 = shippingAddress.Line1,
+                                    Line2 = shippingAddress.Line2,
+                                    City = shippingAddress.City,
+                                    PostalCode = shippingAddress.PostalCode,
+                                    Country = shippingAddress.Country
+                                });
+
+                            var cartId = int.Parse(paymentIntent.Metadata.First(x => x.Key == "CartId").Value);
+
+                            // Create order
+                            await _orderService.AddAsync(new Order
+                            {
+                                CartId = cartId,
+                                PaymentId = paymentId,
+                                ShippingAddressId = shippingAddressId,
+                                Status = OrderStatus.Open
+                            });
+
+                            // Empty cart
+                            await _cartService.EmptyAsync(cartId);
                         }
                         catch (Exception exp)
                         {

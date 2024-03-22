@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { ICartProductDetail } from "src/interface/ICartProductDetail";
 import { baseApiUrl } from "./baseApi";
+import { IGuestCheckout } from "src/interface/IGuestCheckout";
 
 export const cartApi = createApi({
     reducerPath: "cartApi",
@@ -68,7 +69,9 @@ export interface ICartProductQuantityRequest {
 }
 
 export interface ICartResponse {
+    id: number;
     products: ICartProductDetail[];
+    total: number;
     totalStr: string;
 }
 
@@ -80,8 +83,9 @@ export interface IAddProductToCartRequest {
 }
 
 export interface IPaymentIntentRequest {
-    cartUser: ICartUserRequest;
-    guestEmail?: string;
+    cartId: number;
+    firebaseUid?: string;
+    guestUser?: IGuestCheckout;
     promoCode?: string;
 }
 

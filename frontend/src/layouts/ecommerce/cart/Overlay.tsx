@@ -39,13 +39,12 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
     const [quantity, setQuantity] = useState<IProductCartQuantity | null>(null);
     // const [email, setEmail] = useState<string>("");
 
-    const { guestCheckoutId, guestCheckoutEmail } =
-        useAppSelector(getCartState);
+    const { guestCheckout } = useAppSelector(getCartState);
     const dispatch = useAppDispatch();
 
     const { data: cart } = useGetCartQuery({
         firebaseUid: null,
-        guestCheckoutId,
+        guestCheckoutId: guestCheckout.id,
     });
     const { data: products, isLoading: loadingProducts } = useGetProductQuery();
 
@@ -98,7 +97,7 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
     const onCheckoutClick = () => {
         dispatch(OpenCartOverlayAction(false));
 
-        if (guestCheckoutEmail !== "") {
+        if (guestCheckout.email !== "" && guestCheckout.name !== "") {
             navigate("/cart");
         } else {
             dispatch(OpenCartAccountModalAction(true));

@@ -11,7 +11,8 @@ namespace api.Service
     {
         Task<CartViewModel?> GetAsync(int userId);
         Task<CartViewModel?> GetAsync(CartUserDto dto);
-        Task EmptyAsync(int userId);
+        Task EmptyAsync(User user);
+        Task EmptyAsync(int cartId);
         Task SetUserIdAsync(int userId, Guid guestCheckoutId);
     }
 
@@ -25,15 +26,14 @@ namespace api.Service
         private readonly IUserService _userService = userService;
         private readonly ICartProductRepository _cartProductRepository = cartProductRepository;
 
-        public async Task EmptyAsync(int userId)
+
+        public async Task EmptyAsync(int cartId)
         {
-            var user = await _userService.GetByIdAsync(userId);
+            await _cartRepository.EmptyAsync(cartId);
+        }
 
-            if (user is null)
-            {
-                throw new ApplicationException("Unhandled error");
-            }
-
+        public async Task EmptyAsync(User user)
+        {
             Cart? cart;
             if (user.GuestCheckoutId.HasValue)
             {
@@ -49,7 +49,7 @@ namespace api.Service
                 throw new ApplicationException("Unhandled error");
             }
 
-            await _cartRepository.EmptyAsync(cart.Id);
+            await EmptyAsync(cart.Id);
         }
 
         public async Task<CartViewModel?> GetAsync(int userId)
@@ -106,6 +106,7 @@ namespace api.Service
 
             return new CartViewModel
             {
+                Id = cart.Id,
                 Products = products,
                 Total = total,
                 TotalStr = total.ToCurrencyGbp()

@@ -40,7 +40,7 @@ namespace api.Service.Stripe
 
             var options = new CustomerCreateOptions
             {
-                Name = user.FullName,
+                Name = user.Name,
                 Email = user.Email,
                 Metadata = new Dictionary<string, string>
                 {

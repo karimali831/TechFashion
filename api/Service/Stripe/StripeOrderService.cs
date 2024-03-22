@@ -26,13 +26,13 @@ namespace api.Service
         public async Task<PaymentIntentResponse> InitiateAsync(PaymentIntentRequest request)
         {
             User? user = null;
-            if (request.CartUser.FirebaseUid is not null)
+            if (request.FirebaseUid is not null)
             {
-                user = await _userService.GetByFirebaseUIdAsync(request.CartUser.FirebaseUid);
+                user = await _userService.GetByFirebaseUIdAsync(request.FirebaseUid);
             }
-            else if (request.GuestEmail is not null && request.CartUser.GuestCheckoutId.HasValue)
+            else if (request.GuestUser is not null)
             {
-                var userByEmail = await _userService.GetByEmailAsync(request.GuestEmail);
+                var userByEmail = await _userService.GetByEmailAsync(request.GuestUser.Email);
 
                 if (userByEmail is not null)
                 {
@@ -40,28 +40,28 @@ namespace api.Service
                 }
                 else
                 {
-                    var userByGuestCheckout = await _userService.GetByGuestCheckoutIdAsync(request.CartUser.GuestCheckoutId.Value);
+                    var userByGuestCheckout = await _userService.GetByGuestCheckoutIdAsync(request.GuestUser.Id);
 
                     if (userByGuestCheckout is not null)
                     {
-                        if (userByGuestCheckout.Email == "")
-                        {
-                            await _userService.SetEmailAsync(userByGuestCheckout.Email, request.CartUser.GuestCheckoutId.Value);
-                        }
+                        // if (userByGuestCheckout.Email == "")
+                        // {
+                        //     await _userService.SetEmailAsync(userByGuestCheckout.Email, request.GuestUser.Id);
+                        // }
 
                         user = userByGuestCheckout;
                     }
                     else
                     {
-                        user = await _userService.CreateGuestAccountAsync(request.GuestEmail, request.CartUser.GuestCheckoutId.Value);
+                        user = await _userService.CreateGuestAccountAsync(request.GuestUser);
 
                     }
-
-                    if (user is null)
-                        throw new ApplicationException("An error occurred");
-
-                    await _cartService.SetUserIdAsync(user.Id, request.CartUser.GuestCheckoutId.Value);
                 }
+
+                if (user is null)
+                    throw new ApplicationException("An error occurred");
+
+                await _cartService.SetUserIdAsync(user.Id, request.GuestUser.Id);
             }
 
             if (user is null)
@@ -80,14 +80,13 @@ namespace api.Service
 
                 if (couponByPromoCode is null)
                 {
-
                     return new PaymentIntentResponse { ErrorMsg = "Invalid promotion code" };
                 }
 
                 coupon = couponByPromoCode;
             }
 
-            return await _stripePaymentService.CreateIntentAsync(user, coupon, request.PromoCode);
+            return await _stripePaymentService.CreateIntentAsync(user, request.CartId, coupon, request.PromoCode);
         }
     }
 }

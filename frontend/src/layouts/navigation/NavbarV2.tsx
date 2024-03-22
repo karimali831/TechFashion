@@ -14,7 +14,7 @@ import { useAppDispatch, useAppSelector } from "src/state/Hooks";
 import {
     OpenCartAccountModalAction,
     OpenCartOverlayAction,
-    SetGuestCheckoutEmailAction,
+    SetGuestCheckoutAction,
 } from "src/state/contexts/cart/Actions";
 import { getCartState } from "src/state/contexts/cart/Selectors";
 import { OverlaySlider, OverlaySliderSize } from "src/components/OverlaySlider";
@@ -26,22 +26,15 @@ import { ICartProductDetail } from "src/interface/ICartProductDetail";
 import { MDModal } from "src/components/MDModal";
 import MDInput from "src/components/MDInput";
 import { ActionButton } from "src/components/Buttons/ActionButton";
-// import { persistor } from "src/state/InitialiseStore";
-
-// const pages = ["Home", "Shop", "Blog", "Contact"];
-// const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function NavbarV2() {
     const navigate: NavigateFunction = useNavigate();
 
-    const {
-        guestCheckoutId,
-        guestCheckoutEmail,
-        openOverlay,
-        openAccountModal,
-    } = useAppSelector(getCartState);
+    const { guestCheckout, openOverlay, openAccountModal } =
+        useAppSelector(getCartState);
 
-    const [email, setEmail] = React.useState<string>(guestCheckoutEmail);
+    const [email, setEmail] = React.useState<string>(guestCheckout.email);
+    const [name, setName] = React.useState<string>(guestCheckout.name);
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
         null
     );
@@ -55,7 +48,7 @@ function NavbarV2() {
 
     const { data: cart } = useGetCartQuery({
         firebaseUid: null,
-        guestCheckoutId,
+        guestCheckoutId: guestCheckout.id,
     });
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -81,32 +74,49 @@ function NavbarV2() {
     // };
 
     const goToPayment = () => {
-        dispatch(SetGuestCheckoutEmailAction(email));
-        dispatch(OpenCartAccountModalAction(false));
+        dispatch(
+            SetGuestCheckoutAction({
+                ...guestCheckout,
+                email,
+                name,
+            })
+        );
 
+        dispatch(OpenCartAccountModalAction(false));
         navigate("/cart");
     };
-
-    console.log(guestCheckoutEmail);
 
     return (
         <Box>
             <MDModal
-                title="Account"
+                title="Guest Account"
                 content={
-                    <Box mt={2}>
-                        <MDInput
-                            value={email}
-                            label={"Guest Email"}
-                            variant="standard"
-                            fullWidth={true}
-                            onChange={(
-                                e: React.ChangeEvent<HTMLInputElement>
-                            ) => setEmail(e.target.value)}
-                        />
+                    <Box>
+                        <Box mt={2}>
+                            <MDInput
+                                value={name}
+                                label={"Full name"}
+                                variant="outlined"
+                                fullWidth={true}
+                                onChange={(
+                                    e: React.ChangeEvent<HTMLInputElement>
+                                ) => setName(e.target.value)}
+                            />
+                        </Box>
+                        <Box mt={2}>
+                            <MDInput
+                                value={email}
+                                label={"Email"}
+                                variant="outlined"
+                                fullWidth={true}
+                                onChange={(
+                                    e: React.ChangeEvent<HTMLInputElement>
+                                ) => setEmail(e.target.value)}
+                            />
+                        </Box>
                         <Box mt={2}>
                             <ActionButton
-                                disabled={email.length < 4}
+                                disabled={email.length < 4 || name.length < 3}
                                 text="go to payment"
                                 onClick={goToPayment}
                             />

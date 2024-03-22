@@ -17,13 +17,13 @@ namespace api.Controllers
         private readonly IEbayFeedService _ebayFeedService = ebayFeedService;
 
 
-        [HttpGet("test")]
-        public async Task<IActionResult> Test()
-        {
-            var items = await _ebayFeedService.GetItemsAsync();
+        // [HttpGet("test")]
+        // public async Task<IActionResult> Test()
+        // {
+        //     var items = await _ebayFeedService.GetItemsAsync();
 
-            return Ok(items);
-        }
+        //     return Ok(items);
+        // }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()

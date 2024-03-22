@@ -29,8 +29,11 @@ namespace api
 
             services.AddScoped<ICartProductService, CartProductService>();
             services.AddScoped<ICartService, CartService>();
+            services.AddScoped<ICustomerAddressService, CustomerAddressService>();
+            services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IProductListingService, ProductListingService>();
             services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IReturnService, ReturnService>();
             services.AddScoped<IUserService, UserService>();
 
             // Repositories
@@ -39,11 +42,13 @@ namespace api
             services.AddScoped<IStripeCouponRepository, StripeCouponRepository>();
             services.AddScoped<IStripePaymentRepository, StripePaymentRepository>();
             services.AddScoped<IStripePromotionRepository, StripePromotionRepository>();
-
             services.AddScoped<ICartProductRepository, CartProductRepository>();
             services.AddScoped<ICartRepository, CartRepository>();
+            services.AddScoped<ICustomerAddressRepository, CustomerAddressRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductVariantRepository, ProductVariantRepository>();
+            services.AddScoped<IReturnRepository, ReturnRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
 
             return services;

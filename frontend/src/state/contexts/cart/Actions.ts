@@ -1,20 +1,16 @@
 import { createAction } from "@reduxjs/toolkit";
+import { IGuestCheckout } from "src/interface/IGuestCheckout";
 
 const OpenCartOverlayAction = createAction<boolean>("@@Cart/OpenCartOverlay");
 const OpenCartAccountModalAction = createAction<boolean>(
     "@@Cart/OpenCartAccountModal"
 );
-const SetGuestCheckoutIdAction = createAction<string | null>(
-    "@@Cart/SetGuestCheckoutId"
-);
-
-const SetGuestCheckoutEmailAction = createAction<string | null>(
-    "@@Cart/SetGuestCheckoutEmail"
+const SetGuestCheckoutAction = createAction<IGuestCheckout | null>(
+    "@@Cart/SetGuestCheckout"
 );
 
 export {
     OpenCartOverlayAction,
-    SetGuestCheckoutIdAction,
     OpenCartAccountModalAction,
-    SetGuestCheckoutEmailAction,
+    SetGuestCheckoutAction,
 };
