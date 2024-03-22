@@ -15,7 +15,7 @@ namespace api.Repository
         Task CreateGuestAccountAsync(GuestCheckoutDto dto);
         Task SetStripeCustomerIdAsync(string customerId, int userId);
         Task SetStripeCustomerDeletedAsync(string customerId, DateTime? deletedDate);
-        Task SetEmailAsync(string email, Guid guestCheckoutId);
+        Task SetNameAsync(string name, int userId);
     }
 
     public class UserRepository(IConfiguration configuration) : DapperBaseRepository(configuration),
@@ -77,6 +77,12 @@ namespace api.Repository
         {
             await ExecuteAsync($"UPDATE {Table} SET Email = @email WHERE GuestCheckoutId = @guestCheckoutId",
                 new { guestCheckoutId });
+        }
+
+        public async Task SetNameAsync(string name, int userId)
+        {
+            await ExecuteAsync($"UPDATE {Table} SET Name = @name WHERE Id = @userId",
+              new { name, userId });
         }
     }
 }

@@ -15,7 +15,7 @@ namespace api.Service
         Task<User?> CreateGuestAccountAsync(GuestCheckoutDto dto);
         Task SetCustomerIdAsync(string customerId, int userId);
         Task SetStripeCustomerDeletedAsync(string customerId, DateTime? deletedDate);
-        Task SetEmailAsync(string email, Guid guestCheckoutId);
+        Task SetNameAsync(string name, int userId);
     }
 
     public class UserService(IUserRepository userRepository) : IUserService
@@ -95,9 +95,10 @@ namespace api.Service
             await _userRepository.SetStripeCustomerDeletedAsync(customerId, deletedDate);
         }
 
-        public async Task SetEmailAsync(string email, Guid guestCheckoutId)
+
+        public async Task SetNameAsync(string name, int userId)
         {
-            await _userRepository.SetEmailAsync(email, guestCheckoutId);
+            await _userRepository.SetNameAsync(name, userId);
         }
     }
 }

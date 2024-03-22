@@ -13,8 +13,9 @@ export const Success = () => {
         if (!!guestCheckout) {
             dispatch(
                 SetGuestCheckoutAction({
-                    ...guestCheckout,
                     id: window.crypto.randomUUID(),
+                    name: "",
+                    email: "",
                 })
             );
         }

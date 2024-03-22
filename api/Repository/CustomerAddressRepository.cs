@@ -6,8 +6,8 @@ namespace api.Repository
 {
     public interface ICustomerAddressRepository
     {
-        Task<int> AddAsync(CustomerAddress model);
-        Task<CustomerAddress?> FindAsync(int userId, string addressLine1, string postalCode);
+        Task<int> GetOrAddAsync(CustomerAddress model);
+        Task<CustomerAddress?> FindAsync(CustomerAddress model);
     }
 
     public class CustomerAddressRepository(IConfiguration configuration) : DapperBaseRepository(configuration), ICustomerAddressRepository
@@ -16,9 +16,9 @@ namespace api.Repository
         private static readonly string[] Fields = typeof(CustomerAddress).DapperFields();
 
 
-        public async Task<int> AddAsync(CustomerAddress model)
+        public async Task<int> GetOrAddAsync(CustomerAddress model)
         {
-            var exists = await FindAsync(model.UserId, model.Line1, model.PostalCode);
+            var exists = await FindAsync(model);
 
             if (exists is not null)
             {
@@ -29,14 +29,15 @@ namespace api.Repository
             return result.Single();
         }
 
-        public async Task<CustomerAddress?> FindAsync(int userId, string addressLine1, string postalCode)
+        public async Task<CustomerAddress?> FindAsync(CustomerAddress model)
         {
-            return await QueryFirstOrDefaultAsync<CustomerAddress>($"{DapperHelper.Select(Table, Fields)} WHERE UserId = @userId AND Line1 = @addressLine1 AND PostalCode = @postalCode",
+            return await QueryFirstOrDefaultAsync<CustomerAddress>($"{DapperHelper.Select(Table, Fields)} WHERE UserId = @userId AND Name = @name AND Line1 = @addressLine1 AND PostalCode = @postalCode",
                 new
                 {
-                    userId,
-                    addressLine1,
-                    postalCode
+                    userId = model.UserId,
+                    name = model.Name,
+                    addressLine1 = model.Line1,
+                    postalCode = model.PostalCode
                 });
         }
     }

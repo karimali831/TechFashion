@@ -33,6 +33,7 @@ export const Checkout = ({ clientSecret }: IProps) => {
     const handleSubmit = async (ev: React.FormEvent<HTMLFormElement>) => {
         ev.preventDefault();
 
+        setProcessing(true);
         // Trigger form validation and wallet collection
         const { error: submitError } = await elements.submit();
 

@@ -73,7 +73,6 @@ namespace api.Controllers
 
                             var paymentMethod = await _stripePaymentMethodService.GetAsync(paymentIntent.PaymentMethodId);
 
-
                             var paymentId = await _stripePaymentService.AddAsync(
                                 new StripePayment
                                 {
@@ -89,7 +88,7 @@ namespace api.Controllers
                             var shippingName = paymentIntent.Shipping.Name;
                             var shippingAddress = paymentIntent.Shipping.Address;
 
-                            var shippingAddressId = await _customerAddressService.AddAsync(
+                            var shippingAddressId = await _customerAddressService.GetOrAddAsync(
                                 new CustomerAddress
                                 {
                                     UserId = user.Id,
