@@ -36,7 +36,7 @@ namespace api.Service
 
                 if (userByEmail is not null)
                 {
-                    return new PaymentIntentResponse { ErrorMsg = "Account already exists, please login" };
+                    user = userByEmail;
                 }
                 else
                 {

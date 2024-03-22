@@ -23,6 +23,7 @@ import {
     OpenCartAccountModalAction,
     OpenCartOverlayAction,
 } from "src/state/contexts/cart/Actions";
+import { useNavigate } from "react-router-dom";
 
 interface IProductCartQuantity {
     id: number;
@@ -38,7 +39,8 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
     const [quantity, setQuantity] = useState<IProductCartQuantity | null>(null);
     // const [email, setEmail] = useState<string>("");
 
-    const { guestCheckoutId } = useAppSelector(getCartState);
+    const { guestCheckoutId, guestCheckoutEmail } =
+        useAppSelector(getCartState);
     const dispatch = useAppDispatch();
 
     const { data: cart } = useGetCartQuery({
@@ -47,7 +49,7 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
     });
     const { data: products, isLoading: loadingProducts } = useGetProductQuery();
 
-    // const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     const itemsInCart: ICartProductDetail[] = cart?.products ?? [];
 
@@ -56,8 +58,6 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
 
     const [removeProductFromCart, { isLoading: removingProduct }] =
         useRemoveProductFromCartMutation();
-
-    // const navigate = useNavigate();
 
     useEffectSkipInitialRender(() => {
         if (!updatingProductQuantity && !removingProduct && updating) {
@@ -97,7 +97,12 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
 
     const onCheckoutClick = () => {
         dispatch(OpenCartOverlayAction(false));
-        dispatch(OpenCartAccountModalAction(true));
+
+        if (guestCheckoutEmail !== "") {
+            navigate("/cart");
+        } else {
+            dispatch(OpenCartAccountModalAction(true));
+        }
     };
 
     if (loadingProducts) {

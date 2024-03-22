@@ -26,6 +26,7 @@ import { ICartProductDetail } from "src/interface/ICartProductDetail";
 import { MDModal } from "src/components/MDModal";
 import MDInput from "src/components/MDInput";
 import { ActionButton } from "src/components/Buttons/ActionButton";
+import useEffectSkipInitialRender from "src/hooks/useEffectSkipInitialRender";
 
 // const pages = ["Home", "Shop", "Blog", "Contact"];
 // const settings = ["Profile", "Account", "Dashboard", "Logout"];
@@ -73,12 +74,20 @@ function NavbarV2() {
         navigate(url);
     };
 
+    useEffectSkipInitialRender(() => {
+        if (openAccountModal && guestCheckoutEmail === "") {
+            dispatch(OpenCartAccountModalAction(true));
+        }
+    }, [guestCheckoutEmail]);
+
     // const handleCloseUserMenu = () => {
     //     setAnchorElUser(null);
     // };
 
     const goToPayment = () => {
         dispatch(SetGuestCheckoutEmailAction(email));
+        dispatch(OpenCartAccountModalAction(false));
+
         navigate("/cart");
     };
 
