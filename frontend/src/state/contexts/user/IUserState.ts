@@ -1,35 +1,18 @@
-// import { IPayment } from '../../../models/IPayment'
-// import { IPromotion } from '../../../models/IPromotion'
-// import { IUser } from '../../../models/IUser'
+import { User } from "firebase/auth";
+import { IUser } from "src/data/IUser";
 
-// export interface IUserState {
-//     user: IUser | null
-//     signingIn: boolean
-//     authSuccess: boolean
-//     camOn: boolean
-//     djReady: boolean
-//     defaultController: string | null
-//     firebaseUid: string | null
-//     promotions: IPromotion[]
-//     payments: IPayment[]
-//     loadingPromoCodes: boolean
-//     loadingPayments: boolean
-//     paymentsFailure: string | null
-//     promotionsFailure: string | null
-// }
+export interface IUserState {
+    user: IUser | null;
+    authSuccess: boolean;
+    firebaseUid: string | null;
+    signingIn: boolean;
+}
 
-// export const userInitialState: IUserState = {
-//     user: null,
-//     signingIn: false,
-//     authSuccess: false,
-//     camOn: false,
-//     djReady: false,
-//     defaultController: null,
-//     firebaseUid: null,
-//     promotions: [],
-//     payments: [],
-//     loadingPromoCodes: false,
-//     loadingPayments: false,
-//     paymentsFailure: null,
-//     promotionsFailure: null
-// }
+export const userInitialState: IUserState = {
+    user: null,
+    authSuccess: false,
+    firebaseUid: null,
+    signingIn: false,
+};
+
+export type IFirebaseUser = User;

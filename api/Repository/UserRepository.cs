@@ -16,6 +16,7 @@ namespace api.Repository
         Task SetStripeCustomerIdAsync(string customerId, int userId);
         Task SetStripeCustomerDeletedAsync(string customerId, DateTime? deletedDate);
         Task SetNameAsync(string name, int userId);
+        Task CreateAsync(CreateUsertDto dto);
     }
 
     public class UserRepository(IConfiguration configuration) : DapperBaseRepository(configuration),
@@ -73,16 +74,21 @@ namespace api.Repository
                 new { customerId, deletedDate });
         }
 
-        public async Task SetEmailAsync(string email, Guid guestCheckoutId)
-        {
-            await ExecuteAsync($"UPDATE {Table} SET Email = @email WHERE GuestCheckoutId = @guestCheckoutId",
-                new { guestCheckoutId });
-        }
-
         public async Task SetNameAsync(string name, int userId)
         {
             await ExecuteAsync($"UPDATE {Table} SET Name = @name WHERE Id = @userId",
               new { name, userId });
+        }
+
+        public async Task CreateAsync(CreateUsertDto dto)
+        {
+            await ExecuteAsync($"INSERT INTO {Table} (Name, Email, FirebaseUid) VALUES (@name, @email, @firebaseUid)",
+                new
+                {
+                    firebaseUid = dto.FirebaseUid,
+                    name = dto.Name,
+                    email = dto.Email
+                });
         }
     }
 }

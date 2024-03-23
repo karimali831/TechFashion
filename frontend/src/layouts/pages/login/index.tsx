@@ -1,73 +1,175 @@
-import React, { useState } from "react";
+import { CheckCircle } from "@mui/icons-material";
+import { Button, Fade } from "@mui/material";
+import {
+    browserLocalPersistence,
+    sendPasswordResetEmail,
+    signInWithEmailAndPassword,
+} from "firebase/auth";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-// import { addUser, updateLoginStatus } from "../../features/slices/authSlice";
+import { ClipLoader } from "react-spinners";
+import { FormInput, FormValidation } from "src/components/Form";
+import { FormMessage } from "src/components/Form/Message";
+import { auth } from "src/config/firebase";
+import { IFormMessage, IFormMessageCode } from "src/enum/IFormMessage";
+import { useAppDispatch, useAppSelector } from "src/state/Hooks";
+import { SigninLoadingAction } from "src/state/contexts/user/Actions";
+import { getUserState } from "src/state/contexts/user/Selectors";
 // import Swal from "sweetalert2";
 
-const Login = (): JSX.Element => {
-    const [email, setEmail] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
+type FormFields = {
+    email: FormValidation;
+    password: FormValidation;
+};
 
-    // const dispatch: Dispatch<any> = useDispatch();
-    // const { users } = useSelector((store: any) => store.auth);
-    //   user login
-    const handleUserLogin = (e: { preventDefault: () => void }): void => {
-        e.preventDefault();
-        // const newUser = {
-        //     email,
-        //     password,
-        // };
-        // if (users.length < 1) {
-        //     // dispatch(addUser(newUser));
-        //     // dispatch(updateLoginStatus(true));
-        //     setEmail("");
-        //     setPassword("");
-        // } else {
-        //     Swal.fire({
-        //         icon: "error",
-        //         title: "Oops...",
-        //         text: "User already logged in!",
-        //     });
-        // }
+const Login = (): JSX.Element => {
+    const [messages, setMessages] = useState<IFormMessage[]>([]);
+
+    const dispatch = useAppDispatch();
+    const { authSuccess, signingIn } = useAppSelector(getUserState);
+
+    const [formFields, setFormFields] = useState<FormFields>({
+        email: {
+            value: "",
+            emailValidator: true,
+        },
+        password: {
+            value: "",
+            minCharsRequired: 6,
+        },
+    });
+
+    const { email, password } = formFields;
+
+    const formMessage = messages.find(
+        (x) =>
+            x.code !== IFormMessageCode.InvalidEmail &&
+            x.code !== IFormMessageCode.UserNotFound &&
+            x.code !== IFormMessageCode.WrongPassword
+    );
+
+    const sendForgotPassword = () => {
+        sendPasswordResetEmail(auth, email.value)
+            .then(() => {
+                setMessages([
+                    {
+                        message:
+                            "A link to reset your password has been sent to " +
+                            formFields.email.value,
+                        isSuccess: true,
+                    },
+                ]);
+            })
+            .catch(setFormMessage);
     };
+
+    const handleLogin = () => {
+        dispatch(SigninLoadingAction(true));
+
+        auth.setPersistence(browserLocalPersistence)
+            .then(() => {
+                return signInWithEmailAndPassword(
+                    auth,
+                    email.value,
+                    password.value
+                ).catch((message: IFormMessage) => {
+                    dispatch(SigninLoadingAction(false));
+                    setFormMessage(message);
+                });
+            })
+            .catch((message: IFormMessage) => {
+                dispatch(SigninLoadingAction(false));
+                setFormMessage(message);
+            });
+    };
+
+    const setFormMessage = (message: IFormMessage) => {
+        const errorExists = messages.some((x) => x.code === message.code);
+
+        if (!errorExists) {
+            setMessages((messages) => [...messages, message]);
+        }
+    };
+
+    const onInputChange = (name: keyof FormFields, text: string) => {
+        setFormFields({
+            ...formFields,
+            [name]: {
+                ...formFields[name],
+                value: text,
+            },
+        });
+    };
+
     return (
-        <div className="login">
-            <form onSubmit={handleUserLogin}>
-                <div className="input-field">
-                    <input
-                        type="email"
-                        placeholder="email"
-                        required
-                        value={email}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                            setEmail(e.target.value);
-                        }}
+        <Fade in={true} mountOnEnter={true} unmountOnExit={true} timeout={500}>
+            <div className="login">
+                <form>
+                    <h1>Account</h1>
+                    <FormInput
+                        placeholder="Email"
+                        validation={formFields.email}
+                        onChange={(e) => onInputChange("email", e)}
+                        message={messages.find(
+                            (x) =>
+                                x.code === IFormMessageCode.InvalidEmail ||
+                                x.code === IFormMessageCode.UserNotFound ||
+                                x.code === IFormMessageCode.EmailAlreadyInUse
+                        )}
                     />
-                </div>
-                <div className="input-field">
-                    <input
-                        type="password"
-                        placeholder="password"
-                        required
-                        value={password}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                            setPassword(e.target.value);
-                        }}
+
+                    <FormInput
+                        placeholder="Password"
+                        validation={formFields.password}
+                        onChange={(e) => onInputChange("password", e)}
+                        message={messages.find(
+                            (x) => x.code === IFormMessageCode.WrongPassword
+                        )}
+                        passwordToggleEnabled={true}
                     />
-                </div>
-                <div className="login-actions" style={{ marginTop: "18px" }}>
-                    <Link to="/" style={{ textDecoration: "none" }}>
-                        Forgot Password?
-                    </Link>
-                    <Link
-                        to="/register"
-                        style={{ marginLeft: "15px", textDecoration: "none" }}
+                    {!!formMessage && <FormMessage message={formMessage} />}
+
+                    <div
+                        className="login-actions"
+                        style={{ marginTop: "18px" }}
                     >
-                        Don't have an account yet?
-                    </Link>
-                </div>
-                <button>Login</button>
-            </form>
-        </div>
+                        <span
+                            onClick={sendForgotPassword}
+                            style={{ textDecoration: "none" }}
+                        >
+                            Forgot Password?
+                        </span>
+                        <Link
+                            to="/register"
+                            style={{
+                                marginLeft: "15px",
+                                textDecoration: "none",
+                            }}
+                        >
+                            Don't have an account yet?
+                        </Link>
+                    </div>
+                    <Button
+                        disabled={signingIn}
+                        variant="contained"
+                        onClick={handleLogin}
+                        startIcon={
+                            signingIn ? (
+                                <ClipLoader
+                                    color="white"
+                                    size={10}
+                                    speedMultiplier={0.5}
+                                />
+                            ) : authSuccess ? (
+                                <CheckCircle />
+                            ) : undefined
+                        }
+                    >
+                        {signingIn ? "Submitting" : "Register"}
+                    </Button>
+                </form>
+            </div>
+        </Fade>
     );
 };
 

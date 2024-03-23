@@ -16,6 +16,7 @@ namespace api.Service
         Task SetCustomerIdAsync(string customerId, int userId);
         Task SetStripeCustomerDeletedAsync(string customerId, DateTime? deletedDate);
         Task SetNameAsync(string name, int userId);
+        Task CreateAsync(CreateUsertDto dto);
     }
 
     public class UserService(IUserRepository userRepository) : IUserService
@@ -99,6 +100,11 @@ namespace api.Service
         public async Task SetNameAsync(string name, int userId)
         {
             await _userRepository.SetNameAsync(name, userId);
+        }
+
+        public async Task CreateAsync(CreateUsertDto dto)
+        {
+            await _userRepository.CreateAsync(dto);
         }
     }
 }

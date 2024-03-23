@@ -263,7 +263,14 @@ function NavbarV2() {
                             ))}
                         </Box>
 
-                        <Box sx={{ flexGrow: 0 }}>
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                            <Icon
+                                sx={{ cursor: "pointer", mr: 2, fontSize: 30 }}
+                                fontSize="medium"
+                                onClick={() => navigate("./login")}
+                            >
+                                person_outline
+                            </Icon>
                             <Badge
                                 badgeContent={itemsInCart.length}
                                 color="primary"
