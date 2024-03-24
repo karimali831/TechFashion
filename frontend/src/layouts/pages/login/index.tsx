@@ -5,8 +5,8 @@ import {
     sendPasswordResetEmail,
     signInWithEmailAndPassword,
 } from "firebase/auth";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 import { FormInput, FormValidation } from "src/components/Form";
 import { FormMessage } from "src/components/Form/Message";
@@ -15,7 +15,6 @@ import { IFormMessage, IFormMessageCode } from "src/enum/IFormMessage";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
 import { SigninLoadingAction } from "src/state/contexts/user/Actions";
 import { getUserState } from "src/state/contexts/user/Selectors";
-// import Swal from "sweetalert2";
 
 type FormFields = {
     email: FormValidation;
@@ -25,8 +24,16 @@ type FormFields = {
 const Login = (): JSX.Element => {
     const [messages, setMessages] = useState<IFormMessage[]>([]);
 
+    const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const { authSuccess, signingIn } = useAppSelector(getUserState);
+
+    const { user, authSuccess, signingIn } = useAppSelector(getUserState);
+
+    useEffect(() => {
+        if (user) {
+            navigate("/account");
+        }
+    }, [user]);
 
     const [formFields, setFormFields] = useState<FormFields>({
         email: {
@@ -165,7 +172,7 @@ const Login = (): JSX.Element => {
                             ) : undefined
                         }
                     >
-                        {signingIn ? "Submitting" : "Register"}
+                        {!signingIn && "Login"}
                     </Button>
                 </form>
             </div>

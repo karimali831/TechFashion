@@ -14,18 +14,25 @@ import {
 import { cartApi } from "src/api/cartApi";
 import { productApi } from "src/api/productApi";
 import storage from "redux-persist/lib/storage";
-// import { onAuthStateChanged } from "firebase/auth";
-// import { auth } from "../config/firebase";
-// import {
-//     FirebaseAuthEmptyAction,
-//     FirebaseAuthenticatedAction,
-// } from "./contexts/user/Actions";
+import { userApi } from "src/api/userApi.ts";
+import createSagaMiddleware from "redux-saga";
+import { onAuthStateChanged } from "firebase/auth";
+import {
+    FirebaseAuthEmptyAction,
+    FirebaseAuthenticatedAction,
+} from "./contexts/user/Actions";
+import { auth } from "src/config/firebase";
+import { createBrowserHistory } from "history";
+import { rootSaga } from "./middleware/sagas/rootSaga";
+
+export const history = createBrowserHistory();
+
+const sagaMiddleware = createSagaMiddleware();
 
 const persistConfig: any = {
     key: "root",
     whitelist: ["cart"],
     // blacklist: [],
-
     storage,
 };
 
@@ -46,16 +53,23 @@ export const store = configureStore({
                     REGISTER,
                 ],
             },
-        }).concat([cartApi.middleware, productApi.middleware]),
+        }).concat([
+            sagaMiddleware,
+            cartApi.middleware,
+            productApi.middleware,
+            userApi.middleware,
+        ]),
 });
 
-// onAuthStateChanged(auth, (user) => {
-//     if (user) {
-//         store.dispatch(FirebaseAuthenticatedAction(user));
-//     } else {
-//         store.dispatch(FirebaseAuthEmptyAction);
-//     }
-// });
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        store.dispatch(FirebaseAuthenticatedAction(user.uid));
+    } else {
+        store.dispatch(FirebaseAuthEmptyAction);
+    }
+});
+
+sagaMiddleware.run(rootSaga);
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type AppDispatch = typeof store.dispatch;

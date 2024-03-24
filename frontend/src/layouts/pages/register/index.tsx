@@ -12,6 +12,7 @@ import { IFormMessage, IFormMessageCode } from "src/enum/IFormMessage";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
 import { SigninLoadingAction } from "src/state/contexts/user/Actions";
 import { getUserState } from "src/state/contexts/user/Selectors";
+import Swal from "sweetalert2";
 
 type FormFields = {
     email: FormValidation;
@@ -23,18 +24,14 @@ type FormFields = {
 const Register = (): JSX.Element => {
     const [messages, setMessages] = useState<IFormMessage[]>([]);
 
-    const [createUser, { isLoading: registering }] = useCreateUserMutation();
-
-    console.log(registering);
+    const [createUser] = useCreateUserMutation();
 
     const navigate = useNavigate();
     const { user, authSuccess, signingIn } = useAppSelector(getUserState);
 
     useEffect(() => {
         if (user) {
-            setTimeout(() => {
-                navigate("./products");
-            }, 1000);
+            navigate("/account");
         }
     }, [user]);
 
@@ -91,7 +88,24 @@ const Register = (): JSX.Element => {
                         name: name.value,
                         email: email.value,
                         firebaseUid: user.uid,
-                    });
+                    })
+                        .unwrap()
+                        .then((response) => {
+                            if (response.errorMsg) {
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "An error occurred",
+                                    text: response.errorMsg,
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Success",
+                                    text: response.data,
+                                    timer: 10000,
+                                }).then(() => navigate("/login"));
+                            }
+                        });
                 }
 
                 dispatch(SigninLoadingAction(false));
@@ -120,7 +134,7 @@ const Register = (): JSX.Element => {
             }
         } else {
             const mismatched =
-                formFields.password !== formFields.repeatPassword;
+                formFields.password.value !== formFields.repeatPassword.value;
 
             if (errorExists && !mismatched) {
                 setMessages(messages.filter((x) => x.code !== code));
@@ -130,7 +144,7 @@ const Register = (): JSX.Element => {
                         ...messages,
                         {
                             code,
-                            message: "Passwords do no match.",
+                            message: "Passwords do no match. hey?",
                             isClient: true,
                         },
                     ]);
@@ -168,7 +182,6 @@ const Register = (): JSX.Element => {
                         message={messages.find(
                             (x) => x.code === IFormMessageCode.WrongPassword
                         )}
-                        onBlur={checkPasswordMismatch}
                         passwordToggleEnabled={true}
                     />
                     <FormInput
@@ -214,7 +227,7 @@ const Register = (): JSX.Element => {
                             ) : undefined
                         }
                     >
-                        {signingIn ? "Submitting" : "Register"}
+                        {!signingIn && "Register"}
                     </Button>
                 </form>
             </div>

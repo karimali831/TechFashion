@@ -9,7 +9,7 @@ import DefaultInfoCard from "src/components/Cards/DefaultInfoCard";
 
 function Billing(): JSX.Element {
     return (
-        <MDBox mt={4}>
+        <MDBox mt={4} className="home">
             <MDBox mb={3}>
                 <Grid container spacing={3}>
                     <Grid item xs={12} lg={8}>

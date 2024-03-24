@@ -1,6 +1,7 @@
 import { createReducer } from "@reduxjs/toolkit";
 import {
     FirebaseAuthEmptyAction,
+    LoginSuccessAction,
     SetFirebaseUidAction,
     SigninLoadingAction,
 } from "./Actions";
@@ -21,5 +22,10 @@ export const userReducer = createReducer(userInitialState, (builder) => {
         .addCase(FirebaseAuthEmptyAction, (state) => {
             state.user = null;
             state.authSuccess = false;
+        })
+        .addCase(LoginSuccessAction, (state, action) => {
+            state.user = action.payload;
+            state.signingIn = false;
+            state.authSuccess = true;
         });
 });

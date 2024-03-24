@@ -1,11 +1,11 @@
 import { AnimatePresence } from "framer-motion";
 import { Route, Routes } from "react-router-dom";
-import Home from "../pages/home";
-import Login from "../pages/login";
-import Products from "../pages/products";
-import Register from "../pages/register/Register";
-import ResetPassword from "../pages/account/resetpassword";
-import Contact from "../pages/contact";
+// import Home from "../pages/home";
+// import Login from "../pages/login";
+// import Products from "../pages/products";
+// import Register from "../pages/register";
+// import ResetPassword from "../pages/account/resetpassword";
+// import Contact from "../pages/contact";
 import Accessories from "../ecommerce/category/accessories";
 import Footware from "../ecommerce/category/footware";
 import Jewelry from "../ecommerce/category/jewelry";
@@ -14,23 +14,23 @@ import Outdoor from "../ecommerce/category/outdoor";
 import Outware from "../ecommerce/category/outware";
 import Sportsware from "../ecommerce/category/sportsware";
 import Womans from "../ecommerce/category/womans";
-import ProductPage from "../ecommerce/products/product-page";
-import { Cart } from "../ecommerce/cart";
-import { Success } from "../ecommerce/payment/Success";
+// import ProductPage from "../ecommerce/products/product-page";
+// import { Cart } from "../ecommerce/cart";
+// import { Success } from "../ecommerce/payment/Success";
+import { AppRoutes } from "src/router/Routes";
 
 export const AnimatedRoutes = () => {
     return (
         <AnimatePresence>
             <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
-                <Route path="/products" element={<Products />} />
-                <Route path="/product/:slug" element={<ProductPage />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/contacts" element={<Contact />} />
-                <Route path="/ordersuccess" element={<Success />} />
+                {AppRoutes.map((route) => (
+                    <Route
+                        key={route.page}
+                        path={route.path ?? route.url}
+                        element={route.element}
+                    />
+                ))}
+
                 <Route
                     path="/store/category/accessories"
                     element={<Accessories />}

@@ -1,6 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { baseApiUrl } from "./baseApi";
-import { IUser } from "src/data/IUser";
+import { IApiResponse, baseApiUrl } from "./baseApi";
 export const userApi = createApi({
     reducerPath: "userApi",
     tagTypes: ["Activity"],
@@ -8,10 +7,7 @@ export const userApi = createApi({
         baseUrl: baseApiUrl,
     }),
     endpoints: (builder) => ({
-        getUserByFirebaseUid: builder.query<IUser, string>({
-            query: (firebaseUid) => `User/Get/${firebaseUid}`,
-        }),
-        createUser: builder.mutation<void, ICreateUserRequest>({
+        createUser: builder.mutation<IApiResponse<string>, ICreateUserRequest>({
             query: (body) => ({
                 url: "User/Create",
                 method: "POST",
@@ -21,7 +17,7 @@ export const userApi = createApi({
     }),
 });
 
-export const { useGetUserByFirebaseUidQuery, useCreateUserMutation } = userApi;
+export const { useCreateUserMutation } = userApi;
 
 export interface ICreateUserRequest {
     email: string;

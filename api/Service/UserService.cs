@@ -16,7 +16,7 @@ namespace api.Service
         Task SetCustomerIdAsync(string customerId, int userId);
         Task SetStripeCustomerDeletedAsync(string customerId, DateTime? deletedDate);
         Task SetNameAsync(string name, int userId);
-        Task CreateAsync(CreateUsertDto dto);
+        Task<ApiResponse<string>> CreateAsync(CreateUsertDto dto);
     }
 
     public class UserService(IUserRepository userRepository) : IUserService
@@ -102,9 +102,34 @@ namespace api.Service
             await _userRepository.SetNameAsync(name, userId);
         }
 
-        public async Task CreateAsync(CreateUsertDto dto)
+        public async Task<ApiResponse<string>> CreateAsync(CreateUsertDto dto)
         {
+            if (await _userRepository.GetByFirebaseUidAsync(dto.FirebaseUid) is not null)
+            {
+                return new ApiResponse<string>
+                {
+                    ErrorMsg = "Account already exists, please login"
+                };
+            }
+
+            var exists = await _userRepository.GetByEmailAsync(dto.Email);
+
+            if (exists is not null && exists.FirebaseUid is null && exists.GuestCheckoutId is not null)
+            {
+                await _userRepository.SetFirebaseUidAsync(dto.FirebaseUid, exists.Id);
+
+                return new ApiResponse<string>
+                {
+                    Data = "A guest account already exists for this email. We have now updated this as a full account and you can now login."
+                };
+            }
+
             await _userRepository.CreateAsync(dto);
+
+            return new ApiResponse<string>
+            {
+                Data = "Account created and you can now login"
+            };
         }
     }
 }

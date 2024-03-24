@@ -80,6 +80,8 @@ export const FormInput: React.FC<IOwnProps> = (props) => {
     const onInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
         const value = e.target.value;
 
+        if (value.length === 0) return;
+
         if (e.target.value.length < Number(minCharsRequired)) {
             if (value.length > 0) {
                 setAlert({

@@ -1,9 +1,8 @@
 import { createAction } from "@reduxjs/toolkit";
-import { IFirebaseUser } from "./IUserState";
 import { IUser } from "src/data/IUser";
 
 const FirebaseAuthEmptyAction = createAction("@@User/FirebaseAuthEmptyAction");
-const FirebaseAuthenticatedAction = createAction<IFirebaseUser>(
+const FirebaseAuthenticatedAction = createAction<string>(
     "@@User/FirebaseAuthenticated"
 );
 const SigninLoadingAction = createAction<boolean>("@@User/SigninLoading");

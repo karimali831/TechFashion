@@ -1,10 +1,11 @@
 import "regenerator-runtime";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
-import { BrowserRouter } from "react-router-dom";
+import { CustomRouter } from "./router/index.tsx";
+import { history } from "./state/InitialiseStore";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-    <BrowserRouter>
+    <CustomRouter history={history}>
         <App />
-    </BrowserRouter>
+    </CustomRouter>
 );

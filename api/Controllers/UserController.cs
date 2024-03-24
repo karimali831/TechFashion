@@ -10,18 +10,18 @@ namespace api.Controllers
     {
         private readonly IUserService _userService = userService;
 
-        [HttpGet("Get")]
-        public async Task<IActionResult> Get(string firebaseUid)
+        [HttpGet("Get/{id}")]
+        public async Task<IActionResult> Get(string id)
         {
-            var response = await _userService.GetByFirebaseUIdAsync(firebaseUid);
+            var response = await _userService.GetByFirebaseUIdAsync(id);
             return Ok(response);
         }
 
         [HttpPost("Create")]
         public async Task<IActionResult> Create([FromBody] CreateUsertDto dto)
         {
-            await _userService.CreateAsync(dto);
-            return NoContent();
+            var response = await _userService.CreateAsync(dto);
+            return Ok(response);
         }
     }
 }

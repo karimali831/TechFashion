@@ -3,7 +3,8 @@
         "typeRoots": ["node_modules/@types", "./src/types"],
         "baseUrl": ".",
         "paths": {
-            "src/*": ["./src/*"]
+            "src/*": ["./src/*"],
+            "react": ["./node_modules/@types/react"]
         },
         "target": "ES2020",
         "useDefineForClassFields": true,

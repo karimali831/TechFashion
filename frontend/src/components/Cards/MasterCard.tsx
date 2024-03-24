@@ -6,7 +6,7 @@ import MDBox from "src/components/MDBox";
 import MDTypography from "src/components/MDTypography";
 
 // Images
-import pattern from "src/assets/imgpattern-tree.svg";
+import pattern from "src/assets/img/illustrations/pattern-tree.svg";
 import masterCardLogo from "src/assets/img/cards/mastercard.png";
 
 interface Props {
