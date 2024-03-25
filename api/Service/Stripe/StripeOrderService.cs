@@ -36,7 +36,14 @@ namespace api.Service
 
                 if (userByEmail is not null)
                 {
-                    user = userByEmail;
+                    if (userByEmail.FirebaseUid is not null)
+                    {
+                        return new PaymentIntentResponse { ErrorMsg = "An account already exists with this email. Please login to proceed." };
+                    }
+                    else
+                    {
+                        user = userByEmail;
+                    }
                 }
                 else
                 {

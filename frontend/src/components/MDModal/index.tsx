@@ -1,4 +1,4 @@
-import { Modal, Backdrop, Fade, Box, Typography } from "@mui/material";
+import { Modal, Backdrop, Fade, Box } from "@mui/material";
 import { FC, ReactNode } from "react";
 import MDBox from "../MDBox";
 import { Close } from "@mui/icons-material";
@@ -53,11 +53,7 @@ export const MDModal: FC<IProps> = ({
                         justifyContent="space-between"
                         alignItems="center"
                     >
-                        {titleNode ?? title ? (
-                            <Typography variant="h6" component="h2">
-                                {title}
-                            </Typography>
-                        ) : null}
+                        {titleNode ?? title ? <h2>{title}</h2> : null}
                         <MDBox onClick={onClose} sx={{ cursor: "pointer" }}>
                             <Close color="secondary" />
                         </MDBox>

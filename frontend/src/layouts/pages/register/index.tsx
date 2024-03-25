@@ -1,15 +1,18 @@
 import { CheckCircle } from "@mui/icons-material";
-import { Button, Fade } from "@mui/material";
+import { Box, Fade } from "@mui/material";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 import { useCreateUserMutation } from "src/api/userApi.ts";
+import { ActionButton } from "src/components/Buttons/ActionButton";
 import { FormInput, FormValidation } from "src/components/Form";
 import { FormMessage } from "src/components/Form/Message";
 import { auth } from "src/config/firebase";
 import { IFormMessage, IFormMessageCode } from "src/enum/IFormMessage";
+import { Page } from "src/enum/Page";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
+import { ShowPageAction } from "src/state/contexts/app/Actions";
 import { getCartState } from "src/state/contexts/cart/Selectors";
 import { SigninLoadingAction } from "src/state/contexts/user/Actions";
 import { getUserState } from "src/state/contexts/user/Selectors";
@@ -27,14 +30,16 @@ const Register = (): JSX.Element => {
 
     const [createUser] = useCreateUserMutation();
 
-    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
     const { guestCheckout } = useAppSelector(getCartState);
     const { user, authSuccess, signingIn } = useAppSelector(getUserState);
 
     useEffect(() => {
         if (user) {
-            navigate("/account");
+            setTimeout(() => {
+                dispatch(ShowPageAction(Page.Account));
+            }, 1000);
         }
     }, [user]);
 
@@ -69,7 +74,6 @@ const Register = (): JSX.Element => {
         });
     };
 
-    const dispatch = useAppDispatch();
     const formMessage = messages.find(
         (x) =>
             x.code !== IFormMessageCode.InvalidEmail &&
@@ -107,7 +111,9 @@ const Register = (): JSX.Element => {
                                     title: "Success",
                                     text: response.data,
                                     timer: 10000,
-                                }).then(() => navigate("/account"));
+                                }).then(() =>
+                                    dispatch(ShowPageAction(Page.Account))
+                                );
                             }
                         });
                 }
@@ -201,25 +207,15 @@ const Register = (): JSX.Element => {
                     />
                     {!!formMessage && <FormMessage message={formMessage} />}
 
-                    <div
-                        className="register-actions"
-                        style={{ marginTop: "18px" }}
-                    >
-                        <p>
-                            Already registered?{" "}
-                            <Link
-                                to="/login"
-                                style={{ textDecoration: "none" }}
-                            >
-                                Login
-                            </Link>
-                        </p>
-                    </div>
-                    <Button
-                        disabled={signingIn}
-                        variant="contained"
-                        onClick={handleSignUp}
-                        startIcon={
+                    <Box sx={{ mt: "18px", mb: "18px" }}>
+                        Already registered?{" "}
+                        <Link to="/login" style={{ textDecoration: "none" }}>
+                            Login
+                        </Link>
+                    </Box>
+
+                    {/* <MainButton
+                        icon={
                             signingIn ? (
                                 <ClipLoader
                                     color="white"
@@ -230,9 +226,27 @@ const Register = (): JSX.Element => {
                                 <CheckCircle />
                             ) : undefined
                         }
-                    >
-                        {!signingIn && "Register"}
-                    </Button>
+                        text={!signingIn && "Register"}
+                        success={authSuccess}
+                        onClick={handleSignUp}
+                    /> */}
+
+                    <ActionButton
+                        icon={
+                            signingIn ? (
+                                <ClipLoader
+                                    color="white"
+                                    size={10}
+                                    speedMultiplier={0.5}
+                                />
+                            ) : authSuccess ? (
+                                <CheckCircle />
+                            ) : undefined
+                        }
+                        text={!signingIn && "Register"}
+                        success={authSuccess}
+                        onClick={handleSignUp}
+                    />
                 </form>
             </div>
         </Fade>

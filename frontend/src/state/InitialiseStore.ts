@@ -25,8 +25,7 @@ import { auth } from "src/config/firebase";
 import { createBrowserHistory } from "history";
 import { rootSaga } from "./middleware/sagas/rootSaga";
 import { SetGuestCheckoutAction } from "./contexts/cart/Actions";
-import { ShowPageAction } from "./contexts/app/Actions";
-import { Page } from "src/enum/Page";
+import { LocationChangeAction } from "./contexts/app/Actions";
 
 export const history = createBrowserHistory();
 
@@ -57,6 +56,7 @@ export const store = configureStore({
                 ],
             },
         }).concat([
+            // actionToPlainObject,
             sagaMiddleware,
             cartApi.middleware,
             productApi.middleware,
@@ -68,23 +68,13 @@ onAuthStateChanged(auth, (user) => {
     if (user) {
         store.dispatch(FirebaseAuthenticatedAction(user.uid));
         store.dispatch(SetGuestCheckoutAction(null));
-
-        store.dispatch(ShowPageAction(Page.Products));
     } else {
-        store.dispatch(FirebaseAuthEmptyAction);
-        store.dispatch(
-            SetGuestCheckoutAction({
-                id: window.crypto.randomUUID(),
-                name: "",
-                email: "",
-            })
-        );
-
-        store.dispatch(ShowPageAction(Page.Login));
+        store.dispatch(FirebaseAuthEmptyAction());
     }
 });
 
 sagaMiddleware.run(rootSaga);
+store.dispatch(LocationChangeAction());
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type AppDispatch = typeof store.dispatch;

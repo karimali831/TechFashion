@@ -2,7 +2,7 @@ import { Alert, Card } from "@mui/material";
 import { useEffect } from "react";
 import MDBox from "src/components/MDBox";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
-import { SetGuestCheckoutAction } from "src/state/contexts/cart/Actions";
+import { ResetGuestCheckoutAction } from "src/state/contexts/cart/Actions";
 import { getCartState } from "src/state/contexts/cart/Selectors";
 
 export const Success = () => {
@@ -11,13 +11,7 @@ export const Success = () => {
 
     useEffect(() => {
         if (!!guestCheckout) {
-            dispatch(
-                SetGuestCheckoutAction({
-                    id: window.crypto.randomUUID(),
-                    name: "",
-                    email: "",
-                })
-            );
+            dispatch(ResetGuestCheckoutAction());
         }
     }, []);
 

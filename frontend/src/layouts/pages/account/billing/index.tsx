@@ -7,25 +7,18 @@ import Transactions from "src/layouts/pages/account/billing/components/Transacti
 import MasterCard from "src/components/Cards/MasterCard";
 import DefaultInfoCard from "src/components/Cards/DefaultInfoCard";
 import { Button } from "@mui/material";
-import { auth } from "src/config/firebase";
-import { useAppSelector } from "src/state/Hooks";
-import { getUserState } from "src/state/contexts/user/Selectors";
-import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useAppDispatch } from "src/state/Hooks";
+import { SignOutAction } from "src/state/contexts/user/Actions";
 
 function Billing(): JSX.Element {
-    const navigate = useNavigate();
-    const { user } = useAppSelector(getUserState);
-
-    useEffect(() => {
-        if (!user) {
-            navigate("/login");
-        }
-    }, [user]);
+    const dispatch = useAppDispatch();
 
     return (
         <MDBox mt={4} className="home">
-            <Button variant="contained" onClick={() => auth.signOut()}>
+            <Button
+                variant="contained"
+                onClick={() => dispatch(SignOutAction())}
+            >
                 Sign out
             </Button>
             <MDBox mb={3}>

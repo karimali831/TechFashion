@@ -51,7 +51,7 @@ export const Payment = () => {
         guestCheckoutId: guestCheckout?.id,
     });
 
-    const { data: paymentIntent, isLoading: paymentIntentLoading } =
+    const { data: paymentIntent, isFetching: paymentIntentLoading } =
         useCreatePaymentIntentQuery(
             {
                 cartId: cart?.id,

@@ -17,8 +17,9 @@ import {
     OpenCartAccountModalAction,
     OpenCartOverlayAction,
 } from "src/state/contexts/cart/Actions";
-import { useNavigate } from "react-router-dom";
 import { getUserState } from "src/state/contexts/user/Selectors";
+import { Page } from "src/enum/Page";
+import { ShowPageAction } from "src/state/contexts/app/Actions";
 
 interface IProductCartQuantity {
     id: number;
@@ -36,6 +37,7 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
 
     const { user, firebaseUid } = useAppSelector(getUserState);
     const { guestCheckout } = useAppSelector(getCartState);
+
     const dispatch = useAppDispatch();
 
     const { data: cart } = useGetCartQuery({
@@ -43,8 +45,6 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
         guestCheckoutId: guestCheckout?.id,
     });
     const { data: products, isLoading: loadingProducts } = useGetProductQuery();
-
-    const navigate = useNavigate();
 
     const itemsInCart: ICartProductDetail[] = cart?.products ?? [];
 
@@ -94,12 +94,12 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
         dispatch(OpenCartOverlayAction(false));
 
         if (
-            user ||
-            (guestCheckout &&
-                guestCheckout.email !== "" &&
-                guestCheckout.name !== "")
+            user
+            // || (guestCheckout &&
+            //     guestCheckout.email !== "" &&
+            //     guestCheckout.name !== "")
         ) {
-            navigate("/cart");
+            dispatch(ShowPageAction(Page.Cart));
         } else {
             dispatch(OpenCartAccountModalAction(true));
         }
@@ -108,7 +108,7 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
     const onContinueShoppingClick = () => {
         // window.location.reload()
         dispatch(OpenCartOverlayAction(false));
-        navigate("./products");
+        dispatch(ShowPageAction(Page.Products));
     };
 
     return (
@@ -137,6 +137,7 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
                         <h2 style={{ marginBottom: 10 }}>Your cart is empty</h2>
                         <ActionButton
                             size="large"
+                            fullWidth={true}
                             text="Continue shopping"
                             onClick={onContinueShoppingClick}
                         />
@@ -548,6 +549,7 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
                             </MDTypography>
 
                             <ActionButton
+                                fullWidth={true}
                                 text={"check out"}
                                 onClick={onCheckoutClick}
                             />

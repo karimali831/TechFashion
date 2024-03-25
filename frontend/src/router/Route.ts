@@ -6,4 +6,5 @@ export interface IRoute {
     element: React.ReactNode;
     path?: string;
     url: string;
+    displayOnHeader?: boolean;
 }

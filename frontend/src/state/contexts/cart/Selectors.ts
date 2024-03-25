@@ -4,6 +4,9 @@ import { ICartProductDetail } from "src/interface/ICartProductDetail";
 
 export const getCartState = (state: IStoreState) => state.cart;
 
+export const getGuestCheckoutId = (state: IStoreState): string | null =>
+    state.cart.guestCheckout?.id;
+
 export const getCartItems = (state: IStoreState): ICartProductDetail[] => {
     const firebaseUid = state.user.firebaseUid;
     const guestCheckout = state.cart.guestCheckout;
@@ -12,8 +15,6 @@ export const getCartItems = (state: IStoreState): ICartProductDetail[] => {
         firebaseUid,
         guestCheckoutId: guestCheckout?.id,
     });
-
-    console.log("test", data);
 
     return data?.products ?? [];
 };

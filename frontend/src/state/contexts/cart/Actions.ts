@@ -9,8 +9,11 @@ const SetGuestCheckoutAction = createAction<IGuestCheckout | null>(
     "@@Cart/SetGuestCheckout"
 );
 
+const ResetGuestCheckoutAction = createAction("@@Cart/ResetGuestCheckout");
+
 export {
     OpenCartOverlayAction,
     OpenCartAccountModalAction,
     SetGuestCheckoutAction,
+    ResetGuestCheckoutAction,
 };

@@ -1,5 +1,5 @@
 import { PayloadAction } from "@reduxjs/toolkit";
-import { call, put, takeLatest } from "redux-saga/effects";
+import { call, put, select, takeLatest } from "redux-saga/effects";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import {
@@ -10,10 +10,12 @@ import {
     SignOutAction,
 } from "src/state/contexts/user/Actions";
 import { IUser } from "src/data/IUser";
-import { ShowPageAction } from "src/state/contexts/app/Actions";
-import { Page } from "src/enum/Page";
 import { auth } from "src/config/firebase";
 import { IAxiosResponse, baseApiUrl } from "src/api/baseApi";
+import { ShowPageAction } from "src/state/contexts/app/Actions";
+import { Page } from "src/enum/Page";
+import { getGuestCheckoutId } from "src/state/contexts/cart/Selectors";
+import { ResetGuestCheckoutAction } from "src/state/contexts/cart/Actions";
 
 export default function* userApiSaga() {
     yield takeLatest(FirebaseAuthenticatedAction.type, firebaseAuthenticated);
@@ -22,7 +24,18 @@ export default function* userApiSaga() {
 }
 
 export function* userLoggedOut() {
-    yield put(ShowPageAction(Page.Login));
+    try {
+        const guestCheckoutId: string | null = yield select(getGuestCheckoutId);
+
+        if (!guestCheckoutId) {
+            yield put(ResetGuestCheckoutAction());
+        }
+
+        yield put(SetFirebaseUidAction(null));
+    } catch (error) {
+        console.error(error);
+        toast.error("An error occurred");
+    }
 }
 
 export function* firebaseAuthenticated(action: PayloadAction<string>) {
@@ -42,7 +55,8 @@ export function* firebaseAuthenticated(action: PayloadAction<string>) {
 export function* signOut() {
     try {
         auth.signOut();
+        yield put(ShowPageAction(Page.Home));
     } catch (e: any) {
-        // yield put(AxiosErrorAlertAction(e as IAxiosError))
+        console.error(e);
     }
 }

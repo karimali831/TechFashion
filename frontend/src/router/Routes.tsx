@@ -17,6 +17,7 @@ export const AppRoutes: IRoute[] = [
         element: <Home />,
         memberOnly: false,
         url: "/",
+        displayOnHeader: true,
     },
     {
         page: Page.Login,
@@ -41,6 +42,7 @@ export const AppRoutes: IRoute[] = [
         element: <Products />,
         memberOnly: false,
         url: "/products",
+        displayOnHeader: true,
     },
     {
         page: Page.Product,
@@ -60,6 +62,7 @@ export const AppRoutes: IRoute[] = [
         element: <Contact />,
         memberOnly: false,
         url: "/contacts",
+        displayOnHeader: true,
     },
     {
         page: Page.OrderSuccess,

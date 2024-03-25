@@ -1,11 +1,13 @@
-import { put, select, takeLatest } from "redux-saga/effects";
+import { call, put, select, takeLatest } from "redux-saga/effects";
 import { Page } from "../../../enum/Page";
 import { toast } from "react-hot-toast";
 import { history } from "../../../state/InitialiseStore";
 import {
     GoBackAction,
+    IPageParam,
     LocationChangeAction,
     ShowPageAction,
+    ShowPageWithParamsAction,
 } from "../../contexts/app/Actions";
 import { getUserAuth } from "../../contexts/user/Selectors";
 import { PayloadAction } from "@reduxjs/toolkit";
@@ -14,6 +16,7 @@ import { AppRoutes } from "src/router/Routes";
 
 export default function* navigationSaga() {
     yield takeLatest(ShowPageAction.type, navigateToScreen);
+    yield takeLatest(ShowPageWithParamsAction, navigateToScreenWithParams);
     yield takeLatest(GoBackAction.type, navigatePreviousScreen);
     yield takeLatest(LocationChangeAction.type, locationChange);
 }
@@ -31,7 +34,27 @@ export function* locationChange() {
     }
 }
 
-export function* navigateToScreen(route: PayloadAction<Page>) {
+export function* navigateToScreenWithParams(route: PayloadAction<IPageParam>) {
+    try {
+        yield call(
+            navigateToScreen,
+            {
+                payload: route.payload.page,
+                type: route.type,
+            },
+            route.payload.primaryId,
+            route.payload.secondaryId
+        );
+    } catch {
+        toast.error("An erorr occurred");
+    }
+}
+
+export function* navigateToScreen(
+    route: PayloadAction<Page>,
+    primaryId?: string,
+    secondaryId?: string
+) {
     try {
         const auth: boolean = yield select(getUserAuth);
         const newLocation = AppRoutes.filter(
@@ -39,28 +62,35 @@ export function* navigateToScreen(route: PayloadAction<Page>) {
         )[0];
         const currentLocation = history.location.pathname;
 
+        if (newLocation.memberOnly && !auth) {
+            const defaultLocationUrl = AppRoutes.filter(
+                (x) => x.page === Page.Login
+            )[0].url;
+
+            history.replace(defaultLocationUrl);
+            return;
+        }
+
         if (newLocation.url === currentLocation) {
             window.scrollTo(0, 0);
             return;
         }
 
-        if (newLocation.memberOnly && !auth) {
-            const defaultLocationUrl = AppRoutes.filter(
-                (x) => x.page === Page.Home
-            )[0].url;
+        const splitUrl = newLocation.url.split("/");
 
-            history.replace(defaultLocationUrl);
+        if (!!primaryId) {
+            if (splitUrl.length === 2) {
+                newLocation.url += "/" + primaryId;
+            }
+
+            if (!!secondaryId && splitUrl.length === 3) {
+                newLocation.url += "/" + secondaryId;
+            }
         }
 
         history.push(newLocation.url);
-
-        // if (replace) {
-        //     history.replace(newLocation.url)
-        // } else {
-        //     history.push(newLocation.url)
-        // }
     } catch {
-        toast.error("Error navigating you");
+        toast.error("An erorr occurred");
     }
 }
 

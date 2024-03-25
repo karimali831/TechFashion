@@ -2,9 +2,10 @@ import { createReducer } from "@reduxjs/toolkit";
 import {
     OpenCartAccountModalAction,
     OpenCartOverlayAction,
+    ResetGuestCheckoutAction,
     SetGuestCheckoutAction,
 } from "./Actions";
-import { cartInitialState } from "./ICartState";
+import { cartInitialState, initialiseGuestCheckout } from "./ICartState";
 
 export const cartReducer = createReducer(cartInitialState, (builder) => {
     builder
@@ -16,5 +17,8 @@ export const cartReducer = createReducer(cartInitialState, (builder) => {
         })
         .addCase(SetGuestCheckoutAction, (state, action) => {
             state.guestCheckout = action.payload;
+        })
+        .addCase(ResetGuestCheckoutAction, (state) => {
+            state.guestCheckout = initialiseGuestCheckout;
         });
 });

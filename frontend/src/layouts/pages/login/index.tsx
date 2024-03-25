@@ -1,18 +1,21 @@
 import { CheckCircle } from "@mui/icons-material";
-import { Button, Fade } from "@mui/material";
+import { Box, Fade } from "@mui/material";
 import {
     browserLocalPersistence,
     sendPasswordResetEmail,
     signInWithEmailAndPassword,
 } from "firebase/auth";
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
+import { ActionButton } from "src/components/Buttons/ActionButton";
 import { FormInput, FormValidation } from "src/components/Form";
 import { FormMessage } from "src/components/Form/Message";
 import { auth } from "src/config/firebase";
 import { IFormMessage, IFormMessageCode } from "src/enum/IFormMessage";
+import { Page } from "src/enum/Page";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
+import { ShowPageAction } from "src/state/contexts/app/Actions";
 import { SigninLoadingAction } from "src/state/contexts/user/Actions";
 import { getUserState } from "src/state/contexts/user/Selectors";
 
@@ -24,14 +27,14 @@ type FormFields = {
 const Login = (): JSX.Element => {
     const [messages, setMessages] = useState<IFormMessage[]>([]);
 
-    const navigate = useNavigate();
     const dispatch = useAppDispatch();
-
     const { user, authSuccess, signingIn } = useAppSelector(getUserState);
 
     useEffect(() => {
         if (user) {
-            navigate("/account");
+            setTimeout(() => {
+                dispatch(ShowPageAction(Page.Account));
+            }, 1000);
         }
     }, [user]);
 
@@ -136,10 +139,7 @@ const Login = (): JSX.Element => {
                     />
                     {!!formMessage && <FormMessage message={formMessage} />}
 
-                    <div
-                        className="login-actions"
-                        style={{ marginTop: "18px" }}
-                    >
+                    <Box sx={{ mt: "18px", mb: "18px" }}>
                         <span
                             onClick={sendForgotPassword}
                             style={{ textDecoration: "none" }}
@@ -155,12 +155,10 @@ const Login = (): JSX.Element => {
                         >
                             Don't have an account yet?
                         </Link>
-                    </div>
-                    <Button
-                        disabled={signingIn}
-                        variant="contained"
-                        onClick={handleLogin}
-                        startIcon={
+                    </Box>
+
+                    <ActionButton
+                        icon={
                             signingIn ? (
                                 <ClipLoader
                                     color="white"
@@ -168,12 +166,13 @@ const Login = (): JSX.Element => {
                                     speedMultiplier={0.5}
                                 />
                             ) : authSuccess ? (
-                                <CheckCircle />
+                                <CheckCircle fontSize={"large"} />
                             ) : undefined
                         }
-                    >
-                        {!signingIn && "Login"}
-                    </Button>
+                        text={!signingIn && authSuccess ? "Signed in" : "Login"}
+                        success={authSuccess}
+                        onClick={handleLogin}
+                    />
                 </form>
             </div>
         </Fade>

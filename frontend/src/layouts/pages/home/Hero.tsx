@@ -1,7 +1,10 @@
-import { type NavigateFunction, useNavigate } from "react-router-dom";
+import { Page } from "src/enum/Page";
+import { useAppDispatch } from "src/state/Hooks";
+import { ShowPageAction } from "src/state/contexts/app/Actions";
 
 const Hero = (): JSX.Element => {
-    const navigate: NavigateFunction = useNavigate();
+    const dispatch = useAppDispatch();
+
     return (
         <div className="hero">
             <div className="top-content">
@@ -10,7 +13,7 @@ const Hero = (): JSX.Element => {
                     <h3>GET UP TO 25% OFF</h3>
                     <button
                         onClick={() => {
-                            navigate("/accessories");
+                            dispatch(ShowPageAction(Page.Products));
                         }}
                     >
                         shop now

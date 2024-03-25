@@ -47,8 +47,6 @@ function ProductInfo({ item }: IProps): JSX.Element {
     const { firebaseUid } = useAppSelector(getUserState);
     const { guestCheckout } = useAppSelector(getCartState);
 
-    console.log("hello?", guestCheckout);
-
     const { data: cart } = useGetCartQuery({
         firebaseUid,
         guestCheckoutId: guestCheckout?.id,

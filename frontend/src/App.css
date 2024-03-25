@@ -198,20 +198,10 @@
     border: 1px solid #000;
 }
 
-.login form button,
-.register form button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 15%;
-    margin-top: 20px;
-    outline: none;
-    cursor: pointer;
-    padding: 15px;
-    color: #fff;
-    background: #000;
-    border: none;
+.small input {
+    padding: 10px;
 }
+
 /* REGULAR STYLES */
 
 /*!*RESPONSIVENESS*!*/
@@ -404,19 +394,5 @@
         outline: none;
         width: 50%;
         border: 1px solid #000;
-    }
-
-    .login form button {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 15%;
-        margin-top: 20px;
-        outline: none;
-        cursor: pointer;
-        padding: 15px;
-        color: #fff;
-        background: #000;
-        border: none;
     }
 }

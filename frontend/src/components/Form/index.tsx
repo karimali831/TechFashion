@@ -4,7 +4,6 @@ import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import React, { useRef, useState } from "react";
 import { IFormMessage } from "../../enum/IFormMessage";
-import "./styles.css";
 import { IsValidEmail, isValidUrl } from "src/util/Validators";
 import { FormMessage } from "./Message";
 
@@ -24,6 +23,7 @@ interface IOwnProps {
     message?: IFormMessage;
     autoCompleteOff?: boolean;
     hideStatus?: boolean;
+    small?: boolean;
     onChange: (text: string) => void;
     onBlur?: (text: string) => void;
 }
@@ -42,6 +42,7 @@ export const FormInput: React.FC<IOwnProps> = (props) => {
         placeholder,
         hideStatus,
         passwordToggleEnabled,
+        small,
         onChange,
         onBlur,
         validation: {
@@ -129,7 +130,7 @@ export const FormInput: React.FC<IOwnProps> = (props) => {
                     flexDirection: "column",
                     position: "relative",
                 }}
-                className="input-field"
+                className={`input-field ${small && "small"}`}
             >
                 <input
                     ref={ref}
@@ -149,7 +150,13 @@ export const FormInput: React.FC<IOwnProps> = (props) => {
                     onBlur={onInputBlur}
                     value={value}
                 />
-                <div style={{ position: "absolute", top: 35, right: 10 }}>
+                <div
+                    style={{
+                        position: "absolute",
+                        top: small ? 30 : 35,
+                        right: 10,
+                    }}
+                >
                     {!!passwordToggleEnabled && (
                         <span onClick={() => setShowPwd(!showPwd)}>
                             {showPwd ? (

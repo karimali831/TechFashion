@@ -11,14 +11,15 @@ import { useAppDispatch, useAppSelector } from "src/state/Hooks";
 import { getProductState } from "src/state/contexts/product/Selectors";
 import { useEffect } from "react";
 import { SelectedProductAction } from "src/state/contexts/product/Actions";
-import { NavigateFunction, useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { IProductRouteParams } from "src/types/RouteParams";
 import { useGetProductQuery } from "src/api/productApi";
+import { Page } from "src/enum/Page";
+import { ShowPageAction } from "src/state/contexts/app/Actions";
 
 function ProductPage(): JSX.Element {
     const { slug } = useParams<IProductRouteParams>();
 
-    const navigate: NavigateFunction = useNavigate();
     const dispatch = useAppDispatch();
 
     const { selectedProduct } = useAppSelector(getProductState);
@@ -48,7 +49,9 @@ function ProductPage(): JSX.Element {
                 <MDBox p={3}>
                     <MDBox mb={3} display="flex" alignItems="center">
                         <Icon
-                            onClick={() => navigate("/products")}
+                            onClick={() =>
+                                dispatch(ShowPageAction(Page.Products))
+                            }
                             sx={{ cursor: "pointer" }}
                         >
                             arrow_back

@@ -19,9 +19,7 @@ export const FormMessage: React.FC<IOwnProps> = (props) => {
                 background: isSuccess ? "#28a745" : "#C41919",
                 display: "flex",
                 padding: 5,
-                marginTop: 5,
                 color: "white",
-                borderRadius: 10,
                 alignItems: "center",
             }}
         >

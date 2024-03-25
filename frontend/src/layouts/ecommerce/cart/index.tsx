@@ -4,18 +4,15 @@ import MDTypography from "src/components/MDTypography";
 import { Payment } from "../payment";
 import { CartOverlay } from "./Overlay";
 import { useGetCartQuery } from "src/api/cartApi";
-import { useAppSelector } from "src/state/Hooks";
-import { getCartItems, getCartState } from "src/state/contexts/cart/Selectors";
+import { useAppDispatch, useAppSelector } from "src/state/Hooks";
+import { getCartState } from "src/state/contexts/cart/Selectors";
 import { getUserState } from "src/state/contexts/user/Selectors";
-import { useNavigate } from "react-router-dom";
 import { ICartProductDetail } from "src/interface/ICartProductDetail";
+import { ShowPageAction } from "src/state/contexts/app/Actions";
+import { Page } from "src/enum/Page";
 
 export const Cart = () => {
-    const navigate = useNavigate();
-
-    const letssee = useAppSelector(getCartItems);
-
-    console.log("wow", letssee);
+    const dispatch = useAppDispatch();
 
     const { firebaseUid } = useAppSelector(getUserState);
     const { guestCheckout } = useAppSelector(getCartState);
@@ -28,7 +25,7 @@ export const Cart = () => {
     const itemsInCart: ICartProductDetail[] = cart?.products ?? [];
 
     if (itemsInCart.length === 0) {
-        navigate("/products");
+        dispatch(ShowPageAction(Page.Products));
     }
 
     return (

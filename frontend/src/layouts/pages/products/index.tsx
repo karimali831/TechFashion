@@ -1,10 +1,11 @@
 import { Fade, Grid, LinearProgress, Paper, styled } from "@mui/material";
-import { useDispatch } from "react-redux";
-import { NavigateFunction, useNavigate } from "react-router-dom";
 import { SelectedProductAction } from "src/state/contexts/product/Actions";
 import ProductItem from "./ProductItem";
 import { useGetProductQuery } from "src/api/productApi";
 import { IProductCatalogue } from "src/interface/IProductCatalogue";
+import { useAppDispatch } from "src/state/Hooks";
+import { ShowPageWithParamsAction } from "src/state/contexts/app/Actions";
+import { Page } from "src/enum/Page";
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -17,10 +18,7 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const Products = () => {
-    const navigate: NavigateFunction = useNavigate();
-
-    const dispatch = useDispatch();
-    // const { products } = useAppSelector(getProductState);
+    const dispatch = useAppDispatch();
 
     const { data: products, isLoading } = useGetProductQuery();
 
@@ -28,7 +26,12 @@ const Products = () => {
         const productDetails = products.details.filter((x) => x.id === item.id);
 
         dispatch(SelectedProductAction(productDetails));
-        navigate("/product/" + item.slug);
+        dispatch(
+            ShowPageWithParamsAction({
+                page: Page.Product,
+                primaryId: item.slug,
+            })
+        );
     };
 
     if (isLoading) {

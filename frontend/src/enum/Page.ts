@@ -3,7 +3,7 @@ export enum Page {
     Login = "Login",
     Register = "Register",
     ResetPassword = "Reset Password",
-    Products = "Products",
+    Products = "Catalog",
     Product = "Product Info",
     Cart = "Cart",
     Contacts = "Contacts",
