@@ -1,7 +1,9 @@
 using api;
 using api.Config;
+using api.Controllers;
 using api.Data;
 using Ebaysharp;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Stripe;
 
@@ -51,6 +53,15 @@ builder.Services.AddCors(options =>
         });
 });
 
+// forward headers configuration for reverse proxy
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
+builder.Services.AddHttpClient<IpApiClient>();
 
 EnvironemntManager.Environemnt = EnvironemntManager.Environments.Sandbox;
 

@@ -6,6 +6,7 @@ namespace api.Repository
 {
     public interface ICustomerAddressRepository
     {
+        Task<CustomerAddress?> GetMainAsync(int userId);
         Task<int> GetOrAddAsync(CustomerAddress model);
         Task<CustomerAddress?> FindAsync(CustomerAddress model);
     }
@@ -14,6 +15,11 @@ namespace api.Repository
     {
         private const string Table = "CustomerAddress";
         private static readonly string[] Fields = typeof(CustomerAddress).DapperFields();
+
+        public async Task<CustomerAddress?> GetMainAsync(int userId)
+        {
+            return await QueryFirstOrDefaultAsync<CustomerAddress>($"{DapperHelper.Select(Table, Fields)} WHERE UserId = @userId AND Main = 1", new { userId });
+        }
 
 
         public async Task<int> GetOrAddAsync(CustomerAddress model)

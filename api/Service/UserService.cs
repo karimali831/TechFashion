@@ -1,7 +1,7 @@
 using api.Data;
 using api.Dto;
 using api.Repository;
-using Stripe;
+using RestSharp.Extensions;
 
 namespace api.Service
 {
@@ -19,14 +19,25 @@ namespace api.Service
         Task<ApiResponse<string>> CreateAsync(CreateUsertDto dto);
     }
 
-    public class UserService(IUserRepository userRepository) : IUserService
+    public class UserService(
+        IUserRepository userRepository,
+        ICartRepository cartRepository,
+        ICustomerAddressService customerAddressService) : IUserService
     {
         private readonly IUserRepository _userRepository = userRepository;
-        private readonly CustomerService _customerService = new();
+        private readonly ICartRepository _cartRepository = cartRepository;
+        private readonly ICustomerAddressService _customerAddressService = customerAddressService;
 
-        public Task<User?> GetByFirebaseUIdAsync(string id)
+        public async Task<User?> GetByFirebaseUIdAsync(string id)
         {
-            return _userRepository.GetByFirebaseUidAsync(id);
+            var user = await _userRepository.GetByFirebaseUidAsync(id);
+
+            if (user is not null)
+            {
+                user.MainAddress = await _customerAddressService.GetMainAsync(user.Id);
+            }
+
+            return user;
         }
 
         public async Task<User?> GetByIdAsync(int id)
@@ -46,15 +57,7 @@ namespace api.Service
 
         public async Task<User?> GetByCustomerIdAsync(string customerId)
         {
-            var user = await _userRepository.GetByCustomerIdAsync(customerId);
-
-            // if (user is null)
-            //     throw new ApplicationException("Error");
-
-            // var customer = await _customerService.GetAsync(user.StripeCustomerId);
-            // user.Stripe = customer;
-
-            return user;
+            return await _userRepository.GetByCustomerIdAsync(customerId);
         }
 
         public async Task<User?> CreateGuestAccountAsync(GuestCheckoutDto dto)
@@ -116,19 +119,27 @@ namespace api.Service
 
             if (exists is not null && exists.FirebaseUid is null && exists.GuestCheckoutId is not null)
             {
+                // This will change a guest account to a full account
                 await _userRepository.SetFirebaseUidAsync(dto.FirebaseUid, exists.Id);
 
                 return new ApiResponse<string>
                 {
-                    Data = "A guest account already exists for this email. We have now updated this as a full account and you can now login."
+                    Data = "Account created and you are now logged in"
+                    // Data = "A guest account already exists for this email. We have now updated this as a full account and you can now login."
                 };
             }
 
-            await _userRepository.CreateAsync(dto);
+            var userId = await _userRepository.CreateAsync(dto);
+
+            // If items were added to a cart on a guest account, we need to update entities to reflect this.
+            if (dto.GuestCheckoutId.HasValue)
+            {
+                await _cartRepository.SetUserIdAsync(userId, dto.GuestCheckoutId.Value);
+            }
 
             return new ApiResponse<string>
             {
-                Data = "Account created and you can now login"
+                Data = "Account created and you are now logged in"
             };
         }
     }

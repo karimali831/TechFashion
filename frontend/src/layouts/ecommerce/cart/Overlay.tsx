@@ -1,10 +1,4 @@
-import {
-    Box,
-    CircularProgress,
-    Fade,
-    Icon,
-    LinearProgress,
-} from "@mui/material";
+import { Box, CircularProgress, Fade, Icon } from "@mui/material";
 import { useState } from "react";
 import {
     useGetCartQuery,
@@ -24,6 +18,7 @@ import {
     OpenCartOverlayAction,
 } from "src/state/contexts/cart/Actions";
 import { useNavigate } from "react-router-dom";
+import { getUserState } from "src/state/contexts/user/Selectors";
 
 interface IProductCartQuantity {
     id: number;
@@ -39,12 +34,13 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
     const [quantity, setQuantity] = useState<IProductCartQuantity | null>(null);
     // const [email, setEmail] = useState<string>("");
 
+    const { user, firebaseUid } = useAppSelector(getUserState);
     const { guestCheckout } = useAppSelector(getCartState);
     const dispatch = useAppDispatch();
 
     const { data: cart } = useGetCartQuery({
-        firebaseUid: null,
-        guestCheckoutId: guestCheckout.id,
+        firebaseUid,
+        guestCheckoutId: guestCheckout?.id,
     });
     const { data: products, isLoading: loadingProducts } = useGetProductQuery();
 
@@ -97,7 +93,12 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
     const onCheckoutClick = () => {
         dispatch(OpenCartOverlayAction(false));
 
-        if (guestCheckout.email !== "" && guestCheckout.name !== "") {
+        if (
+            user ||
+            (guestCheckout &&
+                guestCheckout.email !== "" &&
+                guestCheckout.name !== "")
+        ) {
             navigate("/cart");
         } else {
             dispatch(OpenCartAccountModalAction(true));
@@ -110,13 +111,16 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
         navigate("./products");
     };
 
-    if (loadingProducts) {
-        return <LinearProgress />;
-    }
-
     return (
         <Box display="flex" flexDirection="column" height="100%">
-            {itemsInCart.length === 0 ? (
+            {loadingProducts ? (
+                <Box>
+                    <MDTypography>
+                        <h2>Your cart</h2>
+                        <CircularProgress />
+                    </MDTypography>
+                </Box>
+            ) : itemsInCart.length === 0 ? (
                 <Fade
                     in={true}
                     timeout={500}

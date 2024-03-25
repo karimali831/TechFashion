@@ -9,9 +9,5 @@ export interface ICartState {
 export const cartInitialState: ICartState = {
     openOverlay: false,
     openAccountModal: false,
-    guestCheckout: {
-        id: window.crypto.randomUUID(),
-        name: "",
-        email: "",
-    },
+    guestCheckout: null,
 };

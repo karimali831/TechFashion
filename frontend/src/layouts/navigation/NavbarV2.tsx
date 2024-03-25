@@ -26,15 +26,19 @@ import { ICartProductDetail } from "src/interface/ICartProductDetail";
 import { MDModal } from "src/components/MDModal";
 import MDInput from "src/components/MDInput";
 import { ActionButton } from "src/components/Buttons/ActionButton";
+import { getUserState } from "src/state/contexts/user/Selectors";
 
 function NavbarV2() {
     const navigate: NavigateFunction = useNavigate();
 
+    const { firebaseUid } = useAppSelector(getUserState);
     const { guestCheckout, openOverlay, openAccountModal } =
         useAppSelector(getCartState);
 
-    const [email, setEmail] = React.useState<string>(guestCheckout.email);
-    const [name, setName] = React.useState<string>(guestCheckout.name);
+    const [email, setEmail] = React.useState<string>(
+        guestCheckout?.email ?? ""
+    );
+    const [name, setName] = React.useState<string>(guestCheckout?.name ?? "");
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
         null
     );
@@ -47,8 +51,8 @@ function NavbarV2() {
     const dispatch = useAppDispatch();
 
     const { data: cart } = useGetCartQuery({
-        firebaseUid: null,
-        guestCheckoutId: guestCheckout.id,
+        firebaseUid,
+        guestCheckoutId: guestCheckout?.id,
     });
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -123,7 +127,7 @@ function NavbarV2() {
                         </Box>
                     </Box>
                 }
-                open={openAccountModal}
+                open={openAccountModal && !!guestCheckout}
                 onClose={() => dispatch(OpenCartAccountModalAction(false))}
             />
             {openOverlay && (

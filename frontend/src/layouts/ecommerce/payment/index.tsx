@@ -1,4 +1,4 @@
-import { Box, Fade, Icon, LinearProgress } from "@mui/material";
+import { Box, CircularProgress, Fade, Icon } from "@mui/material";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import Checkout from "./Checkout";
@@ -7,6 +7,7 @@ import MDTypography from "src/components/MDTypography";
 import { useAppSelector } from "src/state/Hooks";
 import { getCartState } from "src/state/contexts/cart/Selectors";
 import { useCreatePaymentIntentQuery, useGetCartQuery } from "src/api/cartApi";
+import { getUserState } from "src/state/contexts/user/Selectors";
 
 const stripePromise = loadStripe(
     "pk_test_51MF29cB4n2CpwCrekms5MYYiKzNBOpA20kCPNvON4clMPEwh84j1Mv5rljEj1VHEAUGL9moIjteZZpIcmymsggYw00cJJfvH2O"
@@ -42,25 +43,27 @@ const CheckoutPage = ({ clientSecret }: CheckoutProps) => (
 );
 
 export const Payment = () => {
+    const { firebaseUid } = useAppSelector(getUserState);
     const { guestCheckout } = useAppSelector(getCartState);
 
     const { data: cart } = useGetCartQuery({
-        firebaseUid: null,
-        guestCheckoutId: guestCheckout.id,
+        firebaseUid,
+        guestCheckoutId: guestCheckout?.id,
     });
 
     const { data: paymentIntent, isLoading: paymentIntentLoading } =
         useCreatePaymentIntentQuery(
             {
                 cartId: cart?.id,
-                firebaseUid: null,
+                firebaseUid,
                 guestUser: guestCheckout,
             },
             { skip: !cart }
         );
 
-    if (paymentIntentLoading || !stripePromise || !cart)
-        return <LinearProgress />;
+    if (!stripePromise) return null;
+
+    if (paymentIntentLoading || !cart) return <CircularProgress />;
 
     if (paymentIntent.errorMsg) {
         return (

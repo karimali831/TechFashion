@@ -23,6 +23,7 @@ import { IProductDetail } from "src/interface/IProductDetail";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
 import { OpenCartOverlayAction } from "src/state/contexts/cart/Actions";
 import { getCartState } from "src/state/contexts/cart/Selectors";
+import { getUserState } from "src/state/contexts/user/Selectors";
 
 interface IProps {
     item: IProductDetail[];
@@ -43,11 +44,14 @@ function ProductInfo({ item }: IProps): JSX.Element {
         useAddProductToCartMutation();
     const [updateProductQuantity] = useUpdateProductQuantityMutation();
 
+    const { firebaseUid } = useAppSelector(getUserState);
     const { guestCheckout } = useAppSelector(getCartState);
 
+    console.log("hello?", guestCheckout);
+
     const { data: cart } = useGetCartQuery({
-        firebaseUid: null,
-        guestCheckoutId: guestCheckout.id,
+        firebaseUid,
+        guestCheckoutId: guestCheckout?.id,
     });
 
     const { data: products } = useGetProductQuery();
@@ -147,8 +151,8 @@ function ProductInfo({ item }: IProps): JSX.Element {
         } else {
             await addProductToCart({
                 cartUser: {
-                    firebaseUid: null,
-                    guestCheckoutId: guestCheckout.id,
+                    firebaseUid,
+                    guestCheckoutId: guestCheckout?.id,
                 },
                 quantity,
                 productId: product.id,

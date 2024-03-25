@@ -10,6 +10,7 @@ import { FormMessage } from "src/components/Form/Message";
 import { auth } from "src/config/firebase";
 import { IFormMessage, IFormMessageCode } from "src/enum/IFormMessage";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
+import { getCartState } from "src/state/contexts/cart/Selectors";
 import { SigninLoadingAction } from "src/state/contexts/user/Actions";
 import { getUserState } from "src/state/contexts/user/Selectors";
 import Swal from "sweetalert2";
@@ -27,6 +28,8 @@ const Register = (): JSX.Element => {
     const [createUser] = useCreateUserMutation();
 
     const navigate = useNavigate();
+
+    const { guestCheckout } = useAppSelector(getCartState);
     const { user, authSuccess, signingIn } = useAppSelector(getUserState);
 
     useEffect(() => {
@@ -86,6 +89,7 @@ const Register = (): JSX.Element => {
                 if (user) {
                     createUser({
                         name: name.value,
+                        guestCheckoutId: guestCheckout?.id,
                         email: email.value,
                         firebaseUid: user.uid,
                     })
@@ -103,7 +107,7 @@ const Register = (): JSX.Element => {
                                     title: "Success",
                                     text: response.data,
                                     timer: 10000,
-                                }).then(() => navigate("/login"));
+                                }).then(() => navigate("/account"));
                             }
                         });
                 }

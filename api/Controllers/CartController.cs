@@ -1,4 +1,3 @@
-using api.Data;
 using api.Dto;
 using api.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -8,11 +7,9 @@ namespace api.Controllers
     [Route("api/cart")]
     [ApiController]
     public class CartController(
-        IUserService userService,
         ICartService cartService,
         ICartProductService cartProductService) : ControllerBase
     {
-        private readonly IUserService _userService = userService;
         private readonly ICartService _cartService = cartService;
         private readonly ICartProductService _cartProductService = cartProductService;
 

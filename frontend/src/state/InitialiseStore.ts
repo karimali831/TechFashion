@@ -24,6 +24,9 @@ import {
 import { auth } from "src/config/firebase";
 import { createBrowserHistory } from "history";
 import { rootSaga } from "./middleware/sagas/rootSaga";
+import { SetGuestCheckoutAction } from "./contexts/cart/Actions";
+import { ShowPageAction } from "./contexts/app/Actions";
+import { Page } from "src/enum/Page";
 
 export const history = createBrowserHistory();
 
@@ -64,8 +67,20 @@ export const store = configureStore({
 onAuthStateChanged(auth, (user) => {
     if (user) {
         store.dispatch(FirebaseAuthenticatedAction(user.uid));
+        store.dispatch(SetGuestCheckoutAction(null));
+
+        store.dispatch(ShowPageAction(Page.Products));
     } else {
         store.dispatch(FirebaseAuthEmptyAction);
+        store.dispatch(
+            SetGuestCheckoutAction({
+                id: window.crypto.randomUUID(),
+                name: "",
+                email: "",
+            })
+        );
+
+        store.dispatch(ShowPageAction(Page.Login));
     }
 });
 

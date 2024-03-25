@@ -21,6 +21,7 @@ export const { useCreateUserMutation } = userApi;
 
 export interface ICreateUserRequest {
     email: string;
+    guestCheckoutId?: string;
     firebaseUid: string;
     name: string;
 }

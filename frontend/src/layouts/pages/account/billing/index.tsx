@@ -6,10 +6,28 @@ import BillingInformation from "src/layouts/pages/account/billing/components/Bil
 import Transactions from "src/layouts/pages/account/billing/components/Transactions";
 import MasterCard from "src/components/Cards/MasterCard";
 import DefaultInfoCard from "src/components/Cards/DefaultInfoCard";
+import { Button } from "@mui/material";
+import { auth } from "src/config/firebase";
+import { useAppSelector } from "src/state/Hooks";
+import { getUserState } from "src/state/contexts/user/Selectors";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 function Billing(): JSX.Element {
+    const navigate = useNavigate();
+    const { user } = useAppSelector(getUserState);
+
+    useEffect(() => {
+        if (!user) {
+            navigate("/login");
+        }
+    }, [user]);
+
     return (
         <MDBox mt={4} className="home">
+            <Button variant="contained" onClick={() => auth.signOut()}>
+                Sign out
+            </Button>
             <MDBox mb={3}>
                 <Grid container spacing={3}>
                     <Grid item xs={12} lg={8}>
