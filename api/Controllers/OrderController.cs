@@ -8,9 +8,11 @@ namespace api.Controllers
     [ApiController]
     public class OrderController(
         IpApiClient ipApiClient,
+        IOrderService orderService,
         IStripeOrderService stripeOrderService) : ControllerBase
     {
         private readonly IpApiClient _ipApiClient = ipApiClient;
+        private readonly IOrderService _orderService = orderService;
         private readonly IStripeOrderService _stripeOrderService = stripeOrderService;
 
         [HttpPost("CreatePaymentIntent")]
@@ -44,6 +46,20 @@ namespace api.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
+        }
+
+        [HttpGet("GetHistory/{userId}")]
+        public async Task<IActionResult> GetHistory(int userId)
+        {
+            var orderHistory = await _orderService.GetHistoryAsync(userId);
+            return Ok(orderHistory);
+        }
+
+        [HttpGet("GetOrderedItems/{orderId}")]
+        public async Task<IActionResult> GetOrderedItems(int orderId)
+        {
+            var orderHistory = await _orderService.GetOrderedItemsAsync(orderId);
+            return Ok(orderHistory);
         }
     }
 }

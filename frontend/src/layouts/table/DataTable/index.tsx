@@ -22,7 +22,7 @@ import DataTableHeadCell from "./DataTableHeadCell";
 import DataTableBodyCell from "./DataTableBodyCell";
 
 // Declaring props types for DataTable
-interface Props {
+interface IProps<T> {
     loading: boolean;
     entriesPerPage?:
         | false
@@ -50,9 +50,10 @@ interface Props {
     };
     isSorted?: boolean;
     noEndBorder?: boolean;
+    onRowClick?: (item: T) => void;
 }
 
-function DataTable({
+function DataTable<T>({
     loading,
     entriesPerPage,
     canSearch,
@@ -61,7 +62,8 @@ function DataTable({
     pagination,
     isSorted,
     noEndBorder,
-}: Props): JSX.Element {
+    onRowClick,
+}: IProps<T>): JSX.Element {
     let defaultValue: any;
     let entries: any[];
 
@@ -338,7 +340,11 @@ function DataTable({
                         {page.map((row: any, key: any) => {
                             prepareRow(row);
                             return (
-                                <TableRow key={key} {...row.getRowProps()}>
+                                <TableRow
+                                    key={key}
+                                    {...row.getRowProps()}
+                                    onClick={() => onRowClick(row.original)}
+                                >
                                     {row.cells.map((cell: any, key: any) => (
                                         <DataTableBodyCell
                                             key={key}

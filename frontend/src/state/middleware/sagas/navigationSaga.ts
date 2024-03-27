@@ -60,7 +60,8 @@ export function* navigateToScreen(
         const newLocation = AppRoutes.filter(
             (x) => x.page === route.payload
         )[0];
-        const currentLocation = history.location.pathname;
+
+        const currentLocation = history.location.pathname.toLowerCase();
 
         if (newLocation.memberOnly && !auth) {
             const defaultLocationUrl = AppRoutes.filter(
@@ -76,16 +77,9 @@ export function* navigateToScreen(
             return;
         }
 
-        const splitUrl = newLocation.url.split("/");
-
         if (!!primaryId) {
-            if (splitUrl.length === 2) {
-                newLocation.url += "/" + primaryId;
-            }
-
-            if (!!secondaryId && splitUrl.length === 3) {
-                newLocation.url += "/" + secondaryId;
-            }
+            history.push(newLocation.url + "/" + primaryId);
+            return;
         }
 
         history.push(newLocation.url);
@@ -95,5 +89,5 @@ export function* navigateToScreen(
 }
 
 export function* navigatePreviousScreen() {
-    // yield put(goBack());
+    history.back();
 }

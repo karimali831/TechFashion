@@ -8,5 +8,6 @@ export enum Page {
     Cart = "Cart",
     Contacts = "Contacts",
     OrderSuccess = "Order Success",
+    Order = "Order",
     Account = "Account",
 }

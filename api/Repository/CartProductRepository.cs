@@ -54,10 +54,13 @@ namespace api.Repository
                 FROM [Products] AS P
                 JOIN [CartProducts] AS CP
                 ON CP.ProductId = P.Id
+                JOIN [Carts] AS C
+                ON C.Id = CP.CartId 
                 WHERE P.Active = 1 
                 AND CP.CartId = @cartId
                 AND CP.RemovedDate IS NULL
                 AND CP.VariantId IS NULL
+                AND C.ArchiveDate IS NULL
 
                 UNION
 
@@ -76,9 +79,12 @@ namespace api.Repository
                 ON PV.ProductId = P.Id
                 JOIN [CartProducts] CP 
                 ON cp.VariantId = pv.Id
+                JOIN [Carts] AS C
+                ON C.Id = CP.CartId 
                 WHERE p.Active = 1
                 AND CP.CartId = @cartId
                 AND CP.RemovedDate IS NULL
+                AND C.ArchiveDate IS NULL
             ";
 
             return (await QueryAsync<CartProductDetail>(sqlTxt, new { cartId }))

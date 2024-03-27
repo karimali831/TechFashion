@@ -14,8 +14,7 @@ import { SelectedProductAction } from "src/state/contexts/product/Actions";
 import { useParams } from "react-router-dom";
 import { IProductRouteParams } from "src/types/RouteParams";
 import { useGetProductQuery } from "src/api/productApi";
-import { Page } from "src/enum/Page";
-import { ShowPageAction } from "src/state/contexts/app/Actions";
+import { GoBackAction } from "src/state/contexts/app/Actions";
 
 function ProductPage(): JSX.Element {
     const { slug } = useParams<IProductRouteParams>();
@@ -49,9 +48,7 @@ function ProductPage(): JSX.Element {
                 <MDBox p={3}>
                     <MDBox mb={3} display="flex" alignItems="center">
                         <Icon
-                            onClick={() =>
-                                dispatch(ShowPageAction(Page.Products))
-                            }
+                            onClick={() => dispatch(GoBackAction())}
                             sx={{ cursor: "pointer" }}
                         >
                             arrow_back

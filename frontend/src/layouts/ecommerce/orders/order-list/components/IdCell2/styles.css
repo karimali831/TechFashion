@@ -1,0 +1,11 @@
+.id {
+    padding: 0 1.5rem;
+    text-decoration: none;
+    border: 0.1rem solid rgba(18, 18, 18, 0.1);
+    font-size: 1.2rem;
+}
+
+.id:hover {
+    cursor: pointer;
+    box-shadow: 0 0 0 0.1rem rgba(18, 18, 18, 0.1);
+}

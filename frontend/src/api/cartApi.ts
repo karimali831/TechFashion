@@ -2,10 +2,11 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { ICartProductDetail } from "src/interface/ICartProductDetail";
 import { baseApiUrl } from "./baseApi";
 import { IGuestCheckout } from "src/interface/IGuestCheckout";
+import { IOrderHistory } from "src/data/IOrderHistory";
 
 export const cartApi = createApi({
     reducerPath: "cartApi",
-    tagTypes: ["Cart", "PaymentIntent"],
+    tagTypes: ["Cart", "PaymentIntent", "OrderHistory"],
     baseQuery: fetchBaseQuery({
         baseUrl: baseApiUrl,
         // headers: { Authorization: `Bearer ${getTokenFromLocalStorage()}` },
@@ -18,17 +19,6 @@ export const cartApi = createApi({
                 body,
             }),
             providesTags: ["Cart"],
-        }),
-        createPaymentIntent: builder.query<
-            IPaymentIntentResponse,
-            IPaymentIntentRequest
-        >({
-            query: (body) => ({
-                url: "Order/CreatePaymentIntent",
-                method: "POST",
-                body,
-            }),
-            providesTags: ["PaymentIntent"],
         }),
         updateProductQuantity: builder.mutation<
             void,
@@ -54,6 +44,30 @@ export const cartApi = createApi({
                 method: "GET",
             }),
             invalidatesTags: ["Cart", "PaymentIntent"],
+        }),
+        createPaymentIntent: builder.query<
+            IPaymentIntentResponse,
+            IPaymentIntentRequest
+        >({
+            query: (body) => ({
+                url: "Order/CreatePaymentIntent",
+                method: "POST",
+                body,
+            }),
+            providesTags: ["PaymentIntent"],
+        }),
+        getOrderHistory: builder.query<IOrderHistory[], number>({
+            query: (userId) => ({
+                url: `Order/GetHistory/${userId}`,
+                method: "GET",
+            }),
+            providesTags: ["OrderHistory"],
+        }),
+        getOrderedItems: builder.query<IOrderHistory[], number>({
+            query: (orderId) => ({
+                url: `Order/GetOrderedItems/${orderId}`,
+                method: "GET",
+            }),
         }),
     }),
 });
@@ -103,4 +117,6 @@ export const {
     useAddProductToCartMutation,
     useRemoveProductFromCartMutation,
     useCreatePaymentIntentQuery,
+    useGetOrderHistoryQuery,
+    useGetOrderedItemsQuery,
 } = cartApi;

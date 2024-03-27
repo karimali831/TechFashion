@@ -34,7 +34,7 @@ const Login = (): JSX.Element => {
         if (user) {
             setTimeout(() => {
                 dispatch(ShowPageAction(Page.Account));
-            }, 1000);
+            }, 500);
         }
     }, [user]);
 
