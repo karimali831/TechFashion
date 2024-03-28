@@ -54,6 +54,8 @@ export function* firebaseAuthenticated(action: PayloadAction<string>) {
 
         yield put(SetFirebaseUidAction(action.payload));
         yield put(LoginSuccessAction(response.data));
+
+        // persistor.purge();
     } catch (e) {
         toast.error("An error occurred");
     }
