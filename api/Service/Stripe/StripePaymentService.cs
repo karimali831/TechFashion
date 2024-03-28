@@ -29,14 +29,15 @@ namespace api.Service.Stripe
 
         public async Task<PaymentIntentResponse> CreateIntentAsync(User user, int cartId, StripeCoupon? coupon = null, string? promoCode = null)
         {
-            long discountedAmount = 0;
+            decimal discountedAmount = 0;
 
             var cartProducts = await _cartService.GetAsync(user.Id);
 
             if (cartProducts is null || cartProducts.Total <= 0)
                 throw new ApplicationException("An error occurred");
 
-            long amount = (long)cartProducts.Total * 100;
+
+            var amount = cartProducts.Total * 100;
 
             if (coupon is not null)
             {
@@ -67,7 +68,7 @@ namespace api.Service.Stripe
                 var create = await _paymentIntentService.CreateAsync(
                     new PaymentIntentCreateOptions
                     {
-                        Amount = amount,
+                        Amount = (long)amount,
                         Customer = user.StripeCustomerId,
                         Currency = "gbp",
                         Metadata = metaData
@@ -78,7 +79,7 @@ namespace api.Service.Stripe
                     ClientSecret = create.ClientSecret,
                     Coupon = coupon?.Name,
                     DiscountedAmount = discountedAmount.ToCurrencyGbp(),
-                    Amount = amount.ToCurrencyGbp()
+                    Amount = cartProducts.Total.ToCurrencyGbp()
                 };
             }
             catch (Exception exp)

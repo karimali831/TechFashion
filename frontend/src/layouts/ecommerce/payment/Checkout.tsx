@@ -7,7 +7,7 @@ import {
 import React, { useState } from "react";
 import { ClipLoader } from "react-spinners";
 import PaymentIcon from "@mui/icons-material/Payment";
-import { Alert, Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import MDTypography from "src/components/MDTypography";
 import { StripePaymentElementChangeEvent } from "@stripe/stripe-js";
 import { useAppSelector } from "src/state/Hooks";
@@ -17,10 +17,11 @@ import { getUserState } from "src/state/contexts/user/Selectors";
 
 interface IProps {
     clientSecret: string;
+    total: string;
 }
 
-export const Checkout = ({ clientSecret }: IProps) => {
-    const [error, setError] = useState<string | null>(null);
+export const Checkout = ({ clientSecret, total }: IProps) => {
+    const [, setError] = useState<string | null>(null);
     const [processing, setProcessing] = useState<boolean>();
     const [disabled, setDisabled] = useState<boolean>(true);
 
@@ -67,8 +68,9 @@ export const Checkout = ({ clientSecret }: IProps) => {
             onSubmit={handleSubmit}
             style={{ width: "100%" }}
         >
-            <>
-                {/* <LinkAuthenticationElement
+            <Box>
+                <Box>
+                    {/* <LinkAuthenticationElement
                     // Optional prop for prefilling customer information
                     options={{
                         defaultValues: {
@@ -79,53 +81,61 @@ export const Checkout = ({ clientSecret }: IProps) => {
                     //     setEmail(event.value.email);
                     // }}
                 /> */}
-                <MDTypography mt={2} mb={1} variant="h6">
-                    Shipping
-                </MDTypography>
-                <AddressElement
-                    options={{
-                        mode: "shipping",
+                    <MDTypography mt={2} mb={1} variant="h6">
+                        Shipping
+                    </MDTypography>
+                    <AddressElement
+                        options={{
+                            mode: "shipping",
 
-                        allowedCountries: ["UK"],
-                        defaultValues: {
-                            name: user?.name ?? guestCheckout.name,
-                            address: { country: "UK" },
-                        },
-                    }}
-                />
-                <MDTypography mt={2} mb={1} variant="h6">
-                    Payment
-                </MDTypography>
-                <PaymentElement
-                    id="payment-element"
-                    onChange={handleChange}
-                    options={{
-                        defaultValues: {
-                            billingDetails: {
-                                name: "John Doe",
-                                phone: "888-888-8888",
-                                address: {
-                                    postal_code: "10001",
-                                    country: "US",
+                            allowedCountries: ["UK"],
+                            defaultValues: {
+                                name: user?.name ?? guestCheckout.name,
+                                address: { country: "UK" },
+                            },
+                        }}
+                    />
+                    <MDTypography mt={2} mb={1} variant="h6">
+                        Payment
+                    </MDTypography>
+                    <PaymentElement
+                        id="payment-element"
+                        onChange={handleChange}
+                        options={{
+                            defaultValues: {
+                                billingDetails: {
+                                    name: "John Doe",
+                                    phone: "888-888-8888",
+                                    address: {
+                                        postal_code: "10001",
+                                        country: "US",
+                                    },
                                 },
                             },
-                        },
-                    }}
-                />
+                        }}
+                    />
+                </Box>
+                {/* {error && <Alert severity="error">{error}</Alert>} */}
+                <Box>
+                    <Box
+                        display="flex"
+                        justifyContent="space-between"
+                        alignItems="align"
+                        sx={{
+                            mt: 3,
+                        }}
+                    >
+                        <MDTypography>Total</MDTypography>
+                        <MDTypography>{total}</MDTypography>
+                    </Box>
 
-                {error && <Alert severity="error">{error}</Alert>}
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "flex-end",
-                        marginTop: 5,
-                    }}
-                >
                     <Button
+                        sx={{ mt: 1 }}
                         type="submit"
                         disabled={processing || disabled}
                         variant="contained"
-                        size="small"
+                        color="primary"
+                        fullWidth={true}
                         startIcon={
                             processing ? (
                                 <ClipLoader
@@ -140,8 +150,8 @@ export const Checkout = ({ clientSecret }: IProps) => {
                     >
                         {processing ? "Submitting" : "Pay Now"}
                     </Button>
-                </div>
-            </>
+                </Box>
+            </Box>
         </form>
     );
 };

@@ -29,8 +29,10 @@ import { Page } from "src/enum/Page";
 import { FormInput } from "src/components/Form";
 import { ActionButton } from "src/components/Buttons/ActionButton";
 import { AppRoutes } from "src/router/Routes";
+import { useNavigate } from "react-router-dom";
 
 function NavbarV2() {
+    const navigate = useNavigate();
     const { firebaseUid } = useAppSelector(getUserState);
     const { guestCheckout, openOverlay, openAccountModal } =
         useAppSelector(getCartState);
@@ -80,7 +82,14 @@ function NavbarV2() {
 
     const navToLoginOrRegister = (page: Page) => {
         dispatch(OpenCartAccountModalAction(false));
-        dispatch(ShowPageAction(page));
+
+        if (page === Page.Login) {
+            navigate("/login?withCart=true");
+        }
+
+        if (page === Page.Register) {
+            navigate("/register?withCart=true");
+        }
     };
 
     return (

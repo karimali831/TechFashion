@@ -16,6 +16,7 @@ import { ShowPageAction } from "src/state/contexts/app/Actions";
 import { Page } from "src/enum/Page";
 import { getGuestCheckoutId } from "src/state/contexts/cart/Selectors";
 import { ResetGuestCheckoutAction } from "src/state/contexts/cart/Actions";
+import { ICartUserRequest } from "src/api/cartApi";
 
 export default function* userApiSaga() {
     yield takeLatest(FirebaseAuthenticatedAction.type, firebaseAuthenticated);
@@ -40,9 +41,15 @@ export function* userLoggedOut() {
 
 export function* firebaseAuthenticated(action: PayloadAction<string>) {
     try {
+        const guestCheckoutId: string | null = yield select(getGuestCheckoutId);
+
         const response: IAxiosResponse<IUser> = yield call(
-            axios.get,
-            baseApiUrl + `User/Get/${action.payload}`
+            axios.post,
+            baseApiUrl + "User/Get",
+            {
+                firebaseUid: action.payload,
+                guestCheckoutId,
+            } as ICartUserRequest
         );
 
         yield put(SetFirebaseUidAction(action.payload));

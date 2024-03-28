@@ -1,5 +1,4 @@
 import { Box, Fade, LinearProgress } from "@mui/material";
-import Autocomplete from "@mui/material/Autocomplete";
 import Grid from "@mui/material/Grid";
 import Icon from "@mui/material/Icon";
 import isEqual from "lodash.isequal";
@@ -14,12 +13,12 @@ import { ActionButton } from "src/components/Buttons/ActionButton";
 import MDAlert from "src/components/MDAlert";
 import MDBadge from "src/components/MDBadge";
 import MDBox from "src/components/MDBox";
-import MDInput from "src/components/MDInput";
 import MDTypography from "src/components/MDTypography";
 import { IVariant } from "src/data/IVariant";
 import useEffectSkipInitialRender from "src/hooks/useEffectSkipInitialRender";
 import { ICartProductDetail } from "src/interface/ICartProductDetail";
 import { IProductDetail } from "src/interface/IProductDetail";
+import { Variant } from "src/layouts/ecommerce/variant";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
 import { OpenCartOverlayAction } from "src/state/contexts/cart/Actions";
 import { getCartState } from "src/state/contexts/cart/Selectors";
@@ -96,6 +95,7 @@ function ProductInfo({ item }: IProps): JSX.Element {
                 reason: "deleted",
                 text: "Variant not currently available, please make another selection.",
             });
+            setQuantity(1);
         } else {
             if (productVariant.stock === 0) {
                 setProductVariantUnavailable({
@@ -104,14 +104,11 @@ function ProductInfo({ item }: IProps): JSX.Element {
                 });
             } else if (
                 itemInCart?.stock &&
-                itemInCart.stock < itemInCart.quantity + quantity
+                itemInCart.quantity + quantity > itemInCart.stock
             ) {
                 setProductVariantUnavailable({
                     reason: "quantity-exceeds-stock",
-                    text:
-                        "You already have " +
-                        itemInCart.quantity +
-                        " in your cart and cannot add no more.",
+                    text: "Maximum quantity added",
                 });
             } else {
                 setProductVariantUnavailable(null);
@@ -123,13 +120,10 @@ function ProductInfo({ item }: IProps): JSX.Element {
         if (itemInCart) {
             const totalQuantity = itemInCart.quantity + quantity;
 
-            if (itemInCart.stock && itemInCart.stock < totalQuantity) {
+            if (itemInCart?.stock && itemInCart.stock < totalQuantity) {
                 setProductVariantUnavailable({
                     reason: "quantity-exceeds-stock",
-                    text:
-                        "You already have " +
-                        itemInCart.stock +
-                        " in your cart and cannot add no more.",
+                    text: "Maximum quantity added",
                 });
                 return;
             }
@@ -174,26 +168,24 @@ function ProductInfo({ item }: IProps): JSX.Element {
     };
 
     const updateQuantity = (value: number) => {
-        if (value == 0) return;
+        if (value == 0 || productVariantUnavailable?.reason === "deleted")
+            return;
 
         if (
-            (product.stock && product.stock < value) ||
-            (itemInCart?.stock && itemInCart.stock < value)
+            itemInCart?.stock &&
+            itemInCart.quantity + value > itemInCart.stock
         ) {
             setProductVariantUnavailable({
                 reason: "quantity-exceeds-stock",
-                text:
-                    itemInCart?.stock && itemInCart.stock < value
-                        ? "You already have " +
-                          itemInCart.stock +
-                          " in your cart and cannot add no more."
-                        : "Please select a maximum quantity of " +
-                          product.stock,
+                text: "Maximum quantity added",
+            });
+        } else if (product.stock && value > product.stock) {
+            setProductVariantUnavailable({
+                reason: "quantity-exceeds-stock",
+                text: "Maximum quantity is " + product.stock,
             });
         } else {
-            if (productVariantUnavailable.reason === "quantity-exceeds-stock") {
-                setProductVariantUnavailable(null);
-            }
+            setProductVariantUnavailable(null);
         }
 
         setQuantity(value);
@@ -203,151 +195,109 @@ function ProductInfo({ item }: IProps): JSX.Element {
         return <LinearProgress />;
 
     return (
-        <MDBox>
-            <MDBox mb={1}>
-                <MDTypography variant="h3" fontWeight="bold">
-                    {product.title}
-                </MDTypography>
-            </MDBox>
-            <MDTypography variant="h4" color="text">
-                <Icon>star</Icon>
-                <Icon>star</Icon>
-                <Icon>star</Icon>
-                <Icon>star</Icon>
-                <Icon>star_half</Icon>
-            </MDTypography>
-            <MDBox mt={1}>
-                <MDTypography variant="h6" fontWeight="medium">
-                    Price
-                </MDTypography>
-            </MDBox>
-            <MDBox mb={1}>
-                <MDTypography variant="h5" fontWeight="medium">
-                    {product.priceStr}
-                </MDTypography>
-            </MDBox>
-            {!!productVariantUnavailable &&
-            productVariantUnavailable.reason !== "quantity-exceeds-stock" ? (
-                <MDBadge
-                    variant="contained"
-                    color="error"
-                    badgeContent={
-                        productVariantUnavailable.reason === "out-of-stock"
-                            ? "out of stock"
-                            : "unavailable"
-                    }
-                    container
-                />
-            ) : (
-                <MDBadge
-                    variant="contained"
-                    color="success"
-                    badgeContent={
-                        (product.stock ? product.stock : "") + " in stock"
-                    }
-                    container
-                />
-            )}
-            <MDBox mt={3} mb={1} ml={0.5}>
-                <MDTypography
-                    variant="button"
-                    fontWeight="regular"
-                    color="text"
-                >
-                    Description
-                </MDTypography>
-            </MDBox>
-            <MDBox component="ul" m={0} pl={4} mb={2}>
-                <MDBox color="text" fontSize="1.25rem" lineHeight={1}>
-                    <MDTypography
-                        variant="body2"
-                        color="text"
-                        fontWeight="regular"
-                        verticalAlign="middle"
-                    >
-                        {product.description}
+        <Fade
+            in={true}
+            timeout={500}
+            mountOnEnter={true}
+            unmountOnExit={true}
+            style={{
+                transitionDelay: "100ms",
+            }}
+        >
+            <MDBox>
+                <MDBox mb={1}>
+                    <MDTypography variant="h3" fontWeight="bold">
+                        {product.title}
                     </MDTypography>
                 </MDBox>
-                {/* <MDBox component="li" color="text" fontSize="1.25rem" lineHeight={1}>
-                    <MDTypography variant="body2" color="text" fontWeight="regular" verticalAlign="middle">
-                        Memory swivel seat returns to original seat position
+                <MDTypography variant="h4" color="text">
+                    <Icon>star</Icon>
+                    <Icon>star</Icon>
+                    <Icon>star</Icon>
+                    <Icon>star</Icon>
+                    <Icon>star_half</Icon>
+                </MDTypography>
+                <MDBox mt={1}>
+                    <MDTypography variant="h6" fontWeight="medium">
+                        Price
                     </MDTypography>
                 </MDBox>
-                <MDBox component="li" color="text" fontSize="1.25rem" lineHeight={1}>
-                    <MDTypography variant="body2" color="text" fontWeight="regular" verticalAlign="middle">
-                        Comfortable integrated layered chair seat cushion design
+                <MDBox mb={1}>
+                    <MDTypography variant="h5" fontWeight="medium">
+                        {product.priceStr}
                     </MDTypography>
                 </MDBox>
-                <MDBox component="li" color="text" fontSize="1.25rem" lineHeight={1}>
-                    <MDTypography variant="body2" color="text" fontWeight="regular" verticalAlign="middle">
-                        Fully assembled! No assembly required
-                    </MDTypography>
-                </MDBox> */}
-            </MDBox>
-            <MDBox mt={3}>
-                {productVariantUnavailable && (
-                    <Fade in={true} mountOnEnter={true} unmountOnExit={true}>
-                        <Box>
-                            <MDAlert dismissible={true} color="warning">
-                                <Icon sx={{ mr: 1 }}>warning</Icon>
-                                {productVariantUnavailable.text}
-                            </MDAlert>
-                        </Box>
-                    </Fade>
+                {!!productVariantUnavailable &&
+                productVariantUnavailable.reason !==
+                    "quantity-exceeds-stock" ? (
+                    <MDBadge
+                        variant="contained"
+                        color="error"
+                        badgeContent={
+                            productVariantUnavailable.reason === "out-of-stock"
+                                ? "out of stock"
+                                : "unavailable"
+                        }
+                        container
+                    />
+                ) : (
+                    <MDBadge
+                        variant="contained"
+                        color="success"
+                        badgeContent={
+                            (product.stock ? product.stock : "") + " in stock"
+                        }
+                        container
+                    />
                 )}
-                <Fade
-                    in={true}
-                    timeout={500}
-                    mountOnEnter={true}
-                    unmountOnExit={true}
-                >
-                    <Grid container spacing={3}>
-                        {variants.map((variant, idx) => {
-                            const selectedVariant = variations.filter(
-                                (x) => x.attribute === variant.attribute
-                            )[0]?.value;
 
-                            return (
-                                <Grid key={idx} item xs={12} lg={5}>
-                                    <MDBox
-                                        mb={1.5}
-                                        lineHeight={0}
-                                        display="inline-block"
+                <MDBox mt={3}>
+                    <Fade
+                        in={true}
+                        timeout={500}
+                        mountOnEnter={true}
+                        unmountOnExit={true}
+                    >
+                        <Box>
+                            {variants.map((variant, idx) => {
+                                const selectedVariant = variations.filter(
+                                    (x) => x.attribute === variant.attribute
+                                )[0]?.value;
+
+                                return (
+                                    <Grid key={idx} item xs={12} lg={5}>
+                                        <Variant
+                                            selected={selectedVariant}
+                                            variant={variant}
+                                            onClick={(value) => {
+                                                updateVariant(
+                                                    variant.attribute,
+                                                    value
+                                                );
+                                            }}
+                                        />
+                                    </Grid>
+                                );
+                            })}
+
+                            <MDBox mb={1} mt={3} lineHeight={0}>
+                                {productVariantUnavailable && (
+                                    <Fade
+                                        timeout={500}
+                                        in={true}
+                                        mountOnEnter={true}
+                                        unmountOnExit={true}
                                     >
-                                        <MDTypography
-                                            component="label"
-                                            variant="button"
-                                            color="text"
-                                            fontWeight="regular"
-                                        >
-                                            {variant.attribute}
-                                        </MDTypography>
-                                    </MDBox>
-                                    <Autocomplete
-                                        value={selectedVariant}
-                                        options={variant.options}
-                                        onChange={(
-                                            e: React.SyntheticEvent,
-                                            value: string
-                                        ) =>
-                                            updateVariant(
-                                                variant.attribute,
-                                                value
-                                            )
-                                        }
-                                        renderInput={(params) => (
-                                            <MDInput
-                                                {...params}
-                                                variant="standard"
-                                            />
-                                        )}
-                                    />
-                                </Grid>
-                            );
-                        })}
-
-                        <Grid item xs={12} lg={5}>
-                            <MDBox mb={1.5} lineHeight={0}>
+                                        <Box mt={3}>
+                                            <MDAlert color="warning">
+                                                <Icon sx={{ mr: 1 }}>
+                                                    warning
+                                                </Icon>
+                                                {productVariantUnavailable.text}
+                                            </MDAlert>
+                                        </Box>
+                                    </Fade>
+                                )}
                                 <MDTypography
                                     component="label"
                                     variant="button"
@@ -359,32 +309,101 @@ function ProductInfo({ item }: IProps): JSX.Element {
                                         `(${itemInCart.quantity} in cart)`}
                                 </MDTypography>
                             </MDBox>
-                            <MDInput
-                                inputProps={{
-                                    type: "number",
-                                    style: { width: 150 },
-                                    onChange: (
-                                        e: React.ChangeEvent<HTMLInputElement>
-                                    ) => updateQuantity(Number(e.target.value)),
+
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-evenly",
+                                    border: "1px solid darkgrey",
+                                    width: 150,
+                                    height: 47,
+                                    borderRadius: 0,
                                 }}
-                                value={quantity}
-                                variant="standard"
-                            />
-                        </Grid>
+                            >
+                                <Icon
+                                    style={{
+                                        color: quantity === 1 ? "#333" : "#000",
+                                        cursor: quantity !== 1 && "pointer",
+                                    }}
+                                    onClick={() => {
+                                        if (quantity == 1) return;
+                                        updateQuantity(quantity - 1);
+                                    }}
+                                >
+                                    remove
+                                </Icon>
+                                <Box>
+                                    <input
+                                        type="number"
+                                        style={{
+                                            position: "relative",
+                                            width: 40,
+                                            border: 0,
+                                            outline: 0,
+                                            fontSize: 20,
+                                            marginBottom: 6,
+                                            marginRight: 6,
+                                            textAlign: "center",
+                                        }}
+                                        // disabled={!!updatingProductId}
+                                        value={quantity}
+                                        onChange={(
+                                            e: React.ChangeEvent<HTMLInputElement>
+                                        ) => {
+                                            const value = Number(
+                                                e.target.value
+                                            );
+                                            if (value === 0) return;
+                                            updateQuantity(value);
+                                        }}
+                                    />
+                                </Box>
+                                <Icon
+                                    sx={{
+                                        cursor: "pointer",
+                                    }}
+                                    onClick={() => {
+                                        updateQuantity(quantity + 1);
+                                    }}
+                                >
+                                    add
+                                </Icon>
+                            </Box>
+                        </Box>
+                    </Fade>
+                </MDBox>
+
+                <MDBox mt={2}>
+                    <Grid item xs={12} lg={5} container>
+                        <ActionButton
+                            disabled={
+                                quantity === 0 || !!productVariantUnavailable
+                            }
+                            loading={adding}
+                            text={
+                                productVariantUnavailable
+                                    ? "Unavailable"
+                                    : "add to cart"
+                            }
+                            onClick={addToCart}
+                        />
                     </Grid>
-                </Fade>
+                </MDBox>
+                <MDBox mt={4}>
+                    <MDBox color="text" fontSize="1.25rem" lineHeight={1}>
+                        <MDTypography
+                            variant="body2"
+                            color="text"
+                            fontWeight="regular"
+                            verticalAlign="middle"
+                        >
+                            {product.description}
+                        </MDTypography>
+                    </MDBox>
+                </MDBox>
             </MDBox>
-            <MDBox mt={3}>
-                <Grid item xs={12} lg={5} container>
-                    <ActionButton
-                        disabled={quantity === 0 || !!productVariantUnavailable}
-                        loading={adding}
-                        text="add to cart"
-                        onClick={addToCart}
-                    />
-                </Grid>
-            </MDBox>
-        </MDBox>
+        </Fade>
     );
 }
 

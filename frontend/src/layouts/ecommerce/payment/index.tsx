@@ -3,7 +3,6 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import Checkout from "./Checkout";
 import MDAlert from "src/components/MDAlert";
-import MDTypography from "src/components/MDTypography";
 import { useAppSelector } from "src/state/Hooks";
 import { getCartState } from "src/state/contexts/cart/Selectors";
 import { useCreatePaymentIntentQuery, useGetCartQuery } from "src/api/cartApi";
@@ -31,14 +30,15 @@ const loader = "auto";
 
 type CheckoutProps = {
     clientSecret: string;
+    total: string;
 };
 
-const CheckoutPage = ({ clientSecret }: CheckoutProps) => (
+const CheckoutPage = ({ clientSecret, total }: CheckoutProps) => (
     <Elements
         stripe={stripePromise}
         options={{ clientSecret, appearance, loader }}
     >
-        <Checkout clientSecret={clientSecret} />
+        <Checkout clientSecret={clientSecret} total={total} />
     </Elements>
 );
 
@@ -79,9 +79,9 @@ export const Payment = () => {
     }
 
     return (
-        <Box>
-            <MDTypography>Total due now: {paymentIntent.amount}</MDTypography>
-            <CheckoutPage clientSecret={paymentIntent.clientSecret} />
-        </Box>
+        <CheckoutPage
+            clientSecret={paymentIntent.clientSecret}
+            total={paymentIntent.amount}
+        />
     );
 };

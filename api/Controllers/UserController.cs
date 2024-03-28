@@ -10,10 +10,10 @@ namespace api.Controllers
     {
         private readonly IUserService _userService = userService;
 
-        [HttpGet("Get/{id}")]
-        public async Task<IActionResult> Get(string id)
+        [HttpPost("Get")]
+        public async Task<IActionResult> Get([FromBody] CartUserDto user)
         {
-            var response = await _userService.GetByFirebaseUIdAsync(id);
+            var response = await _userService.GetByFirebaseUIdAsync(user.FirebaseUid!, user.GuestCheckoutId);
             return Ok(response);
         }
 

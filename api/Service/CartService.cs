@@ -34,15 +34,7 @@ namespace api.Service
 
         public async Task EmptyAsync(User user)
         {
-            Cart? cart;
-            if (user.GuestCheckoutId.HasValue)
-            {
-                cart = await _cartRepository.GetByGuestCheckoutIdAsync(user.GuestCheckoutId.Value);
-            }
-            else
-            {
-                cart = await _cartRepository.GetByUserIdAsync(user.Id);
-            }
+            var cart = await _cartRepository.GetByUserIdAsync(user.Id);
 
             if (cart is null)
             {

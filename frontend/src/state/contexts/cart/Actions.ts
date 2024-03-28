@@ -8,7 +8,9 @@ const OpenCartAccountModalAction = createAction<boolean>(
 const SetGuestCheckoutAction = createAction<IGuestCheckout | null>(
     "@@Cart/SetGuestCheckout"
 );
-
+const UpdatingProductIdAction = createAction<number | null>(
+    "@@Cart/UpdatingProductId"
+);
 const ResetGuestCheckoutAction = createAction("@@Cart/ResetGuestCheckout");
 
 export {
@@ -16,4 +18,5 @@ export {
     OpenCartAccountModalAction,
     SetGuestCheckoutAction,
     ResetGuestCheckoutAction,
+    UpdatingProductIdAction,
 };

@@ -1,14 +1,13 @@
 using api.Data;
 using api.Dto;
 using api.Repository;
-using RestSharp.Extensions;
 
 namespace api.Service
 {
     public interface IUserService
     {
         Task<User?> GetByIdAsync(int id);
-        Task<User?> GetByFirebaseUIdAsync(string id);
+        Task<User?> GetByFirebaseUIdAsync(string id, Guid? guestCheckoutId = null);
         Task<User?> GetByEmailAsync(string email);
         Task<User?> GetByGuestCheckoutIdAsync(Guid guestCheckoutId);
         Task<User?> GetByCustomerIdAsync(string customerId);
@@ -28,13 +27,19 @@ namespace api.Service
         private readonly ICartRepository _cartRepository = cartRepository;
         private readonly ICustomerAddressService _customerAddressService = customerAddressService;
 
-        public async Task<User?> GetByFirebaseUIdAsync(string id)
+        public async Task<User?> GetByFirebaseUIdAsync(string id, Guid? guestCheckoutId = null)
         {
             var user = await _userRepository.GetByFirebaseUidAsync(id);
 
             if (user is not null)
             {
                 user.MainAddress = await _customerAddressService.GetMainAsync(user.Id);
+
+                // If items were added to a cart on a guest account, we need to update entities to reflect this.
+                if (guestCheckoutId.HasValue)
+                {
+                    await _cartRepository.SetUserIdAsync(user.Id, guestCheckoutId.Value);
+                }
             }
 
             return user;
@@ -117,7 +122,7 @@ namespace api.Service
 
             var exists = await _userRepository.GetByEmailAsync(dto.Email);
 
-            if (exists is not null && exists.FirebaseUid is null && exists.GuestCheckoutId is not null)
+            if (exists is not null && exists.FirebaseUid is null)
             {
                 // This will change a guest account to a full account
                 await _userRepository.SetFirebaseUidAsync(dto.FirebaseUid, exists.Id);

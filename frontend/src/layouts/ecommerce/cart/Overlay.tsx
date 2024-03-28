@@ -1,14 +1,11 @@
 import { Box, CircularProgress, Fade, Icon } from "@mui/material";
-import { useState } from "react";
 import {
     useGetCartQuery,
     useRemoveProductFromCartMutation,
-    useUpdateProductQuantityMutation,
 } from "src/api/cartApi";
 import { useGetProductQuery } from "src/api/productApi";
 import { ActionButton } from "src/components/Buttons/ActionButton";
 import MDTypography from "src/components/MDTypography";
-import useEffectSkipInitialRender from "src/hooks/useEffectSkipInitialRender";
 import { ICartProductDetail } from "src/interface/ICartProductDetail";
 import "./styles.css";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
@@ -16,27 +13,20 @@ import { getCartState } from "src/state/contexts/cart/Selectors";
 import {
     OpenCartAccountModalAction,
     OpenCartOverlayAction,
+    UpdatingProductIdAction,
 } from "src/state/contexts/cart/Actions";
 import { getUserState } from "src/state/contexts/user/Selectors";
 import { Page } from "src/enum/Page";
 import { ShowPageAction } from "src/state/contexts/app/Actions";
-
-interface IProductCartQuantity {
-    id: number;
-    quantity: number;
-}
+import { ProductQuantity } from "../quantity";
 
 interface IProps {
     isOverlay: boolean;
 }
 
 export const CartOverlay = ({ isOverlay }: IProps) => {
-    const [updating, setUpdating] = useState<number | null>(null);
-    const [quantity, setQuantity] = useState<IProductCartQuantity | null>(null);
-    // const [email, setEmail] = useState<string>("");
-
     const { user, firebaseUid } = useAppSelector(getUserState);
-    const { guestCheckout } = useAppSelector(getCartState);
+    const { guestCheckout, updatingProductId } = useAppSelector(getCartState);
 
     const dispatch = useAppDispatch();
 
@@ -48,57 +38,24 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
 
     const itemsInCart: ICartProductDetail[] = cart?.products ?? [];
 
-    const [updateProductQuantity, { isLoading: updatingProductQuantity }] =
-        useUpdateProductQuantityMutation();
-
-    const [removeProductFromCart, { isLoading: removingProduct }] =
-        useRemoveProductFromCartMutation();
-
-    useEffectSkipInitialRender(() => {
-        if (!updatingProductQuantity && !removingProduct && updating) {
-            setUpdating(null);
-        }
-    }, [updatingProductQuantity, removingProduct]);
-
-    const onQuantityChange = async (
-        id: number,
-        quantity: number,
-        stock?: number
-    ) => {
-        if (updatingProductQuantity || quantity === 0) return;
-
-        if (quantity) setUpdating(id);
-        await updateProductQuantity({
-            id,
-            quantity,
-        })
-            .unwrap()
-            .then((payload) => {})
-            .catch((error) => {
-                console.error(error);
-            });
-    };
+    const [removeProductFromCart] = useRemoveProductFromCartMutation();
 
     const removeItem = async (id: number) => {
-        setUpdating(id);
+        dispatch(UpdatingProductIdAction(id));
 
         await removeProductFromCart(id)
             .unwrap()
             .then((payload) => {})
             .catch((error) => {
                 console.error(error);
-            });
+            })
+            .finally(() => dispatch(UpdatingProductIdAction(null)));
     };
 
     const onCheckoutClick = () => {
         dispatch(OpenCartOverlayAction(false));
 
-        if (
-            user
-            // || (guestCheckout &&
-            //     guestCheckout.email !== "" &&
-            //     guestCheckout.name !== "")
-        ) {
+        if (user) {
             dispatch(ShowPageAction(Page.Cart));
         } else {
             dispatch(OpenCartAccountModalAction(true));
@@ -162,8 +119,8 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
                         overflow="hidden"
                     >
                         <Box
-                            // mt={1}
-                            mb={4}
+                            mt={1}
+                            mb={3}
                             display="flex"
                             paddingBottom={2}
                             alignItems="center"
@@ -234,7 +191,7 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
                                                         >
                                                             {product.title}
                                                         </MDTypography>
-                                                        {updating ===
+                                                        {updatingProductId ===
                                                         item.id ? (
                                                             <CircularProgress
                                                                 size={16}
@@ -282,193 +239,13 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
                                                         mt={2}
                                                         display="flex"
                                                         alignItems="center"
-                                                        // justifyContent="space-between"
                                                     >
-                                                        <Box
-                                                            sx={{
-                                                                display: "flex",
-                                                                border: "1px solid darkgrey",
-                                                                width: 150,
-                                                                height: 47,
-                                                                borderRadius: 0,
-                                                            }}
-                                                        >
-                                                            <Box
-                                                                display="flex"
-                                                                justifyContent="space-evenly"
-                                                                alignItems="center"
-                                                                width="100%"
-                                                            >
-                                                                <Icon
-                                                                    style={{
-                                                                        color:
-                                                                            item.quantity ===
-                                                                            1
-                                                                                ? "#333"
-                                                                                : "#000",
-                                                                        cursor:
-                                                                            item.quantity !==
-                                                                                1 &&
-                                                                            "pointer",
-                                                                    }}
-                                                                    onClick={() => {
-                                                                        if (
-                                                                            item.quantity ==
-                                                                            1
-                                                                        )
-                                                                            return;
-
-                                                                        const quantity =
-                                                                            item.quantity -
-                                                                            1;
-
-                                                                        if (
-                                                                            item.stock &&
-                                                                            quantity >
-                                                                                item.stock
-                                                                        ) {
-                                                                            return;
-                                                                        }
-                                                                        setQuantity(
-                                                                            {
-                                                                                id: item.id,
-                                                                                quantity,
-                                                                            }
-                                                                        );
-                                                                        onQuantityChange(
-                                                                            item.id,
-                                                                            quantity,
-                                                                            item.stock
-                                                                        );
-                                                                    }}
-                                                                >
-                                                                    remove
-                                                                </Icon>
-                                                                <Box>
-                                                                    <input
-                                                                        type="number"
-                                                                        style={{
-                                                                            position:
-                                                                                "relative",
-                                                                            width: 40,
-                                                                            border: 0,
-                                                                            outline: 0,
-                                                                            fontSize: 20,
-                                                                            marginBottom: 6,
-                                                                            marginRight: 6,
-                                                                            textAlign:
-                                                                                "center",
-                                                                        }}
-                                                                        disabled={
-                                                                            !!updating
-                                                                        }
-                                                                        value={
-                                                                            quantity?.id ===
-                                                                            item.id
-                                                                                ? quantity.quantity
-                                                                                : item.quantity
-                                                                        }
-                                                                        onChange={(
-                                                                            e: React.ChangeEvent<HTMLInputElement>
-                                                                        ) => {
-                                                                            const value =
-                                                                                Number(
-                                                                                    e
-                                                                                        .target
-                                                                                        .value
-                                                                                );
-
-                                                                            if (
-                                                                                value ===
-                                                                                0
-                                                                            )
-                                                                                return;
-
-                                                                            setQuantity(
-                                                                                {
-                                                                                    id: item.id,
-                                                                                    quantity:
-                                                                                        value,
-                                                                                }
-                                                                            );
-                                                                        }}
-                                                                        onBlur={(
-                                                                            e: React.ChangeEvent<HTMLInputElement>
-                                                                        ) => {
-                                                                            const value =
-                                                                                Number(
-                                                                                    e
-                                                                                        .target
-                                                                                        .value
-                                                                                );
-
-                                                                            if (
-                                                                                value ===
-                                                                                0
-                                                                            )
-                                                                                return;
-
-                                                                            onQuantityChange(
-                                                                                item.id,
-                                                                                Number(
-                                                                                    e
-                                                                                        .target
-                                                                                        .value
-                                                                                ),
-                                                                                item.stock
-                                                                            );
-                                                                        }}
-                                                                    />
-                                                                    {item.stock && (
-                                                                        <span
-                                                                            style={{
-                                                                                position:
-                                                                                    "relative",
-                                                                                right: "25%",
-                                                                            }}
-                                                                        >
-                                                                            {"/ " +
-                                                                                item.stock}
-                                                                        </span>
-                                                                    )}
-                                                                </Box>
-                                                                <Icon
-                                                                    sx={{
-                                                                        cursor: "pointer",
-                                                                    }}
-                                                                    onClick={() => {
-                                                                        const quantity =
-                                                                            item.quantity +
-                                                                            1;
-
-                                                                        if (
-                                                                            item.stock &&
-                                                                            quantity >
-                                                                                item.stock
-                                                                        ) {
-                                                                            return;
-                                                                        }
-
-                                                                        setQuantity(
-                                                                            {
-                                                                                id: item.id,
-                                                                                quantity,
-                                                                            }
-                                                                        );
-                                                                        onQuantityChange(
-                                                                            item.id,
-                                                                            quantity,
-                                                                            item.stock
-                                                                        );
-                                                                    }}
-                                                                >
-                                                                    add
-                                                                </Icon>
-                                                            </Box>
-                                                        </Box>
+                                                        <ProductQuantity
+                                                            item={item}
+                                                        />
                                                         <Box
                                                             onClick={() =>
-                                                                !updating &&
+                                                                !updatingProductId &&
                                                                 removeItem(
                                                                     item.id
                                                                 )
@@ -478,7 +255,7 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
                                                                 sx={{
                                                                     ml: 5,
                                                                     cursor:
-                                                                        !updating &&
+                                                                        !updatingProductId &&
                                                                         "pointer",
                                                                     color: "#121212",
                                                                 }}
@@ -530,7 +307,11 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
                                         mt={1}
                                         letterSpacing=".04rem"
                                     >
-                                        {cart.totalStr}
+                                        {updatingProductId ? (
+                                            <CircularProgress size={16} />
+                                        ) : (
+                                            cart.totalStr
+                                        )}
                                     </MDTypography>
                                 </Fade>
                             </Box>

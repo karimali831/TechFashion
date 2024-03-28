@@ -1,4 +1,8 @@
 .home {
+    display: flex;
+    justify-content: center;
+    /* padding: 20px 150px; */
+    flex-direction: column;
     padding: 20px 250px;
 }
 

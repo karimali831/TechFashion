@@ -6,7 +6,7 @@ import ProductInfo from "../../../../layouts/ecommerce/products/product-page/com
 import dataTableData from "../../../../layouts/ecommerce/products/product-page/data/dataTableData";
 import MDBox from "../../../../components/MDBox";
 import DataTable from "src/layouts/table/DataTable";
-import { Fade, Icon, LinearProgress } from "@mui/material";
+import { Icon, LinearProgress } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
 import { getProductState } from "src/state/contexts/product/Selectors";
 import { useEffect } from "react";
@@ -30,12 +30,6 @@ function ProductPage(): JSX.Element {
             const findItem = products.details.filter((x) => x.slug === slug);
             dispatch(SelectedProductAction(findItem));
         }
-
-        return () => {
-            if (selectedProduct) {
-                dispatch(SelectedProductAction(null));
-            }
-        };
     }, [products]);
 
     if (selectedProduct.length === 0 || isLoading) {
@@ -58,30 +52,14 @@ function ProductPage(): JSX.Element {
                         </MDTypography>
                     </MDBox>
 
-                    <Grid container spacing={3}>
-                        <Fade
-                            in={true}
-                            timeout={500}
-                            mountOnEnter={true}
-                            unmountOnExit={true}
-                        >
-                            <Grid item xs={12} lg={6} xl={5}>
-                                <ProductImages />
-                            </Grid>
-                        </Fade>
-                        <Fade
-                            in={true}
-                            timeout={500}
-                            mountOnEnter={true}
-                            unmountOnExit={true}
-                            style={{
-                                transitionDelay: "100ms",
-                            }}
-                        >
-                            <Grid item xs={12} lg={5} sx={{ mx: "auto" }}>
-                                <ProductInfo item={selectedProduct} />
-                            </Grid>
-                        </Fade>
+                    <Grid container>
+                        <Grid item xs={12} lg={6} xl={5}>
+                            <ProductImages />
+                        </Grid>
+
+                        <Grid item xs={12} lg={5} sx={{ mx: "auto" }}>
+                            <ProductInfo item={selectedProduct} />
+                        </Grid>
                     </Grid>
 
                     <MDBox mt={8} mb={2}>

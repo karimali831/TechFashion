@@ -3,6 +3,5 @@ export interface IUser {
     name?: string;
     email: string;
     firebaseUid?: string;
-    guestCheckoutId?: string;
     stripeCustomerId?: string;
 }

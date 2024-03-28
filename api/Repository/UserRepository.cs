@@ -43,7 +43,8 @@ namespace api.Repository
 
         public async Task<User?> GetByGuestCheckoutIdAsync(Guid guestCheckoutId)
         {
-            return await QuerySingleOrDefaultAsync<User>($"{DapperHelper.Select(Table, Fields)} WHERE GuestCheckoutId = @guestCheckoutId AND RemovedDate IS NULL", new { guestCheckoutId });
+            var userId = await QueryFirstOrDefaultAsync<int>("SELECT UserId FROM Carts WHERE GuestCheckoutId = @guestCheckoutId", new { guestCheckoutId });
+            return await GetByIdAsync(userId);
         }
 
         public async Task<User?> GetByCustomerIdAsync(string customerId)
@@ -53,14 +54,12 @@ namespace api.Repository
 
         public async Task CreateGuestAccountAsync(GuestCheckoutDto dto)
         {
-            await ExecuteAsync($"INSERT INTO {Table} (Name, Email, GuestCheckoutId) VALUES (@name, @email, @guestCheckoutId)",
+            await ExecuteAsync($"INSERT INTO {Table} (Name, Email) VALUES (@name, @email)",
                 new
                 {
-                    guestCheckoutId = dto.Id,
                     name = dto.Name,
                     email = dto.Email
                 });
-            // await ExecuteAsync(DapperHelper.Insert(Table, Fields), model);
         }
 
         public async Task SetStripeCustomerIdAsync(string customerId, int userId)
@@ -83,7 +82,7 @@ namespace api.Repository
 
         public async Task SetFirebaseUidAsync(string firebaseUid, int userId)
         {
-            await ExecuteAsync($"UPDATE {Table} SET GuestCheckoutId = null, FirebaseUid = @firebaseUid WHERE Id = @userId",
+            await ExecuteAsync($"UPDATE {Table} SET FirebaseUid = @firebaseUid WHERE Id = @userId",
                 new { firebaseUid, userId });
         }
 

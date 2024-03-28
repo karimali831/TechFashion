@@ -1,4 +1,4 @@
-import { Fade, Grid, LinearProgress, Paper, styled } from "@mui/material";
+import { Fade, LinearProgress, Paper, styled } from "@mui/material";
 import { SelectedProductAction } from "src/state/contexts/product/Actions";
 import ProductItem from "./ProductItem";
 import { useGetProductQuery } from "src/api/productApi";
@@ -12,9 +12,8 @@ const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
     padding: theme.spacing(1),
     textAlign: "center",
-    height: 326,
-    width: 270,
     color: theme.palette.text.secondary,
+    // boxShadow: "rgb(0 0 0) 0px 5px 15px",
 }));
 
 const Products = () => {
@@ -39,30 +38,19 @@ const Products = () => {
     }
 
     return (
-        <Fade
-            in={true}
-            timeout={500}
-            mountOnEnter={true}
-            unmountOnExit={true}
-            className="home"
-        >
-            <Grid
-                // padding={10}
-                container
-                spacing={{ xs: 2, md: 3 }}
-                columns={{ xs: 4, sm: 8, md: 12 }}
-            >
+        <Fade in={true} timeout={500} mountOnEnter={true} unmountOnExit={true}>
+            <div className="grid-1">
                 {products.catalogue.map((product, index) => (
-                    <Grid item xs={2} sm={3} md={3} key={index}>
-                        <Item
-                            sx={{ cursor: "pointer" }}
-                            onClick={() => onProductClick(product)}
-                        >
-                            <ProductItem item={product} index={index} />
-                        </Item>
-                    </Grid>
+                    <Item
+                        key={index}
+                        className="product-item"
+                        sx={{ cursor: "pointer" }}
+                        onClick={() => onProductClick(product)}
+                    >
+                        <ProductItem item={product} index={index} />
+                    </Item>
                 ))}
-            </Grid>
+            </div>
         </Fade>
     );
 };
