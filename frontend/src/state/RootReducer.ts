@@ -4,7 +4,7 @@ import { cartApi } from "src/api/cartApi";
 import { productApi } from "src/api/productApi";
 import { productReducer } from "./contexts/product/Reducer";
 import { userReducer } from "./contexts/user/Reducer";
-import { userApi } from "src/api/userApi.ts";
+import { userApi } from "src/api/userApi";
 import { appReducer } from "./contexts/app/Reducer";
 
 const rootReducer = combineReducers({

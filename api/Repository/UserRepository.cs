@@ -43,8 +43,12 @@ namespace api.Repository
 
         public async Task<User?> GetByGuestCheckoutIdAsync(Guid guestCheckoutId)
         {
-            var userId = await QueryFirstOrDefaultAsync<int>("SELECT UserId FROM Carts WHERE GuestCheckoutId = @guestCheckoutId", new { guestCheckoutId });
-            return await GetByIdAsync(userId);
+            var userId = await QueryFirstOrDefaultAsync<int?>("SELECT UserId FROM Carts WHERE GuestCheckoutId = @guestCheckoutId", new { guestCheckoutId });
+
+            if (!userId.HasValue)
+                return null;
+
+            return await GetByIdAsync(userId.Value);
         }
 
         public async Task<User?> GetByCustomerIdAsync(string customerId)

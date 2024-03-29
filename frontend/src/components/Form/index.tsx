@@ -16,6 +16,7 @@ export type FormValidation = {
 };
 
 interface IOwnProps {
+    name?: string;
     placeholder: string;
     validation: FormValidation;
     type?: "text" | "password";
@@ -25,6 +26,7 @@ interface IOwnProps {
     hideStatus?: boolean;
     small?: boolean;
     onChange: (text: string) => void;
+    onKeyUp?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
     onBlur?: (text: string) => void;
 }
 
@@ -36,6 +38,7 @@ export const FormInput: React.FC<IOwnProps> = (props) => {
     const [validValue, setValidValue] = useState<boolean>(false);
 
     const {
+        name,
         message,
         type,
         autoCompleteOff,
@@ -44,6 +47,7 @@ export const FormInput: React.FC<IOwnProps> = (props) => {
         passwordToggleEnabled,
         small,
         onChange,
+        onKeyUp,
         onBlur,
         validation: {
             minCharsRequired,
@@ -122,6 +126,8 @@ export const FormInput: React.FC<IOwnProps> = (props) => {
         onBlur && onBlur(e.target.value);
     };
 
+    const inputRef = name ?? placeholder.toLowerCase();
+
     return (
         <>
             <div
@@ -134,6 +140,7 @@ export const FormInput: React.FC<IOwnProps> = (props) => {
             >
                 <input
                     ref={ref}
+                    name={inputRef}
                     className="mp"
                     placeholder={placeholder}
                     type={
@@ -145,8 +152,9 @@ export const FormInput: React.FC<IOwnProps> = (props) => {
                             : "text")
                     }
                     style={{ width: "100%" }}
-                    autoComplete={autoCompleteOff ? "off" : undefined}
+                    autoComplete={autoCompleteOff ? "off" : inputRef}
                     onChange={onInputChange}
+                    onKeyUp={onKeyUp}
                     onBlur={onInputBlur}
                     value={value}
                 />

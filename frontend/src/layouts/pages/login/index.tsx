@@ -132,6 +132,11 @@ const Login = (): JSX.Element => {
                         placeholder="Password"
                         validation={formFields.password}
                         onChange={(e) => onInputChange("password", e)}
+                        onKeyUp={(e) => {
+                            if (e.key === "Enter") {
+                                handleLogin();
+                            }
+                        }}
                         message={messages.find(
                             (x) => x.code === IFormMessageCode.WrongPassword
                         )}

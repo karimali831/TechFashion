@@ -14,7 +14,7 @@ import {
 import { cartApi } from "src/api/cartApi";
 import { productApi } from "src/api/productApi";
 import storage from "redux-persist/lib/storage";
-import { userApi } from "src/api/userApi.ts";
+import { userApi } from "src/api/userApi";
 import createSagaMiddleware from "redux-saga";
 import { onAuthStateChanged } from "firebase/auth";
 import {
@@ -24,7 +24,6 @@ import {
 import { auth } from "src/config/firebase";
 import { createBrowserHistory } from "history";
 import { rootSaga } from "./middleware/sagas/rootSaga";
-import { SetGuestCheckoutAction } from "./contexts/cart/Actions";
 import { LocationChangeAction } from "./contexts/app/Actions";
 
 export const history = createBrowserHistory();
@@ -67,7 +66,6 @@ export const store = configureStore({
 onAuthStateChanged(auth, (user) => {
     if (user) {
         store.dispatch(FirebaseAuthenticatedAction(user.uid));
-        store.dispatch(SetGuestCheckoutAction(null));
     } else {
         store.dispatch(FirebaseAuthEmptyAction());
     }

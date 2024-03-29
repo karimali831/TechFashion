@@ -14,7 +14,7 @@ namespace api.Controllers
         public async Task<IActionResult> Get([FromBody] CartUserDto user)
         {
             var response = await _userService.GetByFirebaseUIdAsync(user.FirebaseUid!, user.GuestCheckoutId);
-            return Ok(response);
+            return response is null ? NoContent() : Ok(response);
         }
 
         [HttpPost("Create")]

@@ -15,7 +15,7 @@ namespace api.Service
         Task SetCustomerIdAsync(string customerId, int userId);
         Task SetStripeCustomerDeletedAsync(string customerId, DateTime? deletedDate);
         Task SetNameAsync(string name, int userId);
-        Task<ApiResponse<string>> CreateAsync(CreateUsertDto dto);
+        Task<ApiResponse<User>> CreateAsync(CreateUsertDto dto);
     }
 
     public class UserService(
@@ -110,11 +110,11 @@ namespace api.Service
             await _userRepository.SetNameAsync(name, userId);
         }
 
-        public async Task<ApiResponse<string>> CreateAsync(CreateUsertDto dto)
+        public async Task<ApiResponse<User>> CreateAsync(CreateUsertDto dto)
         {
             if (await _userRepository.GetByFirebaseUidAsync(dto.FirebaseUid) is not null)
             {
-                return new ApiResponse<string>
+                return new ApiResponse<User>
                 {
                     ErrorMsg = "Account already exists, please login"
                 };
@@ -127,10 +127,9 @@ namespace api.Service
                 // This will change a guest account to a full account
                 await _userRepository.SetFirebaseUidAsync(dto.FirebaseUid, exists.Id);
 
-                return new ApiResponse<string>
+                return new ApiResponse<User>
                 {
-                    Data = "Account created and you are now logged in"
-                    // Data = "A guest account already exists for this email. We have now updated this as a full account and you can now login."
+                    ErrorMsg = "Account created and you are now logged in"
                 };
             }
 
@@ -142,9 +141,11 @@ namespace api.Service
                 await _cartRepository.SetUserIdAsync(userId, dto.GuestCheckoutId.Value);
             }
 
-            return new ApiResponse<string>
+            var user = await GetByIdAsync(userId);
+
+            return new ApiResponse<User>
             {
-                Data = "Account created and you are now logged in"
+                Data = user
             };
         }
     }

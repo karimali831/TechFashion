@@ -10,10 +10,7 @@ import PaymentIcon from "@mui/icons-material/Payment";
 import { Box, Button } from "@mui/material";
 import MDTypography from "src/components/MDTypography";
 import { StripePaymentElementChangeEvent } from "@stripe/stripe-js";
-import { useAppSelector } from "src/state/Hooks";
-import { getCartState } from "src/state/contexts/cart/Selectors";
 import { baseWebUrl } from "src/api/baseApi";
-import { getUserState } from "src/state/contexts/user/Selectors";
 
 interface IProps {
     clientSecret: string;
@@ -24,9 +21,6 @@ export const Checkout = ({ clientSecret, total }: IProps) => {
     const [, setError] = useState<string | null>(null);
     const [processing, setProcessing] = useState<boolean>();
     const [disabled, setDisabled] = useState<boolean>(true);
-
-    const { user } = useAppSelector(getUserState);
-    const { guestCheckout } = useAppSelector(getCartState);
 
     const stripe = useStripe();
     const elements = useElements();
@@ -87,12 +81,11 @@ export const Checkout = ({ clientSecret, total }: IProps) => {
                     <AddressElement
                         options={{
                             mode: "shipping",
-
                             allowedCountries: ["UK"],
-                            defaultValues: {
-                                name: user?.name ?? guestCheckout.name,
-                                address: { country: "UK" },
-                            },
+                            // defaultValues: {
+                            //     name: user?.name ?? guestCheckout.name,
+                            //     address: { country: "UK" },
+                            // },
                         }}
                     />
                     <MDTypography mt={2} mb={1} variant="h6">

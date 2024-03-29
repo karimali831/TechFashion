@@ -53,7 +53,10 @@ export function* firebaseAuthenticated(action: PayloadAction<string>) {
         );
 
         yield put(SetFirebaseUidAction(action.payload));
-        yield put(LoginSuccessAction(response.data));
+
+        if (response?.data) {
+            yield put(LoginSuccessAction(response.data));
+        }
 
         // persistor.purge();
     } catch (e) {

@@ -4,7 +4,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
-import { useCreateUserMutation } from "src/api/userApi.ts";
+import { useCreateUserMutation } from "src/api/userApi";
 import { ActionButton } from "src/components/Buttons/ActionButton";
 import { FormInput, FormValidation } from "src/components/Form";
 import { FormMessage } from "src/components/Form/Message";
@@ -14,7 +14,10 @@ import { Page } from "src/enum/Page";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
 import { ShowPageAction } from "src/state/contexts/app/Actions";
 import { getCartState } from "src/state/contexts/cart/Selectors";
-import { SigninLoadingAction } from "src/state/contexts/user/Actions";
+import {
+    LoginSuccessAction,
+    SigninLoadingAction,
+} from "src/state/contexts/user/Actions";
 import { getUserState } from "src/state/contexts/user/Selectors";
 import Swal from "sweetalert2";
 
@@ -27,7 +30,7 @@ type FormFields = {
 const Register = (): JSX.Element => {
     const [messages, setMessages] = useState<IFormMessage[]>([]);
 
-    const [createUser] = useCreateUserMutation();
+    const [createUser, { isLoading: creating }] = useCreateUserMutation();
 
     const dispatch = useAppDispatch();
 
@@ -38,7 +41,7 @@ const Register = (): JSX.Element => {
         if (user) {
             setTimeout(() => {
                 dispatch(ShowPageAction(Page.Account));
-            }, 1000);
+            }, 500);
         }
     }, [user]);
 
@@ -101,11 +104,13 @@ const Register = (): JSX.Element => {
                                     text: response.errorMsg,
                                 });
                             } else {
+                                dispatch(LoginSuccessAction(response.data));
+
                                 Swal.fire({
                                     icon: "success",
                                     title: "Success",
-                                    text: response.data,
-                                    timer: 10000,
+                                    text: "Account created and you are now logged in.",
+                                    timer: 3000,
                                 }).then(() =>
                                     dispatch(ShowPageAction(Page.Account))
                                 );
@@ -150,7 +155,6 @@ const Register = (): JSX.Element => {
                                 x.code === IFormMessageCode.EmailAlreadyInUse
                         )}
                     />
-
                     <FormInput
                         placeholder="Password"
                         validation={formFields.password}
@@ -173,27 +177,9 @@ const Register = (): JSX.Element => {
                             Login
                         </Link>
                     </Box>
-
-                    {/* <MainButton
-                        icon={
-                            signingIn ? (
-                                <ClipLoader
-                                    color="white"
-                                    size={10}
-                                    speedMultiplier={0.5}
-                                />
-                            ) : authSuccess ? (
-                                <CheckCircle />
-                            ) : undefined
-                        }
-                        text={!signingIn && "Register"}
-                        success={authSuccess}
-                        onClick={handleSignUp}
-                    /> */}
-
                     <ActionButton
                         icon={
-                            signingIn ? (
+                            signingIn || creating ? (
                                 <ClipLoader
                                     color="white"
                                     size={10}
@@ -203,7 +189,7 @@ const Register = (): JSX.Element => {
                                 <CheckCircle />
                             ) : undefined
                         }
-                        text={!signingIn && "Register"}
+                        text={!signingIn && !creating && "Register"}
                         success={authSuccess}
                         onClick={handleSignUp}
                     />

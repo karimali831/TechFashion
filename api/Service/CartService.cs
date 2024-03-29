@@ -53,17 +53,10 @@ namespace api.Service
         public async Task<CartViewModel?> GetAsync(CartUserDto dto)
         {
             Cart? cart = null;
-
             if (dto.FirebaseUid is not null)
             {
                 var user = await _userService.GetByFirebaseUIdAsync(dto.FirebaseUid);
-
-                if (user is null)
-                {
-                    throw new ApplicationException("An error occurred");
-                }
-
-                cart = await _cartRepository.GetByUserIdAsync(user.Id);
+                cart = user is null ? null : await _cartRepository.GetByUserIdAsync(user.Id);
             }
             else if (dto.GuestCheckoutId.HasValue)
             {
