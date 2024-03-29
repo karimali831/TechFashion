@@ -22,7 +22,6 @@ type FormFields = {
     email: FormValidation;
     name: FormValidation;
     password: FormValidation;
-    repeatPassword: FormValidation;
 };
 
 const Register = (): JSX.Element => {
@@ -56,13 +55,9 @@ const Register = (): JSX.Element => {
             value: "",
             minCharsRequired: 6,
         },
-        repeatPassword: {
-            value: "",
-            minCharsRequired: 6,
-        },
     });
 
-    const { email, name, password, repeatPassword } = formFields;
+    const { email, name, password } = formFields;
 
     const onInputChange = (name: keyof FormFields, text: string) => {
         setFormFields({
@@ -134,35 +129,6 @@ const Register = (): JSX.Element => {
         }
     };
 
-    const checkPasswordMismatch = () => {
-        const code = IFormMessageCode.PasswowrdsMismatched;
-        const errorExists = messages.some((x) => x.code === code);
-
-        if (password.value === "" || repeatPassword.value === "") {
-            if (errorExists) {
-                setMessages(messages.filter((x) => x.code !== code));
-            }
-        } else {
-            const mismatched =
-                formFields.password.value !== formFields.repeatPassword.value;
-
-            if (errorExists && !mismatched) {
-                setMessages(messages.filter((x) => x.code !== code));
-            } else {
-                if (mismatched) {
-                    setMessages((messages) => [
-                        ...messages,
-                        {
-                            code,
-                            message: "Passwords do no match. hey?",
-                            isClient: true,
-                        },
-                    ]);
-                }
-            }
-        }
-    };
-
     return (
         <Fade in={true} mountOnEnter={true} unmountOnExit={true} timeout={500}>
             <div className="register">
@@ -192,17 +158,11 @@ const Register = (): JSX.Element => {
                         message={messages.find(
                             (x) => x.code === IFormMessageCode.WrongPassword
                         )}
-                        passwordToggleEnabled={true}
-                    />
-                    <FormInput
-                        placeholder="Repeat password"
-                        validation={formFields.repeatPassword}
-                        onChange={(e) => onInputChange("repeatPassword", e)}
-                        message={messages.find(
-                            (x) =>
-                                x.code === IFormMessageCode.PasswowrdsMismatched
-                        )}
-                        onBlur={checkPasswordMismatch}
+                        onKeyUp={(e) => {
+                            if (e.key === "Enter") {
+                                handleSignUp();
+                            }
+                        }}
                         passwordToggleEnabled={true}
                     />
                     {!!formMessage && <FormMessage message={formMessage} />}
