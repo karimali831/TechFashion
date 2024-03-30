@@ -9,6 +9,7 @@ namespace api.Service
     {
         Task<User?> GetAsync(string? firebaseUid, Guid? guestCheckoutId);
         Task<User?> GetByIdAsync(int id);
+        Task<User?> GetFullAccByEmailAsync(string email);
         Task<User?> GetByFirebaseUIdAsync(string id, Guid? guestCheckoutId = null);
         Task<User?> GetByEmailAsync(string email);
         Task<User?> GetByGuestCheckoutIdAsync(Guid guestCheckoutId);
@@ -78,6 +79,11 @@ namespace api.Service
         public async Task<User?> GetByIdAsync(int id)
         {
             return await _userRepository.GetByIdAsync(id);
+        }
+
+        public async Task<User?> GetFullAccByEmailAsync(string email)
+        {
+            return await _userRepository.GetFullAccByEmailAsync(email);
         }
 
         public async Task<User?> GetByEmailAsync(string email)

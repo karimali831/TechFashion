@@ -38,6 +38,7 @@ import axios from "axios";
 import { IApiResponse, baseApiUrl } from "src/api/baseApi";
 import { IVerificationEmail, IVerificationEmailRequest } from "src/api/userApi";
 import { SetEmailVerificationAction } from "src/state/contexts/user/Actions";
+import Swal from "sweetalert2";
 
 function NavbarV2() {
     const navigate = useNavigate();
@@ -71,8 +72,15 @@ function NavbarV2() {
 
             checkVerificationEmail().then(({ data: response }) => {
                 if (response.errorMsg) {
+                    dispatch(OpenCartAccountModalAction(false));
+                    dispatch(OpenVerifyEmailModalAction(false));
+                    Swal.fire({
+                        title: "An error occurred",
+                        text: response.errorMsg,
+                    });
                 } else {
                     dispatch(SetEmailVerificationAction(response.data));
+
                     if (response.data.verified) {
                         dispatch(OpenCartAccountModalAction(false));
                         dispatch(OpenVerifyEmailModalAction(false));

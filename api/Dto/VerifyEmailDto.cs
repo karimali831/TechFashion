@@ -10,6 +10,7 @@ namespace api.Dto
     {
         public bool Sent { get; set; }
         public bool Verified { get; set; }
+        public bool FullAccountExists { get; set; }
     }
 
 

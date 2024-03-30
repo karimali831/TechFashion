@@ -57,6 +57,7 @@ export function* firebaseAuthenticated(action: PayloadAction<string>) {
             SetEmailVerificationAction({
                 sent: true,
                 verified: response.data.emailVerified,
+                fullAccountExists: true,
             })
         );
         yield put(ResetGuestCheckoutAction());

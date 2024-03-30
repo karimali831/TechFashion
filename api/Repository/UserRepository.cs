@@ -8,6 +8,7 @@ namespace api.Repository
     public interface IUserRepository
     {
         Task<User?> GetByIdAsync(int id);
+        Task<User?> GetFullAccByEmailAsync(string email);
         Task<User?> GetByFirebaseUidAsync(string id);
         Task<User?> GetByEmailAsync(string email);
         Task<User?> GetByGuestCheckoutIdAsync(Guid guestCheckoutId);
@@ -38,6 +39,11 @@ namespace api.Repository
         public async Task<User?> GetByEmailAsync(string email)
         {
             return await QuerySingleOrDefaultAsync<User>($"{DapperHelper.Select(Table, Fields)} WHERE Email = @email AND RemovedDate IS NULL", new { email });
+        }
+
+        public async Task<User?> GetFullAccByEmailAsync(string email)
+        {
+            return await QuerySingleOrDefaultAsync<User>($"{DapperHelper.Select(Table, Fields)} WHERE Email = @email AND FirebaseUid IS NOT NULL AND RemovedDate IS NULL", new { email });
         }
 
         public async Task<User?> GetByGuestCheckoutIdAsync(Guid guestCheckoutId)

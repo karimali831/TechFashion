@@ -26,6 +26,7 @@ export const userReducer = createReducer(userInitialState, (builder) => {
             state.verificationEmail = {
                 sent: false,
                 verified: false,
+                fullAccountExists: false,
             };
         })
         .addCase(LoginSuccessAction, (state, action) => {

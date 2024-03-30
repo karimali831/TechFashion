@@ -18,6 +18,7 @@ export const userInitialState: IUserState = {
     verificationEmail: {
         sent: false,
         verified: false,
+        fullAccountExists: false,
     },
 };
 

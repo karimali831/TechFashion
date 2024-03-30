@@ -38,42 +38,51 @@ namespace api.Controllers
                 Data = new VerificationEmailDto
                 {
                     Sent = false,
-                    Verified = false
+                    Verified = false,
+                    FullAccountExists = false
                 }
             };
 
             try
             {
-                var user = await _userService.GetAsync(request.FirebaseUid, request.GuestCheckoutId);
-
-                if (user is not null)
+                if (request.FirebaseUid is null && await _userService.GetFullAccByEmailAsync(request.Email) is not null)
                 {
-                    var verifiedExisting = await _emailVerificationService.IsVerifiedAsync(user.Id);
-
-                    if (verifiedExisting.HasValue)
-                    {
-                        response.Data.Sent = true;
-                        response.Data.Verified = true;
-                    }
-                }
-
-                var unverifiedExisting = await _emailVerificationService.GetUnverifiedAsync(request.Email);
-
-                if (unverifiedExisting is null)
-                {
-                    if (request.Send && response.Data.Verified is false)
-                    {
-                        var result = await _emailVerificationService.SendAsync(request.Email);
-
-                        response.Data.Sent = result.Data is true;
-                        response.Data.Verified = false;
-                        response.ErrorMsg = result.ErrorMsg;
-                    }
+                    response.Data.FullAccountExists = true;
                 }
                 else
                 {
-                    response.Data.Sent = true;
-                    response.Data.Verified = unverifiedExisting.VerifiedDate.HasValue;
+
+                    var user = await _userService.GetAsync(request.FirebaseUid, request.GuestCheckoutId);
+
+                    if (user is not null)
+                    {
+                        var verifiedExisting = await _emailVerificationService.IsVerifiedAsync(user.Id);
+
+                        if (verifiedExisting.HasValue)
+                        {
+                            response.Data.Sent = true;
+                            response.Data.Verified = true;
+                        }
+                    }
+
+                    var unverifiedExisting = await _emailVerificationService.GetUnverifiedAsync(request.Email);
+
+                    if (unverifiedExisting is null)
+                    {
+                        if (request.Send && response.Data.Verified is false)
+                        {
+                            var result = await _emailVerificationService.SendAsync(request.Email);
+
+                            response.Data.Sent = result.Data is true;
+                            response.Data.Verified = false;
+                            response.ErrorMsg = result.ErrorMsg;
+                        }
+                    }
+                    else
+                    {
+                        response.Data.Sent = true;
+                        response.Data.Verified = unverifiedExisting.VerifiedDate.HasValue;
+                    }
                 }
 
             }

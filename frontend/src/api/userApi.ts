@@ -38,6 +38,7 @@ export interface ICreateUserRequest {
 export interface IVerificationEmail {
     sent: boolean;
     verified: boolean;
+    fullAccountExists: boolean;
 }
 
 export interface IVerificationEmailRequest {

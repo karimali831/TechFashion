@@ -55,7 +55,14 @@ export const CodeVerification = ({ attempt }: IProps) => {
             sendVerificationEmail()
                 .then(({ data: response }) => {
                     dispatch(SetEmailVerificationAction(response.data));
-                    if (response.errorMsg) {
+
+                    if (response.data.fullAccountExists) {
+                        dispatch(OpenVerifyEmailModalAction(false));
+                        Swal.fire({
+                            icon: "error",
+                            title: "Account already exists, please login instead.",
+                        });
+                    } else if (response.errorMsg) {
                         setErrorMsg(response.errorMsg);
                     } else {
                         setErrorMsg(null);
