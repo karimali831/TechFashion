@@ -7,6 +7,7 @@ namespace api.Service
 {
     public interface IUserService
     {
+        Task<User?> GetAsync(string? firebaseUid, Guid? guestCheckoutId);
         Task<User?> GetByIdAsync(int id);
         Task<User?> GetByFirebaseUIdAsync(string id, Guid? guestCheckoutId = null);
         Task<User?> GetByEmailAsync(string email);
@@ -23,12 +24,14 @@ namespace api.Service
         AppDatabaseContext context,
         IUserRepository userRepository,
         ICartRepository cartRepository,
-        ICustomerAddressService customerAddressService
+        ICustomerAddressService customerAddressService,
+        IEmailVerificationRepository emailVerificationRepository
         ) : IUserService
     {
         private readonly AppDatabaseContext _context = context;
         private readonly IUserRepository _userRepository = userRepository;
         private readonly ICartRepository _cartRepository = cartRepository;
+        private readonly IEmailVerificationRepository _emailVerificationRepository = emailVerificationRepository;
         private readonly ICustomerAddressService _customerAddressService = customerAddressService;
 
         public async Task<IEnumerable<string>> GetEmailsByUserIds(IEnumerable<int> userIds)
@@ -45,12 +48,28 @@ namespace api.Service
             if (user is not null)
             {
                 user.MainAddress = await _customerAddressService.GetMainAsync(user.Id);
+                user.EmailVerified = (await _emailVerificationRepository.IsVerifiedAsync(user.Id)).HasValue;
 
                 // If items were added to a cart on a guest account, we need to update entities to reflect this.
                 if (guestCheckoutId.HasValue)
                 {
                     await _cartRepository.SetUserIdAsync(user.Id, guestCheckoutId.Value);
                 }
+            }
+
+            return user;
+        }
+
+        public async Task<User?> GetAsync(string? firebaseUid, Guid? guestCheckoutId)
+        {
+            User? user = null;
+            if (firebaseUid is not null)
+            {
+                user = await GetByFirebaseUIdAsync(firebaseUid);
+            }
+            else if (guestCheckoutId.HasValue)
+            {
+                user = await GetByGuestCheckoutIdAsync(guestCheckoutId.Value);
             }
 
             return user;
@@ -130,11 +149,11 @@ namespace api.Service
             if (exists is not null && exists.FirebaseUid is null)
             {
                 // This will change a guest account to a full account
-                await _userRepository.SetFirebaseUidAsync(dto.FirebaseUid, exists.Id);
+                await _userRepository.SetFirebaseUidAsync(dto.FirebaseUid, dto.Name, exists.Id);
 
                 return new ApiResponse<User>
                 {
-                    ErrorMsg = "Account created and you are now logged in"
+                    Data = exists
                 };
             }
 

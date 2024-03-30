@@ -4,4 +4,6 @@ export interface IUser {
     email: string;
     firebaseUid?: string;
     stripeCustomerId?: string;
+    // not mapped to db
+    emailVerified: boolean;
 }

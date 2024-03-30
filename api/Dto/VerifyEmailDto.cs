@@ -17,5 +17,7 @@ namespace api.Dto
     {
         public required string Email { get; set; }
         public bool Send { get; set; }
+        public Guid? GuestCheckoutId { get; set; }
+        public string? FirebaseUid { get; set; }
     }
 }

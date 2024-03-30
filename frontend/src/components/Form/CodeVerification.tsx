@@ -17,6 +17,7 @@ import { Page } from "src/enum/Page";
 import { getUserState } from "src/state/contexts/user/Selectors";
 import MDTypography from "../MDTypography";
 import { IVerificationEmail, IVerificationEmailRequest } from "src/api/userApi";
+import { SetEmailVerificationAction } from "src/state/contexts/user/Actions";
 
 interface IVerifyEmailRequest {
     email: string;
@@ -33,30 +34,27 @@ export const CodeVerification = ({ attempt }: IProps) => {
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     const { guestCheckout } = useAppSelector(getCartState);
-    const { verificationEmail } = useAppSelector(getUserState);
+    const { user, firebaseUid } = useAppSelector(getUserState);
 
     const dispatch = useDispatch();
 
     useEffect(() => {
-        console.log("attempt", attempt);
-
-        if (
-            !!guestCheckout &&
-            guestCheckout.email !== "" &&
-            !verificationEmail.sent
-        ) {
+        if (!!user || guestCheckout.email !== "") {
             setSendingCode(true);
             const sendVerificationEmail = async () =>
                 await axios.post<IApiResponse<IVerificationEmail>>(
                     baseApiUrl + "User/CheckVerificationEmail",
                     {
-                        email: guestCheckout.email,
+                        email: user?.email ?? guestCheckout.email,
                         send: true,
+                        firebaseUid,
+                        guestCheckoutId: guestCheckout.id,
                     } as IVerificationEmailRequest
                 );
 
             sendVerificationEmail()
                 .then(({ data: response }) => {
+                    dispatch(SetEmailVerificationAction(response.data));
                     if (response.errorMsg) {
                         setErrorMsg(response.errorMsg);
                     } else {
@@ -76,7 +74,7 @@ export const CodeVerification = ({ attempt }: IProps) => {
 
         await axios
             .post<boolean>(baseApiUrl + "User/VerifyEmail", {
-                email: guestCheckout.email,
+                email: user?.email ?? guestCheckout.email,
                 code: Number(value),
             } as IVerifyEmailRequest)
             .then(({ data: response }) => {

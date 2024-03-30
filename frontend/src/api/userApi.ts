@@ -43,4 +43,6 @@ export interface IVerificationEmail {
 export interface IVerificationEmailRequest {
     email: string;
     send: boolean;
+    guestCheckoutId?: string;
+    firebaseUid?: string;
 }

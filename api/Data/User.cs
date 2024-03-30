@@ -13,5 +13,7 @@ namespace api.Data
         public DateTime? RemovedDate { get; set; }
         [DbIgnore]
         public CustomerAddress? MainAddress { get; set; }
+        [DbIgnore]
+        public bool EmailVerified { get; set; }
     }
 }

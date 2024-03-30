@@ -1,6 +1,8 @@
+using api.Data;
 using api.Dto;
 using api.Service;
 using Microsoft.AspNetCore.Mvc;
+using RestSharp.Extensions;
 
 namespace api.Controllers
 {
@@ -28,19 +30,6 @@ namespace api.Controllers
             return Ok(response);
         }
 
-        [HttpGet("CheckVerificationEmail/{email}")]
-        public async Task<IActionResult> CheckVerificationEmail(string email)
-        {
-            var result = await _emailVerificationService.GetAsync(email);
-
-            return Ok(
-                new VerificationEmailDto
-                {
-                    Sent = result is not null,
-                    Verified = result?.VerifiedDate.HasValue ?? false
-                });
-        }
-
         [HttpPost("CheckVerificationEmail")]
         public async Task<IActionResult> CheckVerificationEmail([FromBody] VerificationEmailRequestDto request)
         {
@@ -55,22 +44,36 @@ namespace api.Controllers
 
             try
             {
-                var existing = await _emailVerificationService.GetAsync(request.Email);
+                var user = await _userService.GetAsync(request.FirebaseUid, request.GuestCheckoutId);
 
-                if (existing is null)
+                if (user is not null)
                 {
-                    if (request.Send)
+                    var verifiedExisting = await _emailVerificationService.IsVerifiedAsync(user.Id);
+
+                    if (verifiedExisting.HasValue)
+                    {
+                        response.Data.Sent = true;
+                        response.Data.Verified = true;
+                    }
+                }
+
+                var unverifiedExisting = await _emailVerificationService.GetUnverifiedAsync(request.Email);
+
+                if (unverifiedExisting is null)
+                {
+                    if (request.Send && response.Data.Verified is false)
                     {
                         var result = await _emailVerificationService.SendAsync(request.Email);
 
                         response.Data.Sent = result.Data is true;
                         response.Data.Verified = false;
+                        response.ErrorMsg = result.ErrorMsg;
                     }
                 }
                 else
                 {
                     response.Data.Sent = true;
-                    response.Data.Verified = existing.VerifiedDate.HasValue;
+                    response.Data.Verified = unverifiedExisting.VerifiedDate.HasValue;
                 }
 
             }

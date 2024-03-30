@@ -15,7 +15,7 @@ namespace api.Repository
         Task CreateGuestAccountAsync(GuestCheckoutDto dto);
         Task SetStripeCustomerIdAsync(string customerId, int userId);
         Task SetStripeCustomerDeletedAsync(string customerId, DateTime? deletedDate);
-        Task SetFirebaseUidAsync(string firebaseUid, int userId);
+        Task SetFirebaseUidAsync(string firebaseUid, string name, int userId);
         Task<int> CreateAsync(CreateUsertDto dto);
     }
 
@@ -76,10 +76,10 @@ namespace api.Repository
                 new { customerId, deletedDate });
         }
 
-        public async Task SetFirebaseUidAsync(string firebaseUid, int userId)
+        public async Task SetFirebaseUidAsync(string firebaseUid, string name, int userId)
         {
-            await ExecuteAsync($"UPDATE {Table} SET FirebaseUid = @firebaseUid WHERE Id = @userId",
-                new { firebaseUid, userId });
+            await ExecuteAsync($"UPDATE {Table} SET FirebaseUid = @firebaseUid, Name = @name WHERE Id = @userId",
+                new { firebaseUid, userId, name });
         }
 
         public async Task<int> CreateAsync(CreateUsertDto dto)

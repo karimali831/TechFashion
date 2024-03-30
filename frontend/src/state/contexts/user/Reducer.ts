@@ -23,6 +23,10 @@ export const userReducer = createReducer(userInitialState, (builder) => {
         .addCase(FirebaseAuthEmptyAction, (state) => {
             state.user = null;
             state.authSuccess = false;
+            state.verificationEmail = {
+                sent: false,
+                verified: false,
+            };
         })
         .addCase(LoginSuccessAction, (state, action) => {
             state.user = action.payload;

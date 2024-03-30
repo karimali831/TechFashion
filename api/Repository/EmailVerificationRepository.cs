@@ -6,7 +6,8 @@ namespace api.Repository
 {
     public interface IEmailVerificationRepository
     {
-        Task<EmailVerification?> GetAsync(string email);
+        Task<DateTime?> IsVerifiedAsync(int userId);
+        Task<EmailVerification?> GetUnverifiedAsync(string email);
         Task<bool> CreateAsync(string email, int code);
         Task<bool> VerifyAsync(string email, int code);
     }
@@ -16,7 +17,7 @@ namespace api.Repository
         private const string Table = "[dbo].[EmailVerification]";
         private static readonly string[] Fields = typeof(EmailVerification).DapperFields();
 
-        public async Task<EmailVerification?> GetAsync(string email)
+        public async Task<EmailVerification?> GetUnverifiedAsync(string email)
         {
             return await QueryFirstOrDefaultAsync<EmailVerification?>($"{DapperHelper.Select(Table, Fields)} WHERE Email = @email AND RemovedDate IS NULL AND VerifiedDate IS NULL AND CreatedDate >= DateADD(MINUTE, -10, GETDATE()) AND CreatedDate< GETDATE()",
                 new { email }
@@ -34,7 +35,7 @@ namespace api.Repository
 
         public async Task<bool> VerifyAsync(string email, int code)
         {
-            var existing = await GetAsync(email);
+            var existing = await GetUnverifiedAsync(email);
 
             if (existing is null || existing.Code != code)
                 return false;
@@ -44,5 +45,20 @@ namespace api.Repository
             );
         }
 
+        public async Task<DateTime?> IsVerifiedAsync(int userId)
+        {
+            var sqlTxt = @$"
+                SELECT ev.VerifiedDate
+                FROM Users AS u
+                JOIN EmailVerification AS ev
+                ON ev.Email = u.Email
+                WHERE u.Id = @userId
+                AND u.RemovedDate IS NULL
+                AND ev.RemovedDate IS NULl
+                AND ev.VerifiedDate IS NOT NULL
+            ";
+
+            return await QueryFirstOrDefaultAsync<DateTime?>(sqlTxt, new { userId });
+        }
     }
 }

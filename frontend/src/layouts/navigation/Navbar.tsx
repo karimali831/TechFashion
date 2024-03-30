@@ -41,7 +41,7 @@ import { SetEmailVerificationAction } from "src/state/contexts/user/Actions";
 
 function NavbarV2() {
     const navigate = useNavigate();
-    const { firebaseUid } = useAppSelector(getUserState);
+    const { user, firebaseUid } = useAppSelector(getUserState);
     const {
         guestCheckout,
         openOverlay,
@@ -57,13 +57,15 @@ function NavbarV2() {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if (openAccountModal && guestCheckout?.email !== "") {
+        if (!user && guestCheckout?.email !== "") {
             const checkVerificationEmail = async () =>
                 await axios.post<IApiResponse<IVerificationEmail>>(
                     baseApiUrl + "User/CheckVerificationEmail",
                     {
                         email: guestCheckout.email,
                         send: false,
+                        firebaseUid,
+                        guestCheckoutId: guestCheckout.id,
                     } as IVerificationEmailRequest
                 );
 
@@ -150,11 +152,11 @@ function NavbarV2() {
                 open={openVerifyEmailModal}
                 content={
                     <Box mt={2} textAlign={"center"}>
-                        <Box>
+                        {firebaseUid === null && (
                             <MDTypography variant="text" fontWeight="regular">
                                 Use your email to sign in — no password needed
                             </MDTypography>
-                        </Box>
+                        )}
                         <Box mt={1} mb={2}>
                             <MDTypography
                                 variant="caption"
@@ -164,7 +166,7 @@ function NavbarV2() {
                                 your email:
                             </MDTypography>{" "}
                             <MDTypography variant="caption" fontWeight="medium">
-                                {email}
+                                {user?.email ?? email}
                             </MDTypography>
                         </Box>
                         <Box mt={2} sx={{ borderBottom: "1px solid #ccc" }} />
@@ -187,16 +189,20 @@ function NavbarV2() {
                                 >
                                     request another code
                                 </MDTypography>
-                                {" or "}
-                                <MDTypography
-                                    variant="caption"
-                                    fontWeight="regular"
-                                    textDecoration="underline"
-                                    onClick={changeEmail}
-                                >
-                                    change your email address
-                                </MDTypography>
-                                {". "}
+                                {firebaseUid === null ? (
+                                    <>
+                                        {" or "}
+                                        <MDTypography
+                                            variant="caption"
+                                            fontWeight="regular"
+                                            textDecoration="underline"
+                                            onClick={changeEmail}
+                                        >
+                                            change your email address
+                                        </MDTypography>
+                                        {". "}
+                                    </>
+                                ) : null}
                             </MDTypography>
                             <Box mt={2}>
                                 <CodeVerification

@@ -28,17 +28,22 @@ const appearance = {
 
 const loader = "auto";
 
-type CheckoutProps = {
+export type CheckoutProps = {
     clientSecret: string;
     total: string;
+    guestEmail: string | null;
 };
 
-const CheckoutPage = ({ clientSecret, total }: CheckoutProps) => (
+const CheckoutPage = ({ clientSecret, total, guestEmail }: CheckoutProps) => (
     <Elements
         stripe={stripePromise}
         options={{ clientSecret, appearance, loader }}
     >
-        <Checkout clientSecret={clientSecret} total={total} />
+        <Checkout
+            clientSecret={clientSecret}
+            total={total}
+            guestEmail={guestEmail}
+        />
     </Elements>
 );
 
@@ -82,6 +87,7 @@ export const Payment = () => {
         <CheckoutPage
             clientSecret={paymentIntent.clientSecret}
             total={paymentIntent.amount}
+            guestEmail={guestCheckout?.email}
         />
     );
 };

@@ -38,7 +38,7 @@ namespace api.Repository
 
         public async Task SetUserIdAsync(int userId, Guid guestCheckoutId)
         {
-            await ExecuteAsync($"UPDATE {Table} SET ArchiveDate = GETDATE() WHERE UserId = @userId AND GuestCheckoutId IS NOT NULL", new { userId });
+            await ExecuteAsync($"UPDATE {Table} SET ArchiveDate = GETDATE() WHERE UserId = @userId AND GuestCheckoutId IS NOT NULL AND GuestCheckoutId != @guestCheckoutId", new { userId, guestCheckoutId });
             await ExecuteAsync($"UPDATE {Table} SET UserId = @userId WHERE GuestCheckoutId = @guestCheckoutId", new { userId, guestCheckoutId });
         }
     }

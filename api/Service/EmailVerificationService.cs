@@ -8,7 +8,8 @@ namespace api.Service
 {
     public interface IEmailVerificationService
     {
-        Task<EmailVerification?> GetAsync(string email);
+        Task<DateTime?> IsVerifiedAsync(int userId);
+        Task<EmailVerification?> GetUnverifiedAsync(string email);
         Task<bool> VerifyAsync(string email, int code);
         Task<ApiResponse<bool>> SendAsync(string email);
     }
@@ -20,11 +21,15 @@ namespace api.Service
         private readonly IMailService _mailService = mailService;
         private readonly IEmailVerificationRepository _emailVerificationRepository = emailVerificationRepository;
 
-        public async Task<EmailVerification?> GetAsync(string email)
+        public async Task<EmailVerification?> GetUnverifiedAsync(string email)
         {
-            return await _emailVerificationRepository.GetAsync(email);
+            return await _emailVerificationRepository.GetUnverifiedAsync(email);
         }
 
+        public async Task<DateTime?> IsVerifiedAsync(int userId)
+        {
+            return await _emailVerificationRepository.IsVerifiedAsync(userId);
+        }
 
         public async Task<bool> VerifyAsync(string email, int code)
         {
@@ -35,7 +40,7 @@ namespace api.Service
         {
             try
             {
-                var existing = await GetAsync(email);
+                var existing = await GetUnverifiedAsync(email);
 
                 if (existing is not null)
                 {

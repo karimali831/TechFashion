@@ -13,6 +13,7 @@ import { getCartState } from "src/state/contexts/cart/Selectors";
 import {
     OpenCartAccountModalAction,
     OpenCartOverlayAction,
+    OpenVerifyEmailModalAction,
     UpdatingProductIdAction,
 } from "src/state/contexts/cart/Actions";
 import { getUserState } from "src/state/contexts/user/Selectors";
@@ -25,7 +26,8 @@ interface IProps {
 }
 
 export const CartOverlay = ({ isOverlay }: IProps) => {
-    const { user, firebaseUid } = useAppSelector(getUserState);
+    const { user, firebaseUid, verificationEmail } =
+        useAppSelector(getUserState);
     const { guestCheckout, updatingProductId } = useAppSelector(getCartState);
 
     const dispatch = useAppDispatch();
@@ -55,8 +57,10 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
     const onCheckoutClick = () => {
         dispatch(OpenCartOverlayAction(false));
 
-        if (user) {
+        if (verificationEmail.verified) {
             dispatch(ShowPageAction(Page.Cart));
+        } else if (user && !verificationEmail.verified) {
+            dispatch(OpenVerifyEmailModalAction(true));
         } else {
             dispatch(OpenCartAccountModalAction(true));
         }

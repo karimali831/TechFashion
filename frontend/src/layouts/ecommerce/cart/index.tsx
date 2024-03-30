@@ -1,4 +1,4 @@
-import { Card, Grid } from "@mui/material";
+import { Card, Grid, LinearProgress } from "@mui/material";
 import MDBox from "src/components/MDBox";
 import MDTypography from "src/components/MDTypography";
 import { Payment } from "../payment";
@@ -10,21 +10,37 @@ import { getUserState } from "src/state/contexts/user/Selectors";
 import { ICartProductDetail } from "src/interface/ICartProductDetail";
 import { ShowPageAction } from "src/state/contexts/app/Actions";
 import { Page } from "src/enum/Page";
+import { OpenVerifyEmailModalAction } from "src/state/contexts/cart/Actions";
+import useEffectSkipInitialRender from "src/hooks/useEffectSkipInitialRender";
 
 export const Cart = () => {
     const dispatch = useAppDispatch();
 
-    const { firebaseUid } = useAppSelector(getUserState);
-    const { guestCheckout } = useAppSelector(getCartState);
+    const { firebaseUid, verificationEmail } = useAppSelector(getUserState);
+    const { guestCheckout, openVerifyEmailModal } =
+        useAppSelector(getCartState);
 
-    const { data: cart } = useGetCartQuery({
+    const { data: cart, isLoading } = useGetCartQuery({
         firebaseUid,
         guestCheckoutId: guestCheckout?.id,
     });
 
+    useEffectSkipInitialRender(() => {
+        const open =
+            !verificationEmail.verified &&
+            !openVerifyEmailModal &&
+            guestCheckout?.email !== "";
+
+        dispatch(OpenVerifyEmailModalAction(open));
+    }, [verificationEmail]);
+
     const itemsInCart: ICartProductDetail[] = cart?.products ?? [];
 
-    if (itemsInCart.length === 0) {
+    if (isLoading) {
+        <LinearProgress />;
+    }
+
+    if (itemsInCart.length === 0 && !isLoading) {
         dispatch(ShowPageAction(Page.Products));
     }
 

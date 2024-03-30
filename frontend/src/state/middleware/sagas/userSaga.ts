@@ -6,6 +6,7 @@ import {
     FirebaseAuthEmptyAction,
     FirebaseAuthenticatedAction,
     LoginSuccessAction,
+    SetEmailVerificationAction,
     SetFirebaseUidAction,
     SignOutAction,
 } from "src/state/contexts/user/Actions";
@@ -52,6 +53,13 @@ export function* firebaseAuthenticated(action: PayloadAction<string>) {
             } as ICartUserRequest
         );
 
+        yield put(
+            SetEmailVerificationAction({
+                sent: true,
+                verified: response.data.emailVerified,
+            })
+        );
+        yield put(ResetGuestCheckoutAction());
         yield put(SetFirebaseUidAction(action.payload));
 
         if (response?.data) {

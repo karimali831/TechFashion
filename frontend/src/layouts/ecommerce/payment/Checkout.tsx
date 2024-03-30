@@ -11,13 +11,13 @@ import { Box, Button } from "@mui/material";
 import MDTypography from "src/components/MDTypography";
 import { StripePaymentElementChangeEvent } from "@stripe/stripe-js";
 import { baseWebUrl } from "src/api/baseApi";
+import { CheckoutProps } from ".";
 
-interface IProps {
-    clientSecret: string;
-    total: string;
-}
-
-export const Checkout = ({ clientSecret, total }: IProps) => {
+export const Checkout = ({
+    guestEmail,
+    clientSecret,
+    total,
+}: CheckoutProps) => {
     const [, setError] = useState<string | null>(null);
     const [processing, setProcessing] = useState<boolean>();
     const [disabled, setDisabled] = useState<boolean>(true);
@@ -75,6 +75,11 @@ export const Checkout = ({ clientSecret, total }: IProps) => {
                     //     setEmail(event.value.email);
                     // }}
                 /> */}
+                    {guestEmail && (
+                        <MDTypography variant="text" fontWeight="regular">
+                            {guestEmail}
+                        </MDTypography>
+                    )}
                     <MDTypography mt={2} mb={1} variant="h6">
                         Shipping
                     </MDTypography>
