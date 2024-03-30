@@ -5,11 +5,11 @@ export interface ICartState {
     openAccountModal: boolean;
     guestCheckout: IGuestCheckout | null;
     updatingProductId: number | null;
+    openVerifyEmailModal: boolean;
 }
 
 export const initialiseGuestCheckout: IGuestCheckout = {
     id: window.crypto.randomUUID(),
-    name: "",
     email: "",
 };
 
@@ -18,4 +18,5 @@ export const cartInitialState: ICartState = {
     openAccountModal: false,
     guestCheckout: initialiseGuestCheckout,
     updatingProductId: null,
+    openVerifyEmailModal: false,
 };

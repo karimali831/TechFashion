@@ -10,6 +10,7 @@ namespace api.Data
         public string? FirebaseUid { get; set; }
         public string? StripeCustomerId { get; set; }
         public DateTime? StripeCustomerDeleted { get; set; }
+        public DateTime? RemovedDate { get; set; }
         [DbIgnore]
         public CustomerAddress? MainAddress { get; set; }
     }

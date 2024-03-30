@@ -6,6 +6,7 @@ using api.Repository.Stripe;
 using api.Service;
 using api.Service.Ebay;
 using api.Service.Stripe;
+using CloudChef.Library.Services;
 
 namespace api
 {
@@ -35,6 +36,8 @@ namespace api
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IReturnService, ReturnService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IMailService, MailService>();
+            services.AddScoped<IEmailVerificationService, EmailVerificationService>();
 
             // Repositories
             services.AddScoped<IProductEFRepository, ProductEFRepository>();
@@ -50,6 +53,7 @@ namespace api
             services.AddScoped<IProductVariantRepository, ProductVariantRepository>();
             services.AddScoped<IReturnRepository, ReturnRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IEmailVerificationRepository, EmailVerificationRepository>();
 
             return services;
         }

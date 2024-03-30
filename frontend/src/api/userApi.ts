@@ -16,14 +16,31 @@ export const userApi = createApi({
                 body,
             }),
         }),
+        sendVerificationEmail: builder.mutation<IApiResponse<boolean>, string>({
+            query: (email) => ({
+                url: `User/SendVerificationEmail?email=${email}`,
+                method: "GET",
+            }),
+        }),
     }),
 });
 
-export const { useCreateUserMutation } = userApi;
+export const { useCreateUserMutation, useSendVerificationEmailMutation } =
+    userApi;
 
 export interface ICreateUserRequest {
     email: string;
     guestCheckoutId?: string;
     firebaseUid: string;
     name: string;
+}
+
+export interface IVerificationEmail {
+    sent: boolean;
+    verified: boolean;
+}
+
+export interface IVerificationEmailRequest {
+    email: string;
+    send: boolean;
 }

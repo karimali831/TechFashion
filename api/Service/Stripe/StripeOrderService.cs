@@ -69,11 +69,6 @@ namespace api.Service
                     throw new ApplicationException("An error occurred");
 
                 await _cartService.SetUserIdAsync(user.Id, request.GuestUser.Id);
-
-                if (user.Name != request.GuestUser.Name)
-                {
-                    await _userService.SetNameAsync(request.GuestUser.Name, user.Id);
-                }
             }
 
             if (user is null)

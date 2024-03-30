@@ -14,6 +14,7 @@ import { useAppDispatch, useAppSelector } from "src/state/Hooks";
 import {
     OpenCartAccountModalAction,
     OpenCartOverlayAction,
+    OpenVerifyEmailModalAction,
     SetGuestCheckoutAction,
 } from "src/state/contexts/cart/Actions";
 import { getCartState } from "src/state/contexts/cart/Selectors";
@@ -30,22 +31,58 @@ import { FormInput } from "src/components/Form";
 import { ActionButton } from "src/components/Buttons/ActionButton";
 import { AppRoutes } from "src/router/Routes";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import MDTypography from "src/components/MDTypography";
+import { CodeVerification } from "src/components/Form/CodeVerification";
+import axios from "axios";
+import { IApiResponse, baseApiUrl } from "src/api/baseApi";
+import { IVerificationEmail, IVerificationEmailRequest } from "src/api/userApi";
+import { SetEmailVerificationAction } from "src/state/contexts/user/Actions";
 
 function NavbarV2() {
     const navigate = useNavigate();
     const { firebaseUid } = useAppSelector(getUserState);
-    const { guestCheckout, openOverlay, openAccountModal } =
-        useAppSelector(getCartState);
+    const {
+        guestCheckout,
+        openOverlay,
+        openAccountModal,
+        openVerifyEmailModal,
+    } = useAppSelector(getCartState);
 
-    const [email, setEmail] = React.useState<string>(
-        guestCheckout?.email ?? ""
-    );
-    const [name, setName] = React.useState<string>(guestCheckout?.name ?? "");
-    const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-        null
-    );
+    const [emailVerificationAttempt, setEmailVerificationAttempt] =
+        useState<number>(1);
+    const [email, setEmail] = useState<string>(guestCheckout?.email ?? "");
+    const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
     const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        if (openAccountModal && guestCheckout?.email !== "") {
+            const checkVerificationEmail = async () =>
+                await axios.post<IApiResponse<IVerificationEmail>>(
+                    baseApiUrl + "User/CheckVerificationEmail",
+                    {
+                        email: guestCheckout.email,
+                        send: false,
+                    } as IVerificationEmailRequest
+                );
+
+            checkVerificationEmail().then(({ data: response }) => {
+                if (response.errorMsg) {
+                } else {
+                    dispatch(SetEmailVerificationAction(response.data));
+                    if (response.data.verified) {
+                        dispatch(OpenCartAccountModalAction(false));
+                        dispatch(OpenVerifyEmailModalAction(false));
+                        dispatch(ShowPageAction(Page.Cart));
+                    } else if (response.data.sent) {
+                        dispatch(OpenCartAccountModalAction(false));
+                        dispatch(OpenVerifyEmailModalAction(true));
+                    }
+                }
+            });
+        }
+    }, [openAccountModal]);
 
     const { data: cart } = useGetCartQuery({
         firebaseUid,
@@ -67,17 +104,19 @@ function NavbarV2() {
         dispatch(ShowPageAction(page));
     };
 
-    const goToPayment = () => {
+    const verifyEmail = () => {
+        if (guestCheckout.email !== email) {
+            setEmailVerificationAttempt(emailVerificationAttempt + 1);
+        }
         dispatch(
             SetGuestCheckoutAction({
                 ...guestCheckout,
                 email,
-                name,
             })
         );
 
         dispatch(OpenCartAccountModalAction(false));
-        dispatch(ShowPageAction(Page.Cart));
+        dispatch(OpenVerifyEmailModalAction(true));
     };
 
     const navToLoginOrRegister = (page: Page) => {
@@ -92,8 +131,83 @@ function NavbarV2() {
         }
     };
 
+    const changeEmail = () => {
+        dispatch(
+            SetGuestCheckoutAction({
+                ...guestCheckout,
+                email: "",
+            })
+        );
+
+        dispatch(OpenCartAccountModalAction(true));
+        dispatch(OpenVerifyEmailModalAction(false));
+    };
+
     return (
         <Box>
+            <MDModal
+                title="Verify Email"
+                open={openVerifyEmailModal}
+                content={
+                    <Box mt={2} textAlign={"center"}>
+                        <Box>
+                            <MDTypography variant="text" fontWeight="regular">
+                                Use your email to sign in — no password needed
+                            </MDTypography>
+                        </Box>
+                        <Box mt={1} mb={2}>
+                            <MDTypography
+                                variant="caption"
+                                fontWeight="regular"
+                            >
+                                Confirm it's you by entering the code sent to
+                                your email:
+                            </MDTypography>{" "}
+                            <MDTypography variant="caption" fontWeight="medium">
+                                {email}
+                            </MDTypography>
+                        </Box>
+                        <Box mt={2} sx={{ borderBottom: "1px solid #ccc" }} />
+                        <Box mt={2}>
+                            <MDTypography
+                                variant="caption"
+                                fontWeight="regular"
+                            >
+                                If you haven't received the email in last 10
+                                minutes, you can{" "}
+                                <MDTypography
+                                    variant="caption"
+                                    fontWeight="regular"
+                                    textDecoration="underline"
+                                    onClick={() =>
+                                        setEmailVerificationAttempt(
+                                            emailVerificationAttempt + 1
+                                        )
+                                    }
+                                >
+                                    request another code
+                                </MDTypography>
+                                {" or "}
+                                <MDTypography
+                                    variant="caption"
+                                    fontWeight="regular"
+                                    textDecoration="underline"
+                                    onClick={changeEmail}
+                                >
+                                    change your email address
+                                </MDTypography>
+                                {". "}
+                            </MDTypography>
+                            <Box mt={2}>
+                                <CodeVerification
+                                    attempt={emailVerificationAttempt}
+                                />
+                            </Box>
+                        </Box>
+                    </Box>
+                }
+                onClose={() => dispatch(OpenVerifyEmailModalAction(false))}
+            />
             <MDModal
                 title="Guest Checkout"
                 content={
@@ -120,20 +234,10 @@ function NavbarV2() {
                             >
                                 Register
                             </span>{" "}
-                            instead.
+                            for faster checkout.
                         </Box>
                         <FormInput
-                            placeholder="Name"
-                            validation={{
-                                value: name,
-                                minCharsRequired: 3,
-                                maxCharsRequired: 100,
-                            }}
-                            small={true}
-                            onChange={(value) => setName(value)}
-                        />
-                        <FormInput
-                            placeholder="Email"
+                            placeholder="Enter email address"
                             validation={{
                                 value: email,
                                 minCharsRequired: 3,
@@ -146,9 +250,9 @@ function NavbarV2() {
                         <Box mt={2}>
                             <ActionButton
                                 fullWidth={true}
-                                disabled={email.length < 4 || name.length < 3}
-                                text="checkout"
-                                onClick={goToPayment}
+                                disabled={email.length < 4}
+                                text="Verify Email"
+                                onClick={verifyEmail}
                             />
                         </Box>
                     </Box>

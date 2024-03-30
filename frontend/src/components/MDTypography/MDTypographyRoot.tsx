@@ -10,6 +10,7 @@ export default styled(Typography)(({ theme, ownerState }: any): any => {
         fontWeight,
         opacity,
         textGradient,
+        textDecoration,
         darkMode,
     } = ownerState;
 
@@ -62,7 +63,7 @@ export default styled(Typography)(({ theme, ownerState }: any): any => {
         opacity,
         textTransform,
         verticalAlign,
-        textDecoration: "none",
+        textDecoration,
         color: colorValue,
         fontWeight: fontWeights[fontWeight] && fontWeights[fontWeight],
         ...(textGradient && gradientStyles()),

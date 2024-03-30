@@ -1,6 +1,7 @@
 using api.Data;
 using api.Dto;
 using api.Repository;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Service
 {
@@ -14,18 +15,28 @@ namespace api.Service
         Task<User?> CreateGuestAccountAsync(GuestCheckoutDto dto);
         Task SetCustomerIdAsync(string customerId, int userId);
         Task SetStripeCustomerDeletedAsync(string customerId, DateTime? deletedDate);
-        Task SetNameAsync(string name, int userId);
         Task<ApiResponse<User>> CreateAsync(CreateUsertDto dto);
+        Task<IEnumerable<string>> GetEmailsByUserIds(IEnumerable<int> userIds);
     }
 
     public class UserService(
+        AppDatabaseContext context,
         IUserRepository userRepository,
         ICartRepository cartRepository,
-        ICustomerAddressService customerAddressService) : IUserService
+        ICustomerAddressService customerAddressService
+        ) : IUserService
     {
+        private readonly AppDatabaseContext _context = context;
         private readonly IUserRepository _userRepository = userRepository;
         private readonly ICartRepository _cartRepository = cartRepository;
         private readonly ICustomerAddressService _customerAddressService = customerAddressService;
+
+        public async Task<IEnumerable<string>> GetEmailsByUserIds(IEnumerable<int> userIds)
+        {
+            return (await _context.Users.ToListAsync())
+                .Where(x => userIds.Contains(x.Id) && x.RemovedDate is null)
+                .Select(x => x.Email);
+        }
 
         public async Task<User?> GetByFirebaseUIdAsync(string id, Guid? guestCheckoutId = null)
         {
@@ -104,12 +115,6 @@ namespace api.Service
             await _userRepository.SetStripeCustomerDeletedAsync(customerId, deletedDate);
         }
 
-
-        public async Task SetNameAsync(string name, int userId)
-        {
-            await _userRepository.SetNameAsync(name, userId);
-        }
-
         public async Task<ApiResponse<User>> CreateAsync(CreateUsertDto dto)
         {
             if (await _userRepository.GetByFirebaseUidAsync(dto.FirebaseUid) is not null)
@@ -148,5 +153,6 @@ namespace api.Service
                 Data = user
             };
         }
+
     }
 }

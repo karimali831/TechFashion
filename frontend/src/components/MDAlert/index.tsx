@@ -34,7 +34,7 @@ function MDAlert({
     const alertTemplate: any = (mount: boolean = true) => (
         <Fade in={mount} timeout={300}>
             <MDAlertRoot ownerState={{ color }} {...rest}>
-                <MDBox display="flex" alignItems="center" color="white">
+                <MDBox display="flex" color="white">
                     {children}
                 </MDBox>
                 {dismissible ? (

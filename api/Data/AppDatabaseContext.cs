@@ -1,14 +1,22 @@
+using api.Data.Stripe;
 using Microsoft.EntityFrameworkCore;
 
 namespace api.Data
 {
     public class AppDatabaseContext(DbContextOptions dbContextOptions) : DbContext(dbContextOptions)
     {
-        public DbSet<Cart> Carts { get; set; }
         public DbSet<CartProduct> CartProducts { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CustomerAddress> CustomerAddress { get; set; }
+        public DbSet<Order> Orders { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductVariant> ProductVariants { get; set; }
+        public DbSet<Return> Returns { get; set; }
+        public DbSet<StripeCoupon> StripeCoupons { get; set; }
+        public DbSet<StripePayment> StripePayments { get; set; }
+        public DbSet<StripePromotion> StripePromotions { get; set; }
+        public DbSet<User> Users { get; set; }
         public DbSet<Variant> Variants { get; set; }
 
 

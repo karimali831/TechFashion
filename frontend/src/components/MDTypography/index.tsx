@@ -29,8 +29,10 @@ interface Props extends TypographyProps {
         | "top"
         | "bottom";
     textGradient?: boolean;
+    textDecoration?: string;
     children: ReactNode;
     opacity?: number;
+    onClick?: () => void;
     [key: string]: any;
 }
 
@@ -42,8 +44,10 @@ const MDTypography: FC<Props | any> = forwardRef(
             textTransform,
             verticalAlign,
             textGradient,
+            textDecoration,
             opacity,
             children,
+            onClick,
             ...rest
         },
         ref
@@ -54,6 +58,8 @@ const MDTypography: FC<Props | any> = forwardRef(
             <MDTypographyRoot
                 {...rest}
                 ref={ref}
+                onClick={onClick}
+                style={{ cursor: onClick ? "pointer" : undefined }}
                 ownerState={{
                     color,
                     textTransform,
@@ -61,6 +67,7 @@ const MDTypography: FC<Props | any> = forwardRef(
                     fontWeight,
                     opacity,
                     textGradient,
+                    textDecoration,
                     darkMode,
                 }}
             >
@@ -77,6 +84,7 @@ MDTypography.defaultProps = {
     textTransform: "none",
     verticalAlign: "unset",
     textGradient: false,
+    textDecoration: "none",
     opacity: 1,
 };
 

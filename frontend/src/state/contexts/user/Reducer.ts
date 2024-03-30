@@ -2,6 +2,7 @@ import { createReducer } from "@reduxjs/toolkit";
 import {
     FirebaseAuthEmptyAction,
     LoginSuccessAction,
+    SetEmailVerificationAction,
     SetFirebaseUidAction,
     SigninLoadingAction,
 } from "./Actions";
@@ -27,5 +28,8 @@ export const userReducer = createReducer(userInitialState, (builder) => {
             state.user = action.payload;
             state.signingIn = false;
             state.authSuccess = true;
+        })
+        .addCase(SetEmailVerificationAction, (state, action) => {
+            state.verificationEmail = action.payload;
         });
 });

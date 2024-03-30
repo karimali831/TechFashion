@@ -1,4 +1,5 @@
 import { User } from "firebase/auth";
+import { IVerificationEmail } from "src/api/userApi";
 import { IUser } from "src/data/IUser";
 
 export interface IUserState {
@@ -6,6 +7,7 @@ export interface IUserState {
     authSuccess: boolean;
     firebaseUid: string | null;
     signingIn: boolean;
+    verificationEmail: IVerificationEmail;
 }
 
 export const userInitialState: IUserState = {
@@ -13,6 +15,10 @@ export const userInitialState: IUserState = {
     authSuccess: false,
     firebaseUid: null,
     signingIn: false,
+    verificationEmail: {
+        sent: false,
+        verified: false,
+    },
 };
 
 export type IFirebaseUser = User;
