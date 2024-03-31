@@ -98,7 +98,7 @@ export const CodeVerification = ({ attempt }: IProps) => {
                     dispatch(ShowPageAction(Page.Cart));
                 } else {
                     setErrorMsg(
-                        "Incorrect verification code, please try again."
+                        "Verification code is incorrect or has expired. Please try again."
                     );
                 }
             })

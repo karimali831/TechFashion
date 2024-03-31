@@ -87,7 +87,7 @@ export const Payment = () => {
         <CheckoutPage
             clientSecret={paymentIntent.clientSecret}
             total={paymentIntent.amount}
-            guestEmail={guestCheckout?.email}
+            guestEmail={firebaseUid === null && guestCheckout?.email}
         />
     );
 };

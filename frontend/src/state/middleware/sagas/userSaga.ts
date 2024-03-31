@@ -60,7 +60,7 @@ export function* firebaseAuthenticated(action: PayloadAction<string>) {
                 fullAccountExists: true,
             })
         );
-        yield put(ResetGuestCheckoutAction());
+        // yield put(ResetGuestCheckoutAction());
         yield put(SetFirebaseUidAction(action.payload));
 
         if (response?.data) {
