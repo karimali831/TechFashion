@@ -1,14 +1,11 @@
-import { Alert, Box, Card } from "@mui/material";
+import { Alert, Card } from "@mui/material";
 import { useEffect } from "react";
 import MDBox from "src/components/MDBox";
-import MDTypography from "src/components/MDTypography";
-import { getUserState } from "src/state/contexts/user/Selectors";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
 import { ResetGuestCheckoutAction } from "src/state/contexts/cart/Actions";
 import { getCartState } from "src/state/contexts/cart/Selectors";
 
 export const Success = () => {
-    const { firebaseUid } = useAppSelector(getUserState);
     const { guestCheckout } = useAppSelector(getCartState);
     const dispatch = useAppDispatch();
 

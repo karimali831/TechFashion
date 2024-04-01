@@ -17,7 +17,7 @@ import MDTypography from "src/components/MDTypography";
 import MDInput from "src/components/MDInput";
 import MDPagination from "src/components/MDPagination";
 import { isMobile } from "react-device-detect";
-import { Fade, Skeleton } from "@mui/material";
+import { Skeleton } from "@mui/material";
 import DataTableHeadCell from "./DataTableHeadCell";
 import DataTableBodyCell from "./DataTableBodyCell";
 

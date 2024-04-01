@@ -53,7 +53,6 @@ import {
 import { SetEmailVerificationAction } from "src/state/contexts/user/Actions";
 import Swal from "sweetalert2";
 import MDBox from "src/components/MDBox";
-import { getAppState } from "src/state/contexts/app/Selectors";
 
 function NavbarV2() {
     const navigate = useNavigate();
@@ -66,8 +65,6 @@ function NavbarV2() {
         openSelectAddressModal,
         addressId,
     } = useAppSelector(getCartState);
-
-    const { page } = useAppSelector(getAppState);
 
     const [emailVerificationAttempt, setEmailVerificationAttempt] =
         useState<number>(1);
@@ -212,7 +209,7 @@ function NavbarV2() {
                             >
                                 <Select
                                     labelId="saved-addresses"
-                                    value={addressId.toString()}
+                                    value={addressId?.toString()}
                                     variant="standard"
                                     label="Address"
                                     onChange={(event: SelectChangeEvent) => {
@@ -221,13 +218,9 @@ function NavbarV2() {
                                                 Number(event.target.value)
                                             )
                                         );
-                                        if (page === Page.Cart) {
-                                            dispatch(
-                                                OpenSelectAddressModalAction(
-                                                    false
-                                                )
-                                            );
-                                        }
+                                        dispatch(
+                                            OpenSelectAddressModalAction(false)
+                                        );
                                     }}
                                 >
                                     {account?.addresses.map((address, idx) => (
@@ -242,20 +235,6 @@ function NavbarV2() {
                                     </MenuItem>
                                 </Select>
                             </FormControl>
-                        )}
-                        {page !== Page.Cart && (
-                            <Box mt={4}>
-                                <ActionButton
-                                    fullWidth={true}
-                                    text="Continue to Checkout"
-                                    onClick={() => {
-                                        dispatch(
-                                            OpenSelectAddressModalAction(false)
-                                        );
-                                        dispatch(ShowPageAction(Page.Cart));
-                                    }}
-                                />
-                            </Box>
                         )}
                     </MDBox>
                 }
