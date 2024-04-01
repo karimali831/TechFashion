@@ -10,9 +10,10 @@ import Swal from "sweetalert2";
 
 type EditAddressProps = {
     address: ICustomerAddress;
+    count: number;
 };
 
-export const Address = ({ address }: EditAddressProps) => {
+export const Address = ({ address, count }: EditAddressProps) => {
     const topElement = useRef<HTMLInputElement | null>(null);
     const [editAddress, setEditAddress] = useState<boolean>(false);
 
@@ -30,15 +31,15 @@ export const Address = ({ address }: EditAddressProps) => {
         await deleteAddress(deletingId)
             .unwrap()
             .then((payload) => {
-                if (payload) {
+                if (payload.errorMsg) {
                     Swal.fire({
-                        icon: "success",
-                        title: "Address deleted",
+                        icon: "error",
+                        title: payload.errorMsg,
                     });
                 } else {
                     Swal.fire({
-                        icon: "error",
-                        title: "Something went wrong",
+                        icon: "success",
+                        title: "Address deleted",
                     });
                 }
             })
@@ -52,7 +53,7 @@ export const Address = ({ address }: EditAddressProps) => {
 
     return (
         <Box display="flex" flexDirection="column" alignItems={"center"}>
-            {!editAddress && (
+            {!editAddress && address && (
                 <>
                     {address.main && (
                         <Box mb={2}>
@@ -87,7 +88,7 @@ export const Address = ({ address }: EditAddressProps) => {
                                 Edit
                             </MDButton>
                         </Box>
-                        {!address.main && (
+                        {(!address.main || count === 1) && (
                             <MDButton
                                 variant="outlined"
                                 color="info"

@@ -86,14 +86,17 @@ export const Addresses = () => {
                 </Slide>
             </Box>
             <Fade
-                in={true}
+                in={!!defaultAddress}
                 mountOnEnter={true}
                 unmountOnExit={true}
                 timeout={500}
                 style={{ transitionDelay: "100ms" }}
             >
                 <Box>
-                    <Address address={defaultAddress} />
+                    <Address
+                        address={defaultAddress}
+                        count={account.addresses.length}
+                    />
                 </Box>
             </Fade>
             {account.addresses
@@ -111,7 +114,10 @@ export const Addresses = () => {
                             }}
                         >
                             <Box mt={4}>
-                                <Address address={address} />
+                                <Address
+                                    address={address}
+                                    count={account.addresses.length}
+                                />
                             </Box>
                         </Fade>
                     );

@@ -113,13 +113,14 @@ namespace api.Controllers
                             var cartId = int.Parse(paymentIntent.Metadata.First(x => x.Key == "CartId").Value);
 
                             // Create order
-                            await _orderService.AddAsync(new Order
-                            {
-                                CartId = cartId,
-                                PaymentId = paymentId,
-                                ShippingAddressId = shippingAddressId,
-                                Status = OrderStatus.Open
-                            });
+                            await _orderService.AddAsync(
+                                new Order
+                                {
+                                    CartId = cartId,
+                                    PaymentId = paymentId,
+                                    ShippingAddressId = shippingAddressId,
+                                    Status = OrderStatus.Open
+                                });
 
                             // Empty cart
                             await _cartService.EmptyAsync(cartId);

@@ -83,9 +83,13 @@ export const Payment = () => {
             { skip: !cart }
         );
 
-    if (!stripePromise) return null;
-
-    if (paymentIntentLoading || !cart || accountLoading)
+    if (
+        paymentIntentLoading ||
+        !cart ||
+        accountLoading ||
+        !stripePromise ||
+        !paymentIntent
+    )
         return <CircularProgress />;
 
     if (paymentIntent.errorMsg) {

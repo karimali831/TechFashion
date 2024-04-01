@@ -76,10 +76,15 @@ namespace api.Service
 
             if (find?.Main is true)
             {
-                return new ApiResponse<bool>
+                var allAddressess = await GetAllAsync(find.UserId);
+
+                if (allAddressess.Count > 1)
                 {
-                    ErrorMsg = "You can not delete the default address. Update another address as default before deleting this."
-                };
+                    return new ApiResponse<bool>
+                    {
+                        ErrorMsg = "You can not delete the default address. Update another address as default before deleting this."
+                    };
+                }
             }
 
             if (await _customerAddressRepository.DeleteAsync(id))

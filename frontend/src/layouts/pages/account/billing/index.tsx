@@ -160,26 +160,28 @@ function Billing(): JSX.Element {
                 >
                     <Grid item xl={3} md={12} xs={12}>
                         <h2>Account details</h2>
-                        <Box mt={1} display="flex" flexDirection="column">
-                            <Typography className="standard-text">
-                                {defaultAddress.name}
-                            </Typography>
-                            <Typography className="standard-text">
-                                {defaultAddress.line1}
-                            </Typography>
-                            <Typography className="standard-text">
-                                {defaultAddress.line2}
-                            </Typography>
-                            <Typography className="standard-text">
-                                {defaultAddress.city}
-                            </Typography>
-                            <Typography className="standard-text">
-                                {defaultAddress.postalCode}
-                            </Typography>
-                            <Typography className="standard-text">
-                                {defaultAddress.country}
-                            </Typography>
-                        </Box>
+                        {defaultAddress && (
+                            <Box mt={1} display="flex" flexDirection="column">
+                                <Typography className="standard-text">
+                                    {defaultAddress?.name}
+                                </Typography>
+                                <Typography className="standard-text">
+                                    {defaultAddress?.line1}
+                                </Typography>
+                                <Typography className="standard-text">
+                                    {defaultAddress?.line2}
+                                </Typography>
+                                <Typography className="standard-text">
+                                    {defaultAddress?.city}
+                                </Typography>
+                                <Typography className="standard-text">
+                                    {defaultAddress.postalCode}
+                                </Typography>
+                                <Typography className="standard-text">
+                                    {defaultAddress?.country}
+                                </Typography>
+                            </Box>
+                        )}
                         <Box mt={2}>
                             <Typography
                                 className="standard-text link"

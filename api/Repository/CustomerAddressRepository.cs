@@ -36,6 +36,11 @@ namespace api.Repository
                 return exists.Id;
             }
 
+            if (await GetMainAsync(model.UserId) is null)
+            {
+                model.Main = true;
+            }
+
             var result = await QueryAsync<int>(DapperHelper.Insert(Table, Fields), model);
             return result.Single();
         }
@@ -93,6 +98,11 @@ namespace api.Repository
                 await ExecuteAsync($"UPDATE {Table} SET Main = 0 WHERE UserId = @userId AND RemovedDate IS NULL",
                     new { userId = model.UserId }
                 );
+            }
+
+            if (await GetMainAsync(model.UserId) is null)
+            {
+                model.Main = true;
             }
 
             if (model.Id == 0)
