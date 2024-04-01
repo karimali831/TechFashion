@@ -150,17 +150,28 @@ namespace api.Service
                 };
             }
 
+
             var exists = await _userRepository.GetByEmailAsync(dto.Email);
 
-            if (exists is not null && exists.FirebaseUid is null)
+            if (exists is not null)
             {
-                // This will change a guest account to a full account
-                await _userRepository.SetFirebaseUidAsync(dto.FirebaseUid, dto.Name, exists.Id);
+                var verified = await _emailVerificationRepository.IsVerifiedAsync(exists.Id);
 
-                return new ApiResponse<User>
+                if (!verified.HasValue)
                 {
-                    Data = exists
-                };
+
+                }
+
+                if (exists.FirebaseUid is null)
+                {
+                    // This will change a guest account to a full account
+                    await _userRepository.SetFirebaseUidAsync(dto.FirebaseUid, dto.Name, exists.Id);
+
+                    return new ApiResponse<User>
+                    {
+                        Data = exists
+                    };
+                }
             }
 
             var userId = await _userRepository.CreateAsync(dto);

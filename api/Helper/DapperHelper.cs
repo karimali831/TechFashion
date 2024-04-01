@@ -57,7 +57,7 @@ namespace api.Helper
         public static string Update(string table, string[] fields, string? primaryKey = "Id")
         {
             return
-                $"UPDATE {table} SET {string.Join(", ", fields.Where(f => f != primaryKey).Select(f => $"{f}=@{f}"))}";
+                $"UPDATE {table} SET {string.Join(", ", fields.Where(f => f != primaryKey).Select(f => $"{f}=@{f}"))} WHERE Id = @id";
         }
 
         public static string Insert(string table, string[] fields)

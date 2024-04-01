@@ -7,7 +7,7 @@ export interface IFormField<T> {
     name: T;
     label: string;
     placeholder?: string;
-    type: "text" | "number";
+    type: "text" | "number" | "checkbox";
     errorMsg?: string;
     invalidMsg?: string;
 }

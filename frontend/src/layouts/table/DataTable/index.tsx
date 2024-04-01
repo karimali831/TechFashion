@@ -330,43 +330,36 @@ function DataTable<T>({
                         </TableRow>
                     ))}
                 </MDBox>
-                <Fade
-                    in={true}
-                    mountOnEnter={true}
-                    unmountOnExit={true}
-                    timeout={500}
-                >
-                    <TableBody {...getTableBodyProps()}>
-                        {page.map((row: any, key: any) => {
-                            prepareRow(row);
-                            return (
-                                <TableRow
-                                    key={key}
-                                    {...row.getRowProps()}
-                                    onClick={() => onRowClick(row.original)}
-                                >
-                                    {row.cells.map((cell: any, key: any) => (
-                                        <DataTableBodyCell
-                                            key={key}
-                                            noBorder={
-                                                noEndBorder &&
-                                                rows.length - 1 === key
-                                            }
-                                            align={
-                                                cell.column.align
-                                                    ? cell.column.align
-                                                    : "left"
-                                            }
-                                            {...cell.getCellProps()}
-                                        >
-                                            {cell.render("Cell")}
-                                        </DataTableBodyCell>
-                                    ))}
-                                </TableRow>
-                            );
-                        })}
-                    </TableBody>
-                </Fade>
+                <TableBody {...getTableBodyProps()}>
+                    {page.map((row: any, key: any) => {
+                        prepareRow(row);
+                        return (
+                            <TableRow
+                                key={key}
+                                {...row.getRowProps()}
+                                onClick={() => onRowClick(row.original)}
+                            >
+                                {row.cells.map((cell: any, key: any) => (
+                                    <DataTableBodyCell
+                                        key={key}
+                                        noBorder={
+                                            noEndBorder &&
+                                            rows.length - 1 === key
+                                        }
+                                        align={
+                                            cell.column.align
+                                                ? cell.column.align
+                                                : "left"
+                                        }
+                                        {...cell.getCellProps()}
+                                    >
+                                        {cell.render("Cell")}
+                                    </DataTableBodyCell>
+                                ))}
+                            </TableRow>
+                        );
+                    })}
+                </TableBody>
             </Table>
 
             <MDBox

@@ -15,6 +15,8 @@ builder.Configuration
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
 
+builder.WebHost.UseSentry();
+
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddControllers();
@@ -80,6 +82,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Sentry
+app.UseRouting();
+app.UseSentryTracing();
+
 app.UseHttpsRedirection();
 
 app.UseCors(MyAllowSpecificOrigins);
@@ -87,6 +93,8 @@ app.UseCors(MyAllowSpecificOrigins);
 app.MapControllers();
 
 app.Run();
+
+SentrySdk.CaptureMessage("Hello Sentry - Tech fashion project");
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {

@@ -7,6 +7,8 @@ import { useAppSelector } from "src/state/Hooks";
 import { getCartState } from "src/state/contexts/cart/Selectors";
 import { useCreatePaymentIntentQuery, useGetCartQuery } from "src/api/cartApi";
 import { getUserState } from "src/state/contexts/user/Selectors";
+import { ICustomerAddress } from "src/data/ICustomerAddress";
+import { useGetAccountQuery } from "src/api/userApi";
 
 const stripePromise = loadStripe(
     "pk_test_51MF29cB4n2CpwCrekms5MYYiKzNBOpA20kCPNvON4clMPEwh84j1Mv5rljEj1VHEAUGL9moIjteZZpIcmymsggYw00cJJfvH2O"
@@ -32,9 +34,15 @@ export type CheckoutProps = {
     clientSecret: string;
     total: string;
     guestEmail: string | null;
+    address: ICustomerAddress | null;
 };
 
-const CheckoutPage = ({ clientSecret, total, guestEmail }: CheckoutProps) => (
+const CheckoutPage = ({
+    clientSecret,
+    total,
+    guestEmail,
+    address,
+}: CheckoutProps) => (
     <Elements
         stripe={stripePromise}
         options={{ clientSecret, appearance, loader }}
@@ -43,23 +51,32 @@ const CheckoutPage = ({ clientSecret, total, guestEmail }: CheckoutProps) => (
             clientSecret={clientSecret}
             total={total}
             guestEmail={guestEmail}
+            address={address}
         />
     </Elements>
 );
 
 export const Payment = () => {
-    const { firebaseUid } = useAppSelector(getUserState);
-    const { guestCheckout } = useAppSelector(getCartState);
+    const { firebaseUid, user } = useAppSelector(getUserState);
+    const { guestCheckout, addressId } = useAppSelector(getCartState);
 
     const { data: cart } = useGetCartQuery({
         firebaseUid,
         guestCheckoutId: guestCheckout?.id,
     });
 
+    const { data: account, isLoading: accountLoading } = useGetAccountQuery(
+        user?.id,
+        { skip: !user }
+    );
+
+    const address = account?.addresses.filter((x) => x.id === addressId)[0];
+
     const { data: paymentIntent, isFetching: paymentIntentLoading } =
         useCreatePaymentIntentQuery(
             {
                 cartId: cart?.id,
+                addressId: address?.id,
                 firebaseUid,
                 guestUser: guestCheckout,
             },
@@ -68,7 +85,8 @@ export const Payment = () => {
 
     if (!stripePromise) return null;
 
-    if (paymentIntentLoading || !cart) return <CircularProgress />;
+    if (paymentIntentLoading || !cart || accountLoading)
+        return <CircularProgress />;
 
     if (paymentIntent.errorMsg) {
         return (
@@ -88,6 +106,7 @@ export const Payment = () => {
             clientSecret={paymentIntent.clientSecret}
             total={paymentIntent.amount}
             guestEmail={firebaseUid === null && guestCheckout?.email}
+            address={address}
         />
     );
 };

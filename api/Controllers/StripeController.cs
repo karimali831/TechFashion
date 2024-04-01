@@ -85,20 +85,30 @@ namespace api.Controllers
 
                                 });
 
-                            var shippingName = paymentIntent.Shipping.Name;
-                            var shippingAddress = paymentIntent.Shipping.Address;
+                            int shippingAddressId;
 
-                            var shippingAddressId = await _customerAddressService.GetOrAddAsync(
-                                new CustomerAddress
-                                {
-                                    UserId = user.Id,
-                                    Name = shippingName,
-                                    Line1 = shippingAddress.Line1,
-                                    Line2 = shippingAddress.Line2,
-                                    City = shippingAddress.City,
-                                    PostalCode = shippingAddress.PostalCode,
-                                    Country = shippingAddress.Country
-                                });
+                            if (paymentIntent.Shipping is not null)
+                            {
+
+                                var shippingName = paymentIntent.Shipping.Name;
+                                var shippingAddress = paymentIntent.Shipping.Address;
+
+                                shippingAddressId = await _customerAddressService.GetOrAddAsync(
+                                    new CustomerAddress
+                                    {
+                                        UserId = user.Id,
+                                        Name = shippingName,
+                                        Line1 = shippingAddress.Line1,
+                                        Line2 = shippingAddress.Line2,
+                                        City = shippingAddress.City,
+                                        PostalCode = shippingAddress.PostalCode,
+                                        Country = shippingAddress.Country
+                                    });
+                            }
+                            else
+                            {
+                                shippingAddressId = int.Parse(paymentIntent.Metadata.First(x => x.Key == "AddressId").Value);
+                            }
 
                             var cartId = int.Parse(paymentIntent.Metadata.First(x => x.Key == "CartId").Value);
 

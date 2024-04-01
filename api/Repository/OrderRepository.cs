@@ -8,8 +8,9 @@ namespace api.Repository
     public interface IOrderRepository
     {
         Task AddAsync(Order model);
+        Task<Order?> GetByRefAsync(int orderRef);
         Task<IList<OrderHistory>> GetHistoryAsync(int userId);
-        Task<IList<OrderItem>> GetOrderedItemsAsync(int orderId);
+        Task<IList<OrderItem>> GetOrderedItemsAsync(int orderRef);
     }
 
     public class OrderRepository(IConfiguration configuration) : DapperBaseRepository(configuration), IOrderRepository
@@ -23,20 +24,34 @@ namespace api.Repository
             await ExecuteAsync(DapperHelper.Insert(Table, Fields), model);
         }
 
+        public async Task<Order?> GetByRefAsync(int orderRef)
+        {
+            return await QueryFirstOrDefaultAsync<Order>($"{DapperHelper.Select(Table, Fields)} WHERE Ref = @orderRef", new { orderRef });
+        }
+
         public async Task<IList<OrderHistory>> GetHistoryAsync(int userId)
         {
             var sqlTxt = @$"
                 SELECT
                     O.Id,
+                    O.Ref,
                     O.CreatedDate AS Date,
                     P.Status AS PaymentStatus,
                     O.Status,
+                    CA.Name,
+                    CA.Line1,
+                    CA.Line2,
+                    CA.City,
+                    CA.PostalCode,
+                    CA.Country,
                     P.Amount AS Total
                 FROM [Orders] AS O
                 JOIN [Carts] AS C
                 ON C.Id = O.CartId
                 JOIN [StripePayments] AS P
                 ON O.PaymentId = P.Id
+                JOIN [CustomerAddress] AS CA
+                ON CA.Id = O.ShippingAddressId
                 WHERE C.ArchiveDate IS NOT NULL
                 AND C.UserID = @userId
             ";
@@ -44,7 +59,7 @@ namespace api.Repository
             return (await QueryAsync<OrderHistory>(sqlTxt, new { userId })).ToList();
         }
 
-        public async Task<IList<OrderItem>> GetOrderedItemsAsync(int orderId)
+        public async Task<IList<OrderItem>> GetOrderedItemsAsync(int orderRef)
         {
             const string sqlTxt = @$"
                 ;SELECT 
@@ -63,7 +78,7 @@ namespace api.Repository
                 ON C.Id = CP.CartId 
                 JOIN [Orders] AS O
                 ON O.CartId = C.Id
-                WHERE O.Id = @orderId
+                WHERE O.Ref = @orderRef
                 AND CP.RemovedDate IS NULL
                 AND CP.VariantId IS NULL
                 AND C.ArchiveDate IS NOT NULL
@@ -88,12 +103,12 @@ namespace api.Repository
                 ON C.Id = CP.CartId 
                 JOIN [Orders] AS O
                 ON O.CartId = C.Id
-                WHERE O.Id = @orderId
+                WHERE O.Ref = @orderRef
                 AND CP.RemovedDate IS NULL
                 AND C.ArchiveDate IS NOT NULL
             ";
 
-            return (await QueryAsync<OrderItem>(sqlTxt, new { orderId }))
+            return (await QueryAsync<OrderItem>(sqlTxt, new { orderRef }))
                 .ToList();
         }
     }

@@ -8,15 +8,21 @@ namespace api.Service
     {
         Task AddAsync(Order model);
         Task<IList<OrderHistory>> GetHistoryAsync(int userId);
-        Task<IList<OrderItem>> GetOrderedItemsAsync(int cartId);
+        Task<IList<OrderItem>> GetOrderedItemsAsync(int orderRef);
     }
 
     public class OrderService(IOrderRepository orderRepository) : IOrderService
     {
+        private static Random _random = new();
         private readonly IOrderRepository _orderRepository = orderRepository;
 
         public async Task AddAsync(Order model)
         {
+            var orderRef = _random.Next(100000000, 999999999);
+            // var exists = await _orderRepository.GetByRefAsync(orderRef);
+
+            model.Ref = orderRef;
+
             await _orderRepository.AddAsync(model);
         }
 
@@ -25,9 +31,9 @@ namespace api.Service
             return await _orderRepository.GetHistoryAsync(userId);
         }
 
-        public async Task<IList<OrderItem>> GetOrderedItemsAsync(int cartId)
+        public async Task<IList<OrderItem>> GetOrderedItemsAsync(int orderRef)
         {
-            return await _orderRepository.GetOrderedItemsAsync(cartId);
+            return await _orderRepository.GetOrderedItemsAsync(orderRef);
         }
     }
 }

@@ -93,7 +93,12 @@ namespace api.Service
                 coupon = couponByPromoCode;
             }
 
-            return await _stripePaymentService.CreateIntentAsync(user, request.CartId, coupon, request.PromoCode);
+            return await _stripePaymentService.CreateIntentAsync(user,
+                request.CartId,
+                request.AddressId,
+                coupon,
+                request.PromoCode
+            );
         }
     }
 }

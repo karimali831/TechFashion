@@ -50,14 +50,22 @@ export const ActionButton: FC<IProps> = ({
             sx={{
                 background: bgColor,
                 width: fullWidth ? "100%" : width ?? "15%",
-                minWidth: 150,
-                padding: "15px",
+                minWidth: 120,
+                borderColor: outlined && "#121212",
+                padding: size === "small" ? "10px" : "15px",
+                color: outlined && "#121212",
             }}
             disabled={loading || disabled}
             variant={outlined ? "outlined" : "contained"}
             onClick={onClick}
             fullWidth={fullWidth}
-            startIcon={loading ? <CircularProgress size={16} /> : icon}
+            startIcon={
+                loading ? (
+                    <CircularProgress size={size === "small" ? 14 : 16} />
+                ) : (
+                    icon
+                )
+            }
             size={size ?? "medium"}
         >
             {!loading && text}

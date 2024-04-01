@@ -9,11 +9,14 @@ namespace api.Controllers
     public class OrderController(
         IpApiClient ipApiClient,
         IOrderService orderService,
+        IAccountService accountService,
         IStripeOrderService stripeOrderService) : ControllerBase
     {
         private readonly IpApiClient _ipApiClient = ipApiClient;
+        private readonly IAccountService _accountService = accountService;
         private readonly IOrderService _orderService = orderService;
         private readonly IStripeOrderService _stripeOrderService = stripeOrderService;
+
 
         [HttpPost("CreatePaymentIntent")]
         public async Task<IActionResult> CreatePaymentIntent([FromBody] PaymentIntentRequest request, CancellationToken ct)
@@ -48,17 +51,17 @@ namespace api.Controllers
             }
         }
 
-        [HttpGet("GetHistory/{userId}")]
-        public async Task<IActionResult> GetHistory(int userId)
+        [HttpGet("GetAccount/{userId}")]
+        public async Task<IActionResult> GetAccount(int userId)
         {
-            var orderHistory = await _orderService.GetHistoryAsync(userId);
-            return Ok(orderHistory);
+            var account = await _accountService.GetAsync(userId);
+            return Ok(account);
         }
 
-        [HttpGet("GetOrderedItems/{orderId}")]
-        public async Task<IActionResult> GetOrderedItems(int orderId)
+        [HttpGet("GetOrderedItems/{orderRef}")]
+        public async Task<IActionResult> GetOrderedItems(int orderRef)
         {
-            var orderHistory = await _orderService.GetOrderedItemsAsync(orderId);
+            var orderHistory = await _orderService.GetOrderedItemsAsync(orderRef);
             return Ok(orderHistory);
         }
     }

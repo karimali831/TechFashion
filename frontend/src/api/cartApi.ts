@@ -6,7 +6,7 @@ import { IOrderHistory } from "src/data/IOrderHistory";
 
 export const cartApi = createApi({
     reducerPath: "cartApi",
-    tagTypes: ["Cart", "PaymentIntent", "OrderHistory"],
+    tagTypes: ["Cart", "PaymentIntent"],
     baseQuery: fetchBaseQuery({
         baseUrl: baseApiUrl,
         // headers: { Authorization: `Bearer ${getTokenFromLocalStorage()}` },
@@ -56,16 +56,9 @@ export const cartApi = createApi({
             }),
             providesTags: ["PaymentIntent"],
         }),
-        getOrderHistory: builder.query<IOrderHistory[], number>({
-            query: (userId) => ({
-                url: `Order/GetHistory/${userId}`,
-                method: "GET",
-            }),
-            providesTags: ["OrderHistory"],
-        }),
         getOrderedItems: builder.query<IOrderHistory[], number>({
-            query: (orderId) => ({
-                url: `Order/GetOrderedItems/${orderId}`,
+            query: (orderRef) => ({
+                url: `Order/GetOrderedItems/${orderRef}`,
                 method: "GET",
             }),
         }),
@@ -98,6 +91,7 @@ export interface IAddProductToCartRequest {
 
 export interface IPaymentIntentRequest {
     cartId: number;
+    addressId?: number;
     firebaseUid?: string;
     guestUser?: IGuestCheckout;
     promoCode?: string;
@@ -117,6 +111,5 @@ export const {
     useAddProductToCartMutation,
     useRemoveProductFromCartMutation,
     useCreatePaymentIntentQuery,
-    useGetOrderHistoryQuery,
     useGetOrderedItemsQuery,
 } = cartApi;

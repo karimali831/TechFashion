@@ -25,14 +25,6 @@ export const Success = () => {
                     Payment successful. Your order is now being processed and
                     you will be notified once your items are dispatched.
                 </Alert>
-                {firebaseUid == null && (
-                    <Box p={2}>
-                        <MDTypography variant="text">
-                            Register an account with your email if you wish to
-                            view and track your orders.
-                        </MDTypography>
-                    </Box>
-                )}
             </Card>
         </MDBox>
     );

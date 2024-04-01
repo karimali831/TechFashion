@@ -2,8 +2,10 @@ import { createReducer } from "@reduxjs/toolkit";
 import {
     OpenCartAccountModalAction,
     OpenCartOverlayAction,
+    OpenSelectAddressModalAction,
     OpenVerifyEmailModalAction,
     ResetGuestCheckoutAction,
+    SetAddressIdAction,
     SetGuestCheckoutAction,
     UpdatingProductIdAction,
 } from "./Actions";
@@ -28,5 +30,11 @@ export const cartReducer = createReducer(cartInitialState, (builder) => {
         })
         .addCase(OpenVerifyEmailModalAction, (state, action) => {
             state.openVerifyEmailModal = action.payload;
+        })
+        .addCase(OpenSelectAddressModalAction, (state, action) => {
+            state.openSelectAddressModal = action.payload;
+        })
+        .addCase(SetAddressIdAction, (state, action) => {
+            state.addressId = action.payload;
         });
 });

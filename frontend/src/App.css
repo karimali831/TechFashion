@@ -11,6 +11,16 @@
     width: 100%;
 }
 
+.standard-text {
+    color: #121212bf;
+    font-size: 16px !important;
+}
+
+.link {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 /*navbar styles*/
 .navbar {
     display: flex;

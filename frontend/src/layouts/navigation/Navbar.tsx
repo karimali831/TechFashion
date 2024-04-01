@@ -9,12 +9,21 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
-import { Badge, Icon } from "@mui/material";
+import {
+    Badge,
+    CircularProgress,
+    FormControl,
+    Icon,
+    Select,
+    SelectChangeEvent,
+} from "@mui/material";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
 import {
     OpenCartAccountModalAction,
     OpenCartOverlayAction,
+    OpenSelectAddressModalAction,
     OpenVerifyEmailModalAction,
+    SetAddressIdAction,
     SetGuestCheckoutAction,
 } from "src/state/contexts/cart/Actions";
 import { getCartState } from "src/state/contexts/cart/Selectors";
@@ -36,9 +45,15 @@ import MDTypography from "src/components/MDTypography";
 import { CodeVerification } from "src/components/Form/CodeVerification";
 import axios from "axios";
 import { IApiResponse, baseApiUrl } from "src/api/baseApi";
-import { IVerificationEmail, IVerificationEmailRequest } from "src/api/userApi";
+import {
+    IVerificationEmail,
+    IVerificationEmailRequest,
+    useGetAccountQuery,
+} from "src/api/userApi";
 import { SetEmailVerificationAction } from "src/state/contexts/user/Actions";
 import Swal from "sweetalert2";
+import MDBox from "src/components/MDBox";
+import { getAppState } from "src/state/contexts/app/Selectors";
 
 function NavbarV2() {
     const navigate = useNavigate();
@@ -48,14 +63,31 @@ function NavbarV2() {
         openOverlay,
         openAccountModal,
         openVerifyEmailModal,
+        openSelectAddressModal,
+        addressId,
     } = useAppSelector(getCartState);
+
+    const { page } = useAppSelector(getAppState);
 
     const [emailVerificationAttempt, setEmailVerificationAttempt] =
         useState<number>(1);
     const [email, setEmail] = useState<string>(guestCheckout?.email ?? "");
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
+    const { data: account, isLoading: accountLoading } = useGetAccountQuery(
+        user?.id,
+        { skip: !user }
+    );
+
+    const defaultAddress = account?.addresses.filter((x) => x.main)[0];
+
     const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        if (defaultAddress) {
+            dispatch(SetAddressIdAction(defaultAddress.id));
+        }
+    }, [defaultAddress]);
 
     useEffect(() => {
         if (!user && guestCheckout?.email !== "") {
@@ -155,6 +187,80 @@ function NavbarV2() {
 
     return (
         <Box>
+            <MDModal
+                title="Saved shipping addresses"
+                open={openSelectAddressModal}
+                content={
+                    <MDBox mt={4}>
+                        <MDBox mb={1.5} lineHeight={0} display="inline-block">
+                            <MDTypography
+                                component="label"
+                                variant="button"
+                                color="text"
+                                fontWeight="regular"
+                            >
+                                Select address
+                            </MDTypography>
+                        </MDBox>
+                        {accountLoading ? (
+                            <CircularProgress size={16} />
+                        ) : (
+                            <FormControl
+                                fullWidth={true}
+                                variant="filled"
+                                size="medium"
+                            >
+                                <Select
+                                    labelId="saved-addresses"
+                                    value={addressId.toString()}
+                                    variant="standard"
+                                    label="Address"
+                                    onChange={(event: SelectChangeEvent) => {
+                                        dispatch(
+                                            SetAddressIdAction(
+                                                Number(event.target.value)
+                                            )
+                                        );
+                                        if (page === Page.Cart) {
+                                            dispatch(
+                                                OpenSelectAddressModalAction(
+                                                    false
+                                                )
+                                            );
+                                        }
+                                    }}
+                                >
+                                    {account?.addresses.map((address, idx) => (
+                                        <MenuItem key={idx} value={address.id}>
+                                            {address.line1} {address.city}{" "}
+                                            {address.postalCode}{" "}
+                                            {address.country} ({address.name})
+                                        </MenuItem>
+                                    ))}
+                                    <MenuItem value={0}>
+                                        Enter new address in checkout
+                                    </MenuItem>
+                                </Select>
+                            </FormControl>
+                        )}
+                        {page !== Page.Cart && (
+                            <Box mt={4}>
+                                <ActionButton
+                                    fullWidth={true}
+                                    text="Continue to Checkout"
+                                    onClick={() => {
+                                        dispatch(
+                                            OpenSelectAddressModalAction(false)
+                                        );
+                                        dispatch(ShowPageAction(Page.Cart));
+                                    }}
+                                />
+                            </Box>
+                        )}
+                    </MDBox>
+                }
+                onClose={() => dispatch(OpenSelectAddressModalAction(false))}
+            />
             <MDModal
                 title="Verify Email"
                 open={openVerifyEmailModal}

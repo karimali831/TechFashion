@@ -7,6 +7,7 @@ using api.Service;
 using api.Service.Ebay;
 using api.Service.Stripe;
 using CloudChef.Library.Services;
+using Microsoft.Identity.Client;
 
 namespace api
 {
@@ -38,6 +39,7 @@ namespace api
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IMailService, MailService>();
             services.AddScoped<IEmailVerificationService, EmailVerificationService>();
+            services.AddScoped<IAccountService, AccountService>();
 
             // Repositories
             services.AddScoped<IProductEFRepository, ProductEFRepository>();

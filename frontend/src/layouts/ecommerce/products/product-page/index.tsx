@@ -6,7 +6,7 @@ import ProductInfo from "../../../../layouts/ecommerce/products/product-page/com
 import dataTableData from "../../../../layouts/ecommerce/products/product-page/data/dataTableData";
 import MDBox from "../../../../components/MDBox";
 import DataTable from "src/layouts/table/DataTable";
-import { Icon, LinearProgress } from "@mui/material";
+import { Box, Icon, Skeleton } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
 import { getProductState } from "src/state/contexts/product/Selectors";
 import { useEffect } from "react";
@@ -32,9 +32,9 @@ function ProductPage(): JSX.Element {
         }
     }, [products]);
 
-    if (selectedProduct.length === 0 || isLoading) {
-        return <LinearProgress />;
-    }
+    // if (selectedProduct.length === 0 || isLoading) {
+    //     return <LinearProgress />;
+    // }
 
     return (
         <MDBox py={3} className="home">
@@ -54,11 +54,25 @@ function ProductPage(): JSX.Element {
 
                     <Grid container>
                         <Grid item xs={12} lg={6} xl={5}>
-                            <ProductImages />
+                            {isLoading ? (
+                                <Box>
+                                    <Skeleton
+                                        animation="wave"
+                                        width="100%"
+                                        height={200}
+                                        variant="rounded"
+                                    />
+                                </Box>
+                            ) : (
+                                <ProductImages />
+                            )}
                         </Grid>
 
                         <Grid item xs={12} lg={5} sx={{ mx: "auto" }}>
-                            <ProductInfo item={selectedProduct} />
+                            <ProductInfo
+                                item={selectedProduct}
+                                loading={isLoading}
+                            />
                         </Grid>
                     </Grid>
 

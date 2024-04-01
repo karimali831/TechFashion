@@ -14,7 +14,12 @@ const SetGuestCheckoutAction = createAction<IGuestCheckout | null>(
 const UpdatingProductIdAction = createAction<number | null>(
     "@@Cart/UpdatingProductId"
 );
+const OpenSelectAddressModalAction = createAction<boolean>(
+    "@@Cart/OpenSelectAddressModal"
+);
 const ResetGuestCheckoutAction = createAction("@@Cart/ResetGuestCheckout");
+
+const SetAddressIdAction = createAction<number>("@@Cart/SetAddressId");
 
 export {
     OpenCartOverlayAction,
@@ -23,4 +28,6 @@ export {
     ResetGuestCheckoutAction,
     UpdatingProductIdAction,
     OpenVerifyEmailModalAction,
+    OpenSelectAddressModalAction,
+    SetAddressIdAction,
 };

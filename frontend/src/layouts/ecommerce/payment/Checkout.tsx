@@ -7,23 +7,28 @@ import {
 import React, { useState } from "react";
 import { ClipLoader } from "react-spinners";
 import PaymentIcon from "@mui/icons-material/Payment";
-import { Box, Button } from "@mui/material";
+import { Alert, Box, Button, Typography } from "@mui/material";
 import MDTypography from "src/components/MDTypography";
 import { StripePaymentElementChangeEvent } from "@stripe/stripe-js";
 import { baseWebUrl } from "src/api/baseApi";
 import { CheckoutProps } from ".";
+import { useAppDispatch } from "src/state/Hooks";
+import { OpenSelectAddressModalAction } from "src/state/contexts/cart/Actions";
 
 export const Checkout = ({
     guestEmail,
     clientSecret,
     total,
+    address,
 }: CheckoutProps) => {
-    const [, setError] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const [processing, setProcessing] = useState<boolean>();
     const [disabled, setDisabled] = useState<boolean>(true);
 
     const stripe = useStripe();
     const elements = useElements();
+
+    const dispatch = useAppDispatch();
 
     if (!stripe || !elements) return null;
 
@@ -63,92 +68,107 @@ export const Checkout = ({
             style={{ width: "100%" }}
         >
             <Box>
-                <Box>
-                    {/* <LinkAuthenticationElement
-                    // Optional prop for prefilling customer information
-                    options={{
-                        defaultValues: {
-                            email: guestCheckout.email,
-                        },
-                    }}
-                    // onChange={(event) => {
-                    //     setEmail(event.value.email);
-                    // }}
-                /> */}
-                    {guestEmail && (
-                        <MDTypography variant="text" fontWeight="regular">
-                            {guestEmail}
-                        </MDTypography>
-                    )}
-                    <MDTypography mt={2} mb={1} variant="h6">
-                        Shipping
+                {guestEmail && (
+                    <MDTypography variant="text" fontWeight="regular">
+                        {guestEmail}
                     </MDTypography>
+                )}
+                <MDTypography mt={2} mb={2} variant="h6" display="flex">
+                    Shipping address
+                    {!guestEmail && (
+                        <Box
+                            sx={{ ml: 1 }}
+                            onClick={() =>
+                                dispatch(OpenSelectAddressModalAction(true))
+                            }
+                        >
+                            <Typography className="standard-text link">
+                                (change)
+                            </Typography>
+                        </Box>
+                    )}
+                </MDTypography>
+                {address ? (
+                    <Box>
+                        <Typography className="standard-text">
+                            {address.name}
+                        </Typography>
+                        <Typography className="standard-text">
+                            {address.line1}
+                        </Typography>
+                        <Typography className="standard-text">
+                            {address.city}
+                        </Typography>
+                        <Typography className="standard-text">
+                            {address.postalCode}, {address.country}
+                        </Typography>
+                    </Box>
+                ) : (
                     <AddressElement
                         options={{
                             mode: "shipping",
                             allowedCountries: ["UK"],
                             // defaultValues: {
-                            //     name: user?.name ?? guestCheckout.name,
-                            //     address: { country: "UK" },
+                            //     name: address?.name ?? "",
+                            //     address: {
+                            //         line1: address?.line1 ?? "",
+                            //         line2: address?.line2 ?? "",
+                            //         city: address?.city ?? "",
+                            //         postal_code: address?.postalCode ?? "",
+                            //         country: address?.country,
+                            //     },
                             // },
                         }}
                     />
-                    <MDTypography mt={2} mb={1} variant="h6">
-                        Payment
-                    </MDTypography>
-                    <PaymentElement
-                        id="payment-element"
-                        onChange={handleChange}
-                        options={{
-                            defaultValues: {
-                                billingDetails: {
-                                    name: "John Doe",
-                                    phone: "888-888-8888",
-                                    address: {
-                                        postal_code: "10001",
-                                        country: "US",
-                                    },
-                                },
-                            },
-                        }}
-                    />
+                )}
+                <MDTypography mt={4} mb={2} variant="h6">
+                    Payment details
+                </MDTypography>
+                <PaymentElement id="payment-element" onChange={handleChange} />
+            </Box>
+            {error && (
+                <Box mt={1}>
+                    <Alert severity="error">
+                        <Typography className="standard-text">
+                            {error}
+                        </Typography>
+                    </Alert>
                 </Box>
-                {/* {error && <Alert severity="error">{error}</Alert>} */}
-                <Box>
-                    <Box
-                        display="flex"
-                        justifyContent="space-between"
-                        alignItems="align"
-                        sx={{
-                            mt: 3,
-                        }}
-                    >
-                        <MDTypography>Total</MDTypography>
-                        <MDTypography>{total}</MDTypography>
-                    </Box>
+            )}
+            <Box>
+                <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="align"
+                    sx={{
+                        mt: 3,
+                    }}
+                >
+                    <MDTypography>Total</MDTypography>
+                    <MDTypography>{total}</MDTypography>
+                </Box>
 
-                    <Button
-                        sx={{ mt: 1 }}
-                        type="submit"
-                        disabled={processing || disabled}
-                        variant="contained"
-                        color="primary"
-                        fullWidth={true}
-                        startIcon={
-                            processing ? (
-                                <ClipLoader
-                                    color="white"
-                                    size={10}
-                                    speedMultiplier={0.5}
-                                />
-                            ) : (
-                                <PaymentIcon />
-                            )
-                        }
-                    >
-                        {processing ? "Submitting" : "Pay Now"}
-                    </Button>
-                </Box>
+                <Button
+                    sx={{ mt: 1 }}
+                    type="submit"
+                    disabled={processing || disabled}
+                    variant="contained"
+                    color="primary"
+                    fullWidth={true}
+                    startIcon={
+                        processing ? (
+                            <ClipLoader
+                                color="white"
+                                size={10}
+                                speedMultiplier={0.5}
+                            />
+                        ) : (
+                            <PaymentIcon />
+                        )
+                    }
+                >
+                    {processing ? "Submitting" : "Pay Now"}
+                </Button>
             </Box>
         </form>
     );

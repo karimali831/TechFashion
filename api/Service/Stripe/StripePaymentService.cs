@@ -10,8 +10,11 @@ namespace api.Service.Stripe
     public interface IStripePaymentService
     {
         Task<int> AddAsync(StripePayment model);
-        Task<PaymentIntentResponse> CreateIntentAsync(User user, int cartId,
-            StripeCoupon? coupon = null, string? promoCode = null);
+        Task<PaymentIntentResponse> CreateIntentAsync(User user,
+            int cartId,
+            int? addressId = null,
+            StripeCoupon? coupon = null,
+            string? promoCode = null);
     }
 
     public class StripePaymentService(
@@ -27,7 +30,11 @@ namespace api.Service.Stripe
             return await _stripePaymentRepository.AddAsync(model);
         }
 
-        public async Task<PaymentIntentResponse> CreateIntentAsync(User user, int cartId, StripeCoupon? coupon = null, string? promoCode = null)
+        public async Task<PaymentIntentResponse> CreateIntentAsync(User user,
+            int cartId,
+            int? addressId = null,
+            StripeCoupon? coupon = null,
+            string? promoCode = null)
         {
             decimal discountedAmount = 0;
 
@@ -59,6 +66,13 @@ namespace api.Service.Stripe
                 {
                     { "CartId", cartId.ToString() }
                 };
+
+                // AddressId will be null when an address from local db
+                // is not selected in PaymentElement
+                if (addressId.HasValue)
+                {
+                    metaData.Add("AddressId", addressId.Value.ToString());
+                }
 
                 if (promoCode is not null)
                 {

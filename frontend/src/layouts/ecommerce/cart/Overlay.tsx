@@ -13,6 +13,7 @@ import { getCartState } from "src/state/contexts/cart/Selectors";
 import {
     OpenCartAccountModalAction,
     OpenCartOverlayAction,
+    OpenSelectAddressModalAction,
     OpenVerifyEmailModalAction,
     UpdatingProductIdAction,
 } from "src/state/contexts/cart/Actions";
@@ -20,6 +21,7 @@ import { getUserState } from "src/state/contexts/user/Selectors";
 import { Page } from "src/enum/Page";
 import { ShowPageAction } from "src/state/contexts/app/Actions";
 import { ProductQuantity } from "../quantity";
+import { useGetAccountQuery } from "src/api/userApi";
 
 interface IProps {
     isOverlay: boolean;
@@ -37,6 +39,11 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
         guestCheckoutId: guestCheckout?.id,
     });
     const { data: products, isLoading: loadingProducts } = useGetProductQuery();
+
+    const { data: account, isLoading: accountLoading } = useGetAccountQuery(
+        user?.id,
+        { skip: !user }
+    );
 
     const itemsInCart: ICartProductDetail[] = cart?.products ?? [];
 
@@ -58,7 +65,11 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
         dispatch(OpenCartOverlayAction(false));
 
         if (verificationEmail.verified) {
-            dispatch(ShowPageAction(Page.Cart));
+            if (account?.addresses.length > 0) {
+                dispatch(OpenSelectAddressModalAction(true));
+            } else {
+                dispatch(ShowPageAction(Page.Cart));
+            }
         } else if (user && !verificationEmail.verified) {
             dispatch(OpenVerifyEmailModalAction(true));
         } else {
@@ -74,7 +85,7 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
 
     return (
         <Box display="flex" flexDirection="column" height="100%">
-            {loadingProducts ? (
+            {loadingProducts || accountLoading ? (
                 <Box>
                     <MDTypography>
                         <h2>Your cart</h2>

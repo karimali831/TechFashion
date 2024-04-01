@@ -1,4 +1,4 @@
-import { Box, Fade, LinearProgress } from "@mui/material";
+import { Box, Fade, Skeleton } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Icon from "@mui/material/Icon";
 import isEqual from "lodash.isequal";
@@ -10,7 +10,6 @@ import {
 } from "src/api/cartApi";
 import { useGetProductQuery } from "src/api/productApi";
 import { ActionButton } from "src/components/Buttons/ActionButton";
-import MDAlert from "src/components/MDAlert";
 import MDBadge from "src/components/MDBadge";
 import MDBox from "src/components/MDBox";
 import MDTypography from "src/components/MDTypography";
@@ -26,6 +25,7 @@ import { getUserState } from "src/state/contexts/user/Selectors";
 
 interface IProps {
     item: IProductDetail[];
+    loading: boolean;
 }
 
 interface IProductVariableUnavailable {
@@ -33,7 +33,7 @@ interface IProductVariableUnavailable {
     text: string;
 }
 
-function ProductInfo({ item }: IProps): JSX.Element {
+function ProductInfo({ item, loading }: IProps): JSX.Element {
     const [quantity, setQuantity] = useState<number>(1);
     const [variations, setVariations] = useState<IVariant[]>([]);
     const [productVariantUnavailable, setProductVariantUnavailable] =
@@ -55,8 +55,8 @@ function ProductInfo({ item }: IProps): JSX.Element {
 
     const dispatch = useAppDispatch();
 
-    const variants = products.variants.filter(
-        (x) => x.productId === item[0].id
+    const variants = products?.variants.filter(
+        (x) => x.productId === item[0]?.id
     );
 
     const itemsInCart: ICartProductDetail[] = cart?.products ?? [];
@@ -76,7 +76,7 @@ function ProductInfo({ item }: IProps): JSX.Element {
 
     useEffect(() => {
         setVariations(
-            variants.map((x) => {
+            variants?.map((x) => {
                 return {
                     attribute: x.attribute,
                     value: x.options[0],
@@ -148,7 +148,7 @@ function ProductInfo({ item }: IProps): JSX.Element {
                 },
                 quantity,
                 productId: product.id,
-                variantId: product?.variantId,
+                variantId: product.variantId,
             })
                 .unwrap()
                 .then((payload) => {
@@ -191,8 +191,8 @@ function ProductInfo({ item }: IProps): JSX.Element {
         setQuantity(value);
     };
 
-    if (!product || (product.variantId && variations.length === 0))
-        return <LinearProgress />;
+    // if (!product || (product.variantId && variations.length === 0))
+    //     return <LinearProgress />;
 
     return (
         <Fade
@@ -206,10 +206,29 @@ function ProductInfo({ item }: IProps): JSX.Element {
         >
             <MDBox>
                 <MDBox mb={1}>
-                    <MDTypography variant="h3" fontWeight="bold">
-                        {product.title}
-                    </MDTypography>
+                    {loading ? (
+                        <Box>
+                            <Skeleton
+                                animation="wave"
+                                width="100%"
+                                height={25}
+                                variant="rectangular"
+                            />
+                            <Skeleton
+                                animation="pulse"
+                                width="50%"
+                                height={20}
+                                style={{ marginTop: 5 }}
+                                variant="rounded"
+                            />
+                        </Box>
+                    ) : (
+                        <MDTypography variant="h3" fontWeight="bold">
+                            {product?.title}
+                        </MDTypography>
+                    )}
                 </MDBox>
+
                 <MDTypography variant="h4" color="text">
                     <Icon>star</Icon>
                     <Icon>star</Icon>
@@ -223,13 +242,22 @@ function ProductInfo({ item }: IProps): JSX.Element {
                     </MDTypography>
                 </MDBox>
                 <MDBox mb={1}>
-                    <MDTypography variant="h5" fontWeight="medium">
-                        {product.priceStr}
-                    </MDTypography>
+                    {loading ? (
+                        <Skeleton
+                            animation="pulse"
+                            width="25%"
+                            height={20}
+                            variant="rectangular"
+                        />
+                    ) : (
+                        <MDTypography variant="h5" fontWeight="medium">
+                            {product?.priceStr}
+                        </MDTypography>
+                    )}
                 </MDBox>
-                {!!productVariantUnavailable &&
-                productVariantUnavailable.reason !==
-                    "quantity-exceeds-stock" ? (
+                {loading ? null : !!productVariantUnavailable &&
+                  productVariantUnavailable.reason !==
+                      "quantity-exceeds-stock" ? (
                     <MDBadge
                         variant="contained"
                         color="error"
@@ -259,29 +287,39 @@ function ProductInfo({ item }: IProps): JSX.Element {
                         unmountOnExit={true}
                     >
                         <Box>
-                            {variants.map((variant, idx) => {
-                                const selectedVariant = variations.filter(
-                                    (x) => x.attribute === variant.attribute
-                                )[0]?.value;
+                            {loading ? (
+                                <Skeleton
+                                    width={"75%"}
+                                    height={100}
+                                    animation="pulse"
+                                    variant="rounded"
+                                />
+                            ) : (
+                                variants?.map((variant, idx) => {
+                                    const selectedVariant = variations.filter(
+                                        (x) => x.attribute === variant.attribute
+                                    )[0]?.value;
 
-                                return (
-                                    <Grid key={idx} item xs={12} lg={5}>
-                                        <Variant
-                                            selected={selectedVariant}
-                                            variant={variant}
-                                            onClick={(value) => {
-                                                updateVariant(
-                                                    variant.attribute,
-                                                    value
-                                                );
-                                            }}
-                                        />
-                                    </Grid>
-                                );
-                            })}
-
-                            <MDBox mb={1} mt={3} lineHeight={0}>
-                                {productVariantUnavailable && (
+                                    return (
+                                        <Grid key={idx} item xs={12} lg={5}>
+                                            <Variant
+                                                selected={selectedVariant}
+                                                variant={variant}
+                                                onClick={(value) => {
+                                                    updateVariant(
+                                                        variant.attribute,
+                                                        value
+                                                    );
+                                                }}
+                                            />
+                                        </Grid>
+                                    );
+                                })
+                            )}
+                            {!loading && (
+                                <Box>
+                                    <MDBox mb={1} mt={4} lineHeight={0}>
+                                        {/* {productVariantUnavailable && (
                                     <Fade
                                         timeout={500}
                                         in={true}
@@ -297,88 +335,97 @@ function ProductInfo({ item }: IProps): JSX.Element {
                                             </MDAlert>
                                         </Box>
                                     </Fade>
-                                )}
-                                <MDTypography
-                                    component="label"
-                                    variant="button"
-                                    color="text"
-                                    fontWeight="regular"
-                                >
-                                    Quantity{" "}
-                                    {itemInCart &&
-                                        `(${itemInCart.quantity} in cart)`}
-                                </MDTypography>
-                            </MDBox>
+                                )} */}
+                                        <MDTypography
+                                            component="label"
+                                            variant="button"
+                                            color="text"
+                                            fontWeight="regular"
+                                        >
+                                            Quantity{" "}
+                                            {itemInCart &&
+                                                `(${itemInCart.quantity} in cart)`}
+                                        </MDTypography>
+                                    </MDBox>
 
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "space-evenly",
-                                    border: "1px solid darkgrey",
-                                    width: 150,
-                                    height: 47,
-                                    borderRadius: 0,
-                                }}
-                            >
-                                <Icon
-                                    style={{
-                                        color: quantity === 1 ? "#333" : "#000",
-                                        cursor: quantity !== 1 && "pointer",
-                                    }}
-                                    onClick={() => {
-                                        if (quantity == 1) return;
-                                        updateQuantity(quantity - 1);
-                                    }}
-                                >
-                                    remove
-                                </Icon>
-                                <Box>
-                                    <input
-                                        type="number"
-                                        style={{
-                                            position: "relative",
-                                            width: 40,
-                                            border: 0,
-                                            outline: 0,
-                                            fontSize: 20,
-                                            marginBottom: 6,
-                                            marginRight: 6,
-                                            textAlign: "center",
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "space-evenly",
+                                            border: "1px solid darkgrey",
+                                            width: 150,
+                                            height: 47,
+                                            borderRadius: 0,
                                         }}
-                                        // disabled={!!updatingProductId}
-                                        value={quantity}
-                                        onChange={(
-                                            e: React.ChangeEvent<HTMLInputElement>
-                                        ) => {
-                                            const value = Number(
-                                                e.target.value
-                                            );
-                                            if (value === 0) return;
-                                            updateQuantity(value);
-                                        }}
-                                    />
+                                    >
+                                        <Icon
+                                            style={{
+                                                color:
+                                                    quantity === 1
+                                                        ? "#333"
+                                                        : "#000",
+                                                cursor:
+                                                    quantity !== 1 && "pointer",
+                                            }}
+                                            onClick={() => {
+                                                if (quantity == 1) return;
+                                                updateQuantity(quantity - 1);
+                                            }}
+                                        >
+                                            remove
+                                        </Icon>
+                                        <Box>
+                                            <input
+                                                type="number"
+                                                style={{
+                                                    position: "relative",
+                                                    width: 40,
+                                                    border: 0,
+                                                    outline: 0,
+                                                    fontSize: 20,
+                                                    marginBottom: 6,
+                                                    marginRight: 6,
+                                                    textAlign: "center",
+                                                }}
+                                                // disabled={!!updatingProductId}
+                                                value={quantity}
+                                                onChange={(
+                                                    e: React.ChangeEvent<HTMLInputElement>
+                                                ) => {
+                                                    const value = Number(
+                                                        e.target.value
+                                                    );
+                                                    if (value === 0) return;
+                                                    updateQuantity(value);
+                                                }}
+                                            />
+                                        </Box>
+                                        <Icon
+                                            sx={{
+                                                cursor: "pointer",
+                                            }}
+                                            onClick={() => {
+                                                updateQuantity(quantity + 1);
+                                            }}
+                                        >
+                                            add
+                                        </Icon>
+                                    </Box>
                                 </Box>
-                                <Icon
-                                    sx={{
-                                        cursor: "pointer",
-                                    }}
-                                    onClick={() => {
-                                        updateQuantity(quantity + 1);
-                                    }}
-                                >
-                                    add
-                                </Icon>
-                            </Box>
+                            )}
                         </Box>
                     </Fade>
                 </MDBox>
 
                 <MDBox mt={2}>
-                    <Grid item xs={12} lg={5} container>
+                    <Grid item xs={12} lg={6} container>
                         <ActionButton
+                            width={150}
                             disabled={
-                                quantity === 0 || !!productVariantUnavailable
+                                quantity === 0 ||
+                                !!productVariantUnavailable ||
+                                loading
                             }
                             loading={adding}
                             text={
@@ -391,16 +438,48 @@ function ProductInfo({ item }: IProps): JSX.Element {
                     </Grid>
                 </MDBox>
                 <MDBox mt={4}>
-                    <MDBox color="text" fontSize="1.25rem" lineHeight={1}>
-                        <MDTypography
-                            variant="body2"
-                            color="text"
-                            fontWeight="regular"
-                            verticalAlign="middle"
-                        >
-                            {product.description}
-                        </MDTypography>
-                    </MDBox>
+                    {loading ? (
+                        <Box>
+                            <Skeleton
+                                animation="pulse"
+                                width="100%"
+                                height={15}
+                                variant="rectangular"
+                            />
+                            <Skeleton
+                                animation="pulse"
+                                width="100%"
+                                height={15}
+                                style={{ marginTop: 2 }}
+                                variant="rectangular"
+                            />
+                            <Skeleton
+                                animation="pulse"
+                                width="100%"
+                                height={15}
+                                style={{ marginTop: 2 }}
+                                variant="rectangular"
+                            />
+                            <Skeleton
+                                animation="pulse"
+                                width="100%"
+                                height={15}
+                                style={{ marginTop: 2 }}
+                                variant="rectangular"
+                            />
+                        </Box>
+                    ) : (
+                        <MDBox color="text" fontSize="1.25rem" lineHeight={1}>
+                            <MDTypography
+                                variant="body2"
+                                color="text"
+                                fontWeight="regular"
+                                verticalAlign="middle"
+                            >
+                                {product?.description}
+                            </MDTypography>
+                        </MDBox>
+                    )}
                 </MDBox>
             </MDBox>
         </Fade>

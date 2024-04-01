@@ -2,17 +2,20 @@ using api.Data;
 using api.Dto;
 using api.Service;
 using Microsoft.AspNetCore.Mvc;
-using RestSharp.Extensions;
 
 namespace api.Controllers
 {
     [Route("api/user")]
     [ApiController]
     public class UserController(
+        IHub sentryHub,
         IUserService userService,
+        ICustomerAddressService customerAddressService,
         IEmailVerificationService emailVerificationService) : ControllerBase
     {
+        private readonly IHub _sentryHub = sentryHub;
         private readonly IUserService _userService = userService;
+        private readonly ICustomerAddressService _customerAddressService = customerAddressService;
         private readonly IEmailVerificationService _emailVerificationService = emailVerificationService;
 
 
@@ -27,6 +30,20 @@ namespace api.Controllers
         public async Task<IActionResult> Create([FromBody] CreateUsertDto dto)
         {
             var response = await _userService.CreateAsync(dto);
+            return Ok(response);
+        }
+
+        [HttpPost("AddOrUpdateAddress")]
+        public async Task<IActionResult> AddOrUpdateAddress([FromBody] CustomerAddress dto)
+        {
+            var response = await _customerAddressService.AddOrUpdateAddress(dto);
+            return Ok(response);
+        }
+
+        [HttpGet("DeleteAddress/{id}")]
+        public async Task<IActionResult> DeleteAddress(int id)
+        {
+            var response = await _customerAddressService.DeleteAsync(id);
             return Ok(response);
         }
 
@@ -99,6 +116,25 @@ namespace api.Controllers
         {
             var result = await _emailVerificationService.VerifyAsync(dto.Email, dto.Code);
             return Ok(result);
+        }
+
+        [HttpGet("/person/{id}")]
+        public IActionResult Person(string id)
+        {
+            var childSpan = _sentryHub.GetSpan()?.StartChild("additional-work");
+            try
+            {
+                // Do the work that gets measured.
+
+                childSpan?.Finish(SpanStatus.Ok);
+            }
+            catch (Exception e)
+            {
+                childSpan?.Finish(e);
+                throw;
+            }
+
+            return Ok();
         }
     }
 }

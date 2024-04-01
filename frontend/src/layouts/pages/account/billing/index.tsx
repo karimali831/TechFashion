@@ -6,10 +6,16 @@ import BillingInformation from "src/layouts/pages/account/billing/components/Bil
 import Transactions from "src/layouts/pages/account/billing/components/Transactions";
 import MasterCard from "src/components/Cards/MasterCard";
 import DefaultInfoCard from "src/components/Cards/DefaultInfoCard";
-import { Box, Button, Icon, LinearProgress } from "@mui/material";
+import {
+    Box,
+    Button,
+    Fade,
+    Icon,
+    LinearProgress,
+    Typography,
+} from "@mui/material";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
 import { SignOutAction } from "src/state/contexts/user/Actions";
-import { useGetOrderHistoryQuery } from "src/api/cartApi";
 import { getUserState } from "src/state/contexts/user/Selectors";
 import DataTable from "src/layouts/table/DataTable";
 import StatusCell from "src/layouts/ecommerce/orders/order-list/components/StatusCell";
@@ -17,8 +23,12 @@ import { OrderStatus } from "src/enum/OrderStatus";
 import DefaultCell from "src/layouts/ecommerce/orders/order-list/components/DefaultCell";
 import IdCell2 from "src/layouts/ecommerce/orders/order-list/components/IdCell2";
 import { IOrderHistory } from "src/data/IOrderHistory";
-import { ShowPageWithParamsAction } from "src/state/contexts/app/Actions";
+import {
+    ShowPageAction,
+    ShowPageWithParamsAction,
+} from "src/state/contexts/app/Actions";
 import { Page } from "src/enum/Page";
+import { useGetAccountQuery } from "src/api/userApi";
 
 const columns = [
     {
@@ -73,12 +83,15 @@ function Billing(): JSX.Element {
 
     const { user } = useAppSelector(getUserState);
 
-    const { data: orderHistory, isLoading: orderHistoryLoading } =
-        useGetOrderHistoryQuery(user.id);
+    const { data: account, isLoading: accountLoading } = useGetAccountQuery(
+        user.id
+    );
 
-    if (orderHistoryLoading) {
+    if (accountLoading) {
         return <LinearProgress />;
     }
+
+    const defaultAddress = account.addresses.filter((x) => x.main)[0];
 
     return (
         <MDBox mt={4} className="home">
@@ -99,34 +112,87 @@ function Billing(): JSX.Element {
                     Log out
                 </span>
             </Box>
-            <Box mt={5}>
-                <h2>Order history</h2>
-                <Box mt={1}>
-                    {orderHistory.length === 0 ? (
-                        <span>You haven't placed any orders yet.</span>
-                    ) : (
-                        <Box>
-                            <DataTable<IOrderHistory>
-                                table={{
-                                    columns,
-                                    rows: orderHistory,
-                                }}
-                                entriesPerPage={false}
-                                canSearch
-                                loading={orderHistoryLoading}
-                                onRowClick={(order) =>
-                                    dispatch(
-                                        ShowPageWithParamsAction({
-                                            page: Page.Order,
-                                            primaryId: order.id.toString(),
-                                        })
-                                    )
-                                }
-                            />
+            <Grid container mt={5} spacing={2}>
+                <Fade
+                    in={true}
+                    mountOnEnter={true}
+                    unmountOnExit={true}
+                    timeout={500}
+                >
+                    <Grid item xl={9} md={12} xs={12}>
+                        <h2>Order history</h2>
+                        <Box mt={1}>
+                            {account.orders.length === 0 ? (
+                                <span>You haven't placed any orders yet.</span>
+                            ) : (
+                                <Box>
+                                    <DataTable<IOrderHistory>
+                                        table={{
+                                            columns,
+                                            rows: account.orders,
+                                        }}
+                                        entriesPerPage={false}
+                                        canSearch
+                                        loading={accountLoading}
+                                        onRowClick={(order) =>
+                                            dispatch(
+                                                ShowPageWithParamsAction({
+                                                    page: Page.Order,
+                                                    primaryId:
+                                                        order.ref.toString(),
+                                                })
+                                            )
+                                        }
+                                    />
+                                </Box>
+                            )}
                         </Box>
-                    )}
-                </Box>
-            </Box>
+                    </Grid>
+                </Fade>
+                <Fade
+                    in={true}
+                    mountOnEnter={true}
+                    unmountOnExit={true}
+                    timeout={500}
+                    style={{
+                        transitionDelay: "250ms",
+                    }}
+                >
+                    <Grid item xl={3} md={12} xs={12}>
+                        <h2>Account details</h2>
+                        <Box mt={1} display="flex" flexDirection="column">
+                            <Typography className="standard-text">
+                                {defaultAddress.name}
+                            </Typography>
+                            <Typography className="standard-text">
+                                {defaultAddress.line1}
+                            </Typography>
+                            <Typography className="standard-text">
+                                {defaultAddress.line2}
+                            </Typography>
+                            <Typography className="standard-text">
+                                {defaultAddress.city}
+                            </Typography>
+                            <Typography className="standard-text">
+                                {defaultAddress.postalCode}
+                            </Typography>
+                            <Typography className="standard-text">
+                                {defaultAddress.country}
+                            </Typography>
+                        </Box>
+                        <Box mt={2}>
+                            <Typography
+                                className="standard-text link"
+                                onClick={() =>
+                                    dispatch(ShowPageAction(Page.Addresses))
+                                }
+                            >
+                                View addresses ({account.addresses.length})
+                            </Typography>
+                        </Box>
+                    </Grid>
+                </Fade>
+            </Grid>
         </MDBox>
     );
 
