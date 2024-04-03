@@ -36,14 +36,13 @@ namespace api.Service
 
             foreach (var item in orderedItems.Where(x => x.Stock is not null))
             {
-                if (item.VariantId is null)
+                if (item.VariantId.HasValue)
                 {
-
-                    await _productRepository.UpdateStockAsync(item.ProductId, item.Quantity);
+                    await _productVariantRepository.UpdateStockAsync(item.VariantId.Value, item.Quantity);
                 }
                 else
                 {
-                    await _productVariantRepository.UpdateStockAsync(item.ProductId, item.Quantity);
+                    await _productRepository.UpdateStockAsync(item.ProductId, item.Quantity);
                 }
             }
 

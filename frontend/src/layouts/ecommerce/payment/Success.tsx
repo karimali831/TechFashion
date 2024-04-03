@@ -1,4 +1,4 @@
-import { Alert, Card, CircularProgress } from "@mui/material";
+import { Alert, CircularProgress } from "@mui/material";
 import { useEffect } from "react";
 import { baseWebUrl } from "src/api/baseApi";
 import { useGetOrderQuery } from "src/api/orderApi";
