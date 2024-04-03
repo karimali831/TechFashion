@@ -1,6 +1,6 @@
 import { LinearProgress } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { useGetAccountQuery } from "src/api/userApi";
+import { useAccountDetailsQuery } from "src/api/userApi";
 import MDBox from "src/components/MDBox";
 import { Page } from "src/enum/Page";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
@@ -17,7 +17,7 @@ export const AccountOrder = () => {
 
     const dispatch = useAppDispatch();
 
-    const { data: account, isLoading: accountLoading } = useGetAccountQuery(
+    const { data: account, isLoading: accountLoading } = useAccountDetailsQuery(
         user?.id,
         {
             skip: !user,

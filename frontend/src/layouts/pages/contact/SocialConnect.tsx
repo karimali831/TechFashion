@@ -29,8 +29,8 @@ const connectData: Connect[] = [
 const SocialConnect = (): JSX.Element => {
     return (
         <div className="connect">
-            {connectData.map((chan) => (
-                <div className="channel">
+            {connectData.map((chan, idx) => (
+                <div className="channel" key={idx}>
                     <i>{chan.icon}</i>
                     <p>
                         {chan.title}: <br /> <strong>{chan.value}</strong>

@@ -13,6 +13,7 @@ import {
 
 import { cartApi } from "src/api/cartApi";
 import { productApi } from "src/api/productApi";
+import { orderApi } from "src/api/orderApi";
 import storage from "redux-persist/lib/storage";
 import { userApi } from "src/api/userApi";
 import createSagaMiddleware from "redux-saga";
@@ -60,6 +61,7 @@ export const store = configureStore({
             cartApi.middleware,
             productApi.middleware,
             userApi.middleware,
+            orderApi.middleware,
         ]),
 });
 

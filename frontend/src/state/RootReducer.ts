@@ -6,6 +6,7 @@ import { productReducer } from "./contexts/product/Reducer";
 import { userReducer } from "./contexts/user/Reducer";
 import { userApi } from "src/api/userApi";
 import { appReducer } from "./contexts/app/Reducer";
+import { orderApi } from "src/api/orderApi";
 
 const rootReducer = combineReducers({
     app: appReducer,
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
     [cartApi.reducerPath]: cartApi.reducer,
     [productApi.reducerPath]: productApi.reducer,
     [userApi.reducerPath]: userApi.reducer,
+    [orderApi.reducerPath]: orderApi.reducer,
 });
 
 export default rootReducer;

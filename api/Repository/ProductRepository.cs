@@ -7,11 +7,14 @@ namespace api.Repository
     {
         Task<IList<ProductDetail>> GetAllAsync();
         Task<IList<ProductCatalogue>> GetCatalogueAsync();
+        Task UpdateStockAsync(int id, int quantity);
     }
 
     public class ProductRepository(IConfiguration configuration) : DapperBaseRepository(configuration),
         IProductRepository
     {
+        private const string Table = "Products";
+
         public async Task<IList<ProductCatalogue>> GetCatalogueAsync()
         {
             const string sqlTxt = $@"
@@ -80,6 +83,11 @@ namespace api.Repository
 
             return (await QueryAsync<ProductDetail>(sqlTxt)).ToList();
             ;
+        }
+
+        public async Task UpdateStockAsync(int id, int quantity)
+        {
+            await ExecuteAsync($"UPDATE {Table} SET Stock = Stock - @quantity WHERE Id = @id AND Stock IS NOT NULL", new { id, quantity });
         }
     }
 }

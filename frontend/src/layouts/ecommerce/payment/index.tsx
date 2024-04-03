@@ -8,7 +8,7 @@ import { getCartState } from "src/state/contexts/cart/Selectors";
 import { useCreatePaymentIntentQuery, useGetCartQuery } from "src/api/cartApi";
 import { getUserState } from "src/state/contexts/user/Selectors";
 import { ICustomerAddress } from "src/data/ICustomerAddress";
-import { useGetAccountQuery } from "src/api/userApi";
+import { useAccountDetailsQuery } from "src/api/userApi";
 
 const stripePromise = loadStripe(
     "pk_test_51MF29cB4n2CpwCrekms5MYYiKzNBOpA20kCPNvON4clMPEwh84j1Mv5rljEj1VHEAUGL9moIjteZZpIcmymsggYw00cJJfvH2O"
@@ -65,7 +65,7 @@ export const Payment = () => {
         guestCheckoutId: guestCheckout?.id,
     });
 
-    const { data: account, isLoading: accountLoading } = useGetAccountQuery(
+    const { data: account, isLoading: accountLoading } = useAccountDetailsQuery(
         user?.id,
         { skip: !user }
     );

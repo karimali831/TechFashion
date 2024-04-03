@@ -10,13 +10,23 @@ namespace api.Controllers
     public class UserController(
         IHub sentryHub,
         IUserService userService,
+        IAccountService accountService,
         ICustomerAddressService customerAddressService,
         IEmailVerificationService emailVerificationService) : ControllerBase
     {
         private readonly IHub _sentryHub = sentryHub;
         private readonly IUserService _userService = userService;
+        private readonly IAccountService _accountService = accountService;
         private readonly ICustomerAddressService _customerAddressService = customerAddressService;
         private readonly IEmailVerificationService _emailVerificationService = emailVerificationService;
+
+
+        [HttpGet("AccountDetails/{userId}")]
+        public async Task<IActionResult> AccountDetails(int userId)
+        {
+            var account = await _accountService.GetAsync(userId);
+            return Ok(account);
+        }
 
 
         [HttpPost("Get")]

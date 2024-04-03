@@ -28,7 +28,7 @@ import {
     ShowPageWithParamsAction,
 } from "src/state/contexts/app/Actions";
 import { Page } from "src/enum/Page";
-import { useGetAccountQuery } from "src/api/userApi";
+import { useAccountDetailsQuery } from "src/api/userApi";
 
 const columns = [
     {
@@ -83,7 +83,7 @@ function Billing(): JSX.Element {
 
     const { user } = useAppSelector(getUserState);
 
-    const { data: account, isLoading: accountLoading } = useGetAccountQuery(
+    const { data: account, isLoading: accountLoading } = useAccountDetailsQuery(
         user.id
     );
 

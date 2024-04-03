@@ -48,7 +48,7 @@ import { IApiResponse, baseApiUrl } from "src/api/baseApi";
 import {
     IVerificationEmail,
     IVerificationEmailRequest,
-    useGetAccountQuery,
+    useAccountDetailsQuery,
 } from "src/api/userApi";
 import { SetEmailVerificationAction } from "src/state/contexts/user/Actions";
 import Swal from "sweetalert2";
@@ -71,7 +71,7 @@ function NavbarV2() {
     const [email, setEmail] = useState<string>(guestCheckout?.email ?? "");
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
-    const { data: account, isLoading: accountLoading } = useGetAccountQuery(
+    const { data: account, isLoading: accountLoading } = useAccountDetailsQuery(
         user?.id,
         { skip: !user }
     );

@@ -6,29 +6,23 @@ import { IAccount } from "src/interface/IAccount";
 
 export const userApi = createApi({
     reducerPath: "userApi",
-    tagTypes: ["Activity", "Account"],
+    tagTypes: ["AccountDetails"],
     baseQuery: fetchBaseQuery({
         baseUrl: baseApiUrl,
     }),
     endpoints: (builder) => ({
-        getAccount: builder.query<IAccount, number>({
+        accountDetails: builder.query<IAccount, number>({
             query: (userId) => ({
-                url: `Order/GetAccount/${userId}`,
+                url: `User/AccountDetails/${userId}`,
                 method: "GET",
             }),
-            providesTags: ["Account"],
+            providesTags: ["AccountDetails"],
         }),
         createUser: builder.mutation<IApiResponse<IUser>, ICreateUserRequest>({
             query: (body) => ({
                 url: "User/Create",
                 method: "POST",
                 body,
-            }),
-        }),
-        sendVerificationEmail: builder.mutation<IApiResponse<boolean>, string>({
-            query: (email) => ({
-                url: `User/SendVerificationEmail?email=${email}`,
-                method: "GET",
             }),
         }),
         addOrUpdateAddress: builder.mutation<
@@ -40,22 +34,21 @@ export const userApi = createApi({
                 method: "POST",
                 body,
             }),
-            invalidatesTags: ["Account"],
+            invalidatesTags: ["AccountDetails"],
         }),
         deleteAddress: builder.mutation<IApiResponse<boolean>, number>({
             query: (id) => ({
                 url: `User/DeleteAddress/${id}`,
                 method: "GET",
             }),
-            invalidatesTags: ["Account"],
+            invalidatesTags: ["AccountDetails"],
         }),
     }),
 });
 
 export const {
-    useGetAccountQuery,
+    useAccountDetailsQuery,
     useCreateUserMutation,
-    useSendVerificationEmailMutation,
     useAddOrUpdateAddressMutation,
     useDeleteAddressMutation,
 } = userApi;

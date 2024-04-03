@@ -7,10 +7,10 @@ import { Page } from "src/enum/Page";
 import DataTable from "src/layouts/table/DataTable";
 import { ShowPageWithParamsAction } from "src/state/contexts/app/Actions";
 import { SelectedProductAction } from "src/state/contexts/product/Actions";
-import { useGetOrderedItemsQuery } from "src/api/cartApi";
 import { useAppDispatch } from "src/state/Hooks";
 import DefaultCell from "src/layouts/ecommerce/orders/order-list/components/DefaultCell";
 import { useGetProductQuery } from "src/api/productApi";
+import { useGetOrderedItemsQuery } from "src/api/orderApi";
 
 interface IProps {
     order: IOrderHistory;

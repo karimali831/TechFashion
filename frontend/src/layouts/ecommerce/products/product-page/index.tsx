@@ -12,12 +12,12 @@ import { getProductState } from "src/state/contexts/product/Selectors";
 import { useEffect } from "react";
 import { SelectedProductAction } from "src/state/contexts/product/Actions";
 import { useParams } from "react-router-dom";
-import { IProductRouteParams } from "src/types/RouteParams";
+import { ProductRouteParams } from "src/types/RouteParams";
 import { useGetProductQuery } from "src/api/productApi";
 import { GoBackAction } from "src/state/contexts/app/Actions";
 
 function ProductPage(): JSX.Element {
-    const { slug } = useParams<IProductRouteParams>();
+    const { slug } = useParams<ProductRouteParams>();
 
     const dispatch = useAppDispatch();
 

@@ -2,7 +2,6 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { ICartProductDetail } from "src/interface/ICartProductDetail";
 import { baseApiUrl } from "./baseApi";
 import { IGuestCheckout } from "src/interface/IGuestCheckout";
-import { IOrderHistory } from "src/data/IOrderHistory";
 
 export const cartApi = createApi({
     reducerPath: "cartApi",
@@ -50,17 +49,11 @@ export const cartApi = createApi({
             IPaymentIntentRequest
         >({
             query: (body) => ({
-                url: "Order/CreatePaymentIntent",
+                url: "Cart/CreatePaymentIntent",
                 method: "POST",
                 body,
             }),
             providesTags: ["PaymentIntent"],
-        }),
-        getOrderedItems: builder.query<IOrderHistory[], number>({
-            query: (orderRef) => ({
-                url: `Order/GetOrderedItems/${orderRef}`,
-                method: "GET",
-            }),
         }),
     }),
 });
@@ -111,5 +104,4 @@ export const {
     useAddProductToCartMutation,
     useRemoveProductFromCartMutation,
     useCreatePaymentIntentQuery,
-    useGetOrderedItemsQuery,
 } = cartApi;

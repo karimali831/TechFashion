@@ -6,6 +6,7 @@ namespace api.Repository
 {
     public interface ICartRepository
     {
+        Task<Cart> GetAsync(int id);
         Task<Cart?> GetByUserIdAsync(int userId);
         Task<Cart?> GetByGuestCheckoutIdAsync(Guid guestCheckoutId);
         Task EmptyAsync(int cartId);
@@ -40,6 +41,11 @@ namespace api.Repository
         {
             await ExecuteAsync($"UPDATE {Table} SET ArchiveDate = GETDATE() WHERE UserId = @userId AND GuestCheckoutId IS NOT NULL AND GuestCheckoutId != @guestCheckoutId", new { userId, guestCheckoutId });
             await ExecuteAsync($"UPDATE {Table} SET UserId = @userId WHERE GuestCheckoutId = @guestCheckoutId", new { userId, guestCheckoutId });
+        }
+
+        public async Task<Cart> GetAsync(int id)
+        {
+            return await QueryFirstAsync<Cart>($"{DapperHelper.Select(Table, Fields)} WHERE Id = @id", new { id });
         }
     }
 }

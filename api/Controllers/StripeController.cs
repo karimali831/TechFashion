@@ -122,8 +122,8 @@ namespace api.Controllers
                                     Status = OrderStatus.Open
                                 });
 
-                            // Empty cart
-                            await _cartService.EmptyAsync(cartId);
+                            // Re-calculate stock for ordered items then empty basket
+                            await _cartService.RecalculateStockThenArchiveAsync(cartId);
                         }
                         catch (Exception exp)
                         {

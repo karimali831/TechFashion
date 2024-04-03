@@ -10,7 +10,7 @@ namespace api.Repository
         Task<bool> AddAsync(CartProduct model);
         Task<bool> RemoveProductAsync(int id);
         Task<bool> UpdateProductQuantityAsync(int id, int quantity);
-        Task<IList<CartProductDetail>> GetBasketAsync(int cartId);
+        Task<IList<CartProductDetail>> GetBasketAsync(int cartId, bool incArchived = false);
     }
 
     public class CartProductRepository(IConfiguration configuration) : DapperBaseRepository(configuration),
@@ -38,9 +38,9 @@ namespace api.Repository
             return await ExecuteAsync(DapperHelper.Insert(TABLE, FIELDS), model);
         }
 
-        public async Task<IList<CartProductDetail>> GetBasketAsync(int cartId)
+        public async Task<IList<CartProductDetail>> GetBasketAsync(int cartId, bool incArchived = false)
         {
-            const string sqlTxt = @$"
+            string sqlTxt = @$"
                 ;SELECT 
                     cp.Id,
                     p.Id AS ProductId,
@@ -60,7 +60,7 @@ namespace api.Repository
                 AND CP.CartId = @cartId
                 AND CP.RemovedDate IS NULL
                 AND CP.VariantId IS NULL
-                AND C.ArchiveDate IS NULL
+                {(incArchived ? "" : "AND C.ArchiveDate IS NULL")}
 
                 UNION
 
@@ -84,7 +84,7 @@ namespace api.Repository
                 WHERE p.Active = 1
                 AND CP.CartId = @cartId
                 AND CP.RemovedDate IS NULL
-                AND C.ArchiveDate IS NULL
+                {(incArchived ? "" : "AND C.ArchiveDate IS NULL")}
             ";
 
             return (await QueryAsync<CartProductDetail>(sqlTxt, new { cartId }))

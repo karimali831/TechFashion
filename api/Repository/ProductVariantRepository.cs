@@ -8,6 +8,7 @@ namespace api.Repository
     {
         Task<IEnumerable<Variant>> GetAllAttributesAsync();
         Task<IList<ProductVariant>> GetAllByProductIdsAsync(IList<int> productIds);
+        Task UpdateStockAsync(int id, int quantity);
     }
 
     public class ProductVariantRepository(IConfiguration configuration) : DapperBaseRepository(configuration),
@@ -28,6 +29,11 @@ namespace api.Repository
                 await QueryAsync<ProductVariant>($"{DapperHelper.Select(Table, Fields)} WHERE ProductId IN @productIds",
                     new { productIds })
             ).ToList();
+        }
+
+        public async Task UpdateStockAsync(int id, int quantity)
+        {
+            await ExecuteAsync($"UPDATE {Table} SET Stock = Stock - @quantity WHERE Id = @id AND Stock IS NOT NULL", new { id, quantity });
         }
     }
 }

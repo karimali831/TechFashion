@@ -10,6 +10,7 @@ namespace api.Infrastructure
         Task<bool> ExecuteAsync(string query, object? parameters = null);
         Task<T?> ExecuteScalarAsync<T>(string query, object? parameters = null);
         Task<T?> QueryFirstOrDefaultAsync<T>(string query, object? parameters = null);
+        Task<T> QueryFirstAsync<T>(string query, object? parameters = null);
         Task<T?> QuerySingleOrDefaultAsync<T>(string query, object? parameters = null);
         Task<T> QuerySingleAsync<T>(string query, object? parameters = null);
         Task<int?> ExecuteScalarAsync(string query, object? parameters);
@@ -65,6 +66,18 @@ namespace api.Infrastructure
             try
             {
                 return await _dbConnection.QueryFirstOrDefaultAsync<T>(query, parameters);
+            }
+            catch (Exception exp)
+            {
+                throw new Exception(exp.Message);
+            }
+        }
+
+        public async Task<T> QueryFirstAsync<T>(string query, object? parameters = null)
+        {
+            try
+            {
+                return await _dbConnection.QueryFirstAsync<T>(query, parameters);
             }
             catch (Exception exp)
             {

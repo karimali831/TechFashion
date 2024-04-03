@@ -11,8 +11,7 @@ namespace api.Service
     {
         Task<CartViewModel?> GetAsync(int userId);
         Task<CartViewModel?> GetAsync(CartUserDto dto);
-        Task EmptyAsync(User user);
-        Task EmptyAsync(int cartId);
+        Task RecalculateStockThenArchiveAsync(int cartId);
         Task SetUserIdAsync(int userId, Guid guestCheckoutId);
     }
 
@@ -20,17 +19,37 @@ namespace api.Service
         AppDatabaseContext context,
         ICartRepository cartRepository,
         IUserService userService,
+        IProductRepository productRepository,
+        IProductVariantRepository productVariantRepository,
         ICartProductRepository cartProductRepository) : EFRepositoryBase<CartProduct>(context), ICartService
     {
         private readonly ICartRepository _cartRepository = cartRepository;
         private readonly IUserService _userService = userService;
         private readonly ICartProductRepository _cartProductRepository = cartProductRepository;
+        private readonly IProductRepository _productRepository = productRepository;
+        private readonly IProductVariantRepository _productVariantRepository = productVariantRepository;
 
 
-        public async Task EmptyAsync(int cartId)
+        public async Task RecalculateStockThenArchiveAsync(int cartId)
         {
-            await _cartRepository.EmptyAsync(cartId);
+            var orderedItems = await _cartProductRepository.GetBasketAsync(cartId, incArchived: true);
+
+            foreach (var item in orderedItems.Where(x => x.Stock is not null))
+            {
+                if (item.VariantId is null)
+                {
+
+                    await _productRepository.UpdateStockAsync(item.ProductId, item.Quantity);
+                }
+                else
+                {
+                    await _productVariantRepository.UpdateStockAsync(item.ProductId, item.Quantity);
+                }
+            }
+
+            await ArchiveAsync(cartId);
         }
+
 
         public async Task EmptyAsync(User user)
         {
@@ -41,7 +60,7 @@ namespace api.Service
                 throw new ApplicationException("Unhandled error");
             }
 
-            await EmptyAsync(cart.Id);
+            await ArchiveAsync(cart.Id);
         }
 
         public async Task<CartViewModel?> GetAsync(int userId)
@@ -95,5 +114,11 @@ namespace api.Service
                 TotalStr = total.ToCurrencyGbp()
             };
         }
+
+        private async Task ArchiveAsync(int cartId)
+        {
+            await _cartRepository.EmptyAsync(cartId);
+        }
+
     }
 }

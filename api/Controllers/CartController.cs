@@ -1,4 +1,5 @@
 using api.Dto;
+using api.Dto.Stripe;
 using api.Service;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,10 +9,12 @@ namespace api.Controllers
     [ApiController]
     public class CartController(
         ICartService cartService,
-        ICartProductService cartProductService) : ControllerBase
+        ICartProductService cartProductService,
+        IStripeOrderService stripeOrderService) : ControllerBase
     {
         private readonly ICartService _cartService = cartService;
         private readonly ICartProductService _cartProductService = cartProductService;
+        private readonly IStripeOrderService _stripeOrderService = stripeOrderService;
 
 
         [HttpPost("GetBasket")]
@@ -55,6 +58,39 @@ namespace api.Controllers
             var request = await _cartProductService.UpdateProductQuantityAsync(id, quantity);
 
             return NoContent();
+        }
+
+        [HttpPost("CreatePaymentIntent")]
+        public async Task<IActionResult> CreatePaymentIntent([FromBody] PaymentIntentRequest request, CancellationToken ct)
+        {
+            try
+            {
+
+                // var ipAddress = HttpContext.GetServerVariable("HTTP_X_FORWARDED_FOR") ?? HttpContext.Connection.RemoteIpAddress?.ToString();
+                // var ipAddressWithoutPort = ipAddress?.Split(':')[0];
+
+                // var ipApiResponse = await _ipApiClient.Get(ipAddressWithoutPort, ct);
+
+                // var test = new
+                // {
+                //     IpAddress = ipAddressWithoutPort,
+                //     Country = ipApiResponse?.country,
+                //     Region = ipApiResponse?.regionName,
+                //     City = ipApiResponse?.city,
+                //     District = ipApiResponse?.district,
+                //     PostCode = ipApiResponse?.zip,
+                //     Longitude = ipApiResponse?.lon.GetValueOrDefault(),
+                //     Latitude = ipApiResponse?.lat.GetValueOrDefault(),
+                // };
+
+                var response = await _stripeOrderService.InitiateAsync(request);
+                return Ok(response);
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
     }
 }

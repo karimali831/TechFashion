@@ -9,7 +9,7 @@ import { ShowPageAction } from "src/state/contexts/app/Actions";
 import { getUserState } from "src/state/contexts/user/Selectors";
 import { EditAddress } from "./Edit";
 import { Address } from "./Address";
-import { useGetAccountQuery } from "src/api/userApi";
+import { useAccountDetailsQuery } from "src/api/userApi";
 
 export const Addresses = () => {
     const topElement = useRef<HTMLInputElement | null>(null);
@@ -17,7 +17,7 @@ export const Addresses = () => {
 
     const { user } = useAppSelector(getUserState);
 
-    const { data: account, isLoading: accountLoading } = useGetAccountQuery(
+    const { data: account, isLoading: accountLoading } = useAccountDetailsQuery(
         user.id
     );
 

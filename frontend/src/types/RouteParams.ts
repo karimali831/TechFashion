@@ -1,4 +1,4 @@
-export type IProductRouteParams = {
+export type ProductRouteParams = {
     slug: string;
 };
 
