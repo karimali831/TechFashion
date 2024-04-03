@@ -135,26 +135,30 @@ export const Checkout = ({
                     </Alert>
                 </Box>
             )}
-            <Box>
-                <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="align"
-                    sx={{
-                        mt: 3,
-                    }}
-                >
-                    <MDTypography>Total</MDTypography>
-                    <MDTypography>{total}</MDTypography>
-                </Box>
-
+            <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="align"
+                sx={{
+                    mt: 3,
+                }}
+            >
+                <MDTypography>Total</MDTypography>
+                <MDTypography>{total}</MDTypography>
+            </Box>
+            <Box
+                sx={{
+                    mt: 1,
+                    display: "flex",
+                    justifyContent: "flex-end",
+                }}
+            >
                 <Button
-                    sx={{ mt: 1 }}
                     type="submit"
                     disabled={processing || disabled}
                     variant="contained"
                     color="primary"
-                    fullWidth={true}
+                    // fullWidth={true}
                     startIcon={
                         processing ? (
                             <ClipLoader

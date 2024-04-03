@@ -12,6 +12,7 @@ import { ShowPageAction } from "src/state/contexts/app/Actions";
 import { Page } from "src/enum/Page";
 import { OpenVerifyEmailModalAction } from "src/state/contexts/cart/Actions";
 import useEffectSkipInitialRender from "src/hooks/useEffectSkipInitialRender";
+import { useEffect } from "react";
 
 export const Cart = () => {
     const dispatch = useAppDispatch();
@@ -25,6 +26,14 @@ export const Cart = () => {
         guestCheckoutId: guestCheckout?.id,
     });
 
+    const itemsInCart: ICartProductDetail[] = cart?.products ?? [];
+
+    useEffect(() => {
+        if (!isLoading && (!cart || itemsInCart.length === 0)) {
+            dispatch(ShowPageAction(Page.Products));
+        }
+    }, [itemsInCart]);
+
     useEffectSkipInitialRender(() => {
         const open =
             !verificationEmail.verified &&
@@ -34,14 +43,8 @@ export const Cart = () => {
         dispatch(OpenVerifyEmailModalAction(open));
     }, [verificationEmail]);
 
-    const itemsInCart: ICartProductDetail[] = cart?.products ?? [];
-
-    if (isLoading) {
+    if (isLoading || itemsInCart.length === 0) {
         <LinearProgress />;
-    }
-
-    if (itemsInCart.length === 0 && !isLoading) {
-        dispatch(ShowPageAction(Page.Products));
     }
 
     return (

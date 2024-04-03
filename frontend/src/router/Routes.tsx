@@ -10,7 +10,7 @@ import { Cart } from "src/layouts/ecommerce/cart";
 import Contact from "src/layouts/pages/contact";
 import { Success } from "src/layouts/ecommerce/payment/Success";
 import Billing from "src/layouts/pages/account/billing";
-import { Order } from "src/layouts/pages/order";
+import { AccountOrder } from "src/layouts/pages/order";
 import { Addresses } from "src/layouts/pages/account/address";
 
 export const AppRoutes: IRoute[] = [
@@ -80,7 +80,7 @@ export const AppRoutes: IRoute[] = [
     },
     {
         page: Page.Order,
-        element: <Order />,
+        element: <AccountOrder />,
         memberOnly: true,
         url: "/account/order",
         path: "/account/order/:id",

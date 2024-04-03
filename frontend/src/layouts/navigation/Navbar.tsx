@@ -87,7 +87,7 @@ function NavbarV2() {
     }, [defaultAddress]);
 
     useEffect(() => {
-        if (!user && guestCheckout?.email !== "") {
+        if (openAccountModal && !user && guestCheckout?.email !== "") {
             const checkVerificationEmail = async () =>
                 await axios.post<IApiResponse<IVerificationEmail>>(
                     baseApiUrl + "User/CheckVerificationEmail",

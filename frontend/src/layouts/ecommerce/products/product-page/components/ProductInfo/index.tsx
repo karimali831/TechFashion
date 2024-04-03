@@ -296,7 +296,7 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
                                 />
                             ) : (
                                 variants?.map((variant, idx) => {
-                                    const selectedVariant = variations.filter(
+                                    const selectedVariant = variations?.filter(
                                         (x) => x.attribute === variant.attribute
                                     )[0]?.value;
 

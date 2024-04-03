@@ -19,7 +19,6 @@ export function deepEquals(object1: any, object2: any) {
             (areObjects && !deepEquals(val1, val2)) ||
             (!areObjects && val1 !== val2)
         ) {
-            alert("hmm");
             return false;
         }
     }

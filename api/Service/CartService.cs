@@ -71,12 +71,10 @@ namespace api.Service
             await _cartRepository.SetUserIdAsync(userId, guestCheckoutId);
         }
 
-        private async Task<CartViewModel> GetViewModelAsync(Cart? cart)
+        private async Task<CartViewModel?> GetViewModelAsync(Cart? cart)
         {
             if (cart is null)
-            {
-                return new CartViewModel();
-            }
+                return null;
 
             var products = (await _cartProductRepository.GetBasketAsync(cart.Id))
                 .Select(x =>
