@@ -8,7 +8,7 @@ namespace api.Repository
     {
         Task<IEnumerable<Variant>> GetAllAttributesAsync();
         Task<IList<ProductVariant>> GetAllByProductIdsAsync(IList<int> productIds);
-        Task UpdateStockAsync(int id, int quantity);
+        Task UpdateStockAsync(int id, int stock);
     }
 
     public class ProductVariantRepository(IConfiguration configuration) : DapperBaseRepository(configuration),
@@ -31,9 +31,10 @@ namespace api.Repository
             ).ToList();
         }
 
-        public async Task UpdateStockAsync(int id, int quantity)
+        public async Task UpdateStockAsync(int id, int stock)
         {
-            await ExecuteAsync($"UPDATE {Table} SET Stock = Stock - @quantity WHERE Id = @id AND Stock IS NOT NULL", new { id, quantity });
+            await ExecuteAsync($"UPDATE {Table} SET Stock = @stock WHERE Id = @id AND Stock IS NOT NULL", new { id, stock });
         }
+
     }
 }

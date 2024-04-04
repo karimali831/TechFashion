@@ -7,6 +7,9 @@ namespace api.Repository
 {
     public interface ICartProductRepository
     {
+        Task<CartProductStock> ProductStockCheckAsync(int productId);
+        Task<CartProductStock> ProductVariantStockCheckAsync(int productVariantId);
+        Task<CartProduct> GetAsync(int id);
         Task<bool> AddAsync(CartProduct model);
         Task<bool> RemoveProductAsync(int id);
         Task<bool> UpdateProductQuantityAsync(int id, int quantity);
@@ -16,26 +19,48 @@ namespace api.Repository
     public class CartProductRepository(IConfiguration configuration) : DapperBaseRepository(configuration),
         ICartProductRepository
     {
-        private static readonly string TABLE = "CartProducts";
-        private static readonly string[] FIELDS = typeof(CartProduct).DapperFields();
+        private static readonly string Table = "CartProducts";
+        private static readonly string[] Fields = typeof(CartProduct).DapperFields();
 
+        public async Task<CartProductStock> ProductStockCheckAsync(int productId)
+        {
+            var sqlTxt = @$"
+                SELECT p.Id, p.Stock, cp.Quantity, p.Price
+                FROM Products AS P
+                JOIN CartProducts CP
+                ON CP.ProductId = P.Id AND CP.VariantId IS NULL
+                WHERE p.Id = @productId
+                AND cp.RemovedDate IS NULL";
+
+            return await QueryFirstAsync<CartProductStock>(sqlTxt, new { productId });
+        }
+
+        public async Task<CartProductStock> ProductVariantStockCheckAsync(int productVariantId)
+        {
+            var sqlTxt = @$"
+                SELECT pv.Id, pv.Stock, cp.Quantity, pv.Price
+                FROM ProductVariants AS PV
+                JOIN CartProducts CP
+                ON CP.VariantId = PV.Id
+                WHERE pv.Id = @productVariantId
+                AND cp.RemovedDate IS NULL";
+
+            return await QueryFirstAsync<CartProductStock>(sqlTxt, new { productVariantId });
+        }
 
         public async Task<bool> UpdateProductQuantityAsync(int id, int quantity)
         {
-            return await ExecuteAsync(@$"
-                ;UPDATE {TABLE}
-                SET Quantity = @quantity
-                WHERE Id = @id
-            ", new
-            {
-                quantity,
-                id
-            });
+            return await ExecuteAsync($";UPDATE {Table} SET Quantity = @quantity WHERE Id = @id",
+                new
+                {
+                    quantity,
+                    id
+                });
         }
 
         public async Task<bool> AddAsync(CartProduct model)
         {
-            return await ExecuteAsync(DapperHelper.Insert(TABLE, FIELDS), model);
+            return await ExecuteAsync(DapperHelper.Insert(Table, Fields), model);
         }
 
         public async Task<IList<CartProductDetail>> GetBasketAsync(int cartId, bool incArchived = false)
@@ -94,7 +119,7 @@ namespace api.Repository
         public async Task<bool> RemoveProductAsync(int id)
         {
             return await ExecuteAsync(@$"
-                ;UPDATE {TABLE}
+                ;UPDATE {Table}
                 SET RemovedDate = @date
                 WHERE Id = @id
             ", new
@@ -102,6 +127,11 @@ namespace api.Repository
                 date = DateTime.UtcNow,
                 id
             });
+        }
+
+        public async Task<CartProduct> GetAsync(int id)
+        {
+            return await QueryFirstAsync<CartProduct>($"{DapperHelper.Select(Table, Fields)} WHERE Id = @id", new { id });
         }
     }
 }

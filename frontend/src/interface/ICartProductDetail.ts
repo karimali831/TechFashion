@@ -10,6 +10,7 @@ export interface ICartProductDetail {
     variant?: string;
     unitPrice: number;
     unitTotal: number;
+    // not mapped
     unitPriceStr: string;
     unitTotalStr: string;
     variantList: IProductVariantObj[];

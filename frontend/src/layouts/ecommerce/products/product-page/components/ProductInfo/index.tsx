@@ -104,7 +104,7 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
                 });
             } else if (
                 itemInCart?.stock &&
-                itemInCart.quantity + quantity > itemInCart.stock
+                itemInCart.quantity + quantity > product.stock
             ) {
                 setProductVariantUnavailable({
                     reason: "quantity-exceeds-stock",
@@ -120,7 +120,9 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
         if (itemInCart) {
             const totalQuantity = itemInCart.quantity + quantity;
 
-            if (itemInCart?.stock && itemInCart.stock < totalQuantity) {
+            console.log("total quantity", totalQuantity);
+
+            if (itemInCart?.stock && product.stock < totalQuantity) {
                 setProductVariantUnavailable({
                     reason: "quantity-exceeds-stock",
                     text: "Maximum quantity added",
@@ -131,6 +133,7 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
             await updateProductQuantity({
                 id: itemInCart.id,
                 quantity: totalQuantity,
+                replinish: false,
             })
                 .unwrap()
                 .then((payload) => {
@@ -171,10 +174,7 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
         if (value == 0 || productVariantUnavailable?.reason === "deleted")
             return;
 
-        if (
-            itemInCart?.stock &&
-            itemInCart.quantity + value > itemInCart.stock
-        ) {
+        if (itemInCart?.stock && itemInCart.quantity + value > product.stock) {
             setProductVariantUnavailable({
                 reason: "quantity-exceeds-stock",
                 text: "Maximum quantity added",

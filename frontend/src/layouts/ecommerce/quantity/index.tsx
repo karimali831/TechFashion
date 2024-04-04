@@ -28,7 +28,7 @@ export const ProductQuantity = ({ item }: IProps) => {
     const onQuantityChange = async (
         id: number,
         quantity: number,
-        stock?: number
+        replinish: boolean
     ) => {
         if (updatingProductQuantity || quantity === 0) return;
 
@@ -38,6 +38,7 @@ export const ProductQuantity = ({ item }: IProps) => {
         await updateProductQuantity({
             id,
             quantity,
+            replinish,
         })
             .unwrap()
             .then((payload) => {})
@@ -80,7 +81,7 @@ export const ProductQuantity = ({ item }: IProps) => {
                             id: item.id,
                             quantity,
                         });
-                        onQuantityChange(item.id, quantity, item.stock);
+                        onQuantityChange(item.id, quantity, true);
                     }}
                 >
                     remove
@@ -119,11 +120,13 @@ export const ProductQuantity = ({ item }: IProps) => {
 
                             if (value === 0) return;
 
-                            onQuantityChange(
-                                item.id,
-                                Number(e.target.value),
-                                item.stock
-                            );
+                            const q =
+                                quantity?.id === item.id
+                                    ? quantity.quantity
+                                    : item.quantity;
+
+                            const replinish = value < q;
+                            onQuantityChange(item.id, value, replinish);
                         }}
                     />
                     {item.stock && (
@@ -152,7 +155,7 @@ export const ProductQuantity = ({ item }: IProps) => {
                             id: item.id,
                             quantity,
                         });
-                        onQuantityChange(item.id, quantity, item.stock);
+                        onQuantityChange(item.id, quantity, false);
                     }}
                 >
                     add

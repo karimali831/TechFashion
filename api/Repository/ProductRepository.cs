@@ -7,7 +7,7 @@ namespace api.Repository
     {
         Task<IList<ProductDetail>> GetAllAsync();
         Task<IList<ProductCatalogue>> GetCatalogueAsync();
-        Task UpdateStockAsync(int id, int quantity);
+        Task UpdateStockAsync(int id, int stock);
     }
 
     public class ProductRepository(IConfiguration configuration) : DapperBaseRepository(configuration),
@@ -85,9 +85,9 @@ namespace api.Repository
             ;
         }
 
-        public async Task UpdateStockAsync(int id, int quantity)
+        public async Task UpdateStockAsync(int id, int stock)
         {
-            await ExecuteAsync($"UPDATE {Table} SET Stock = Stock - @quantity WHERE Id = @id AND Stock IS NOT NULL", new { id, quantity });
+            await ExecuteAsync($"UPDATE {Table} SET Stock = @stock WHERE Id = @id AND Stock IS NOT NULL", new { id, stock });
         }
     }
 }

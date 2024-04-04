@@ -22,6 +22,7 @@ namespace api.Controllers
         IExceptionHandlerService exceptionHandlerService,
         IStripePaymentMethodService stripePaymentMethodService,
         ICustomerAddressService customerAddressService,
+        ICartProductService cartProductService,
         IOrderService orderService,
         ICartService cartService) : Controller
     {
@@ -31,6 +32,7 @@ namespace api.Controllers
         private readonly IExceptionHandlerService _exceptionHandlerService = exceptionHandlerService;
         private readonly IStripePaymentMethodService _stripePaymentMethodService = stripePaymentMethodService;
         private readonly ICustomerAddressService _customerAddressService = customerAddressService;
+        private readonly ICartProductService _cartProductService = cartProductService;
         private readonly IOrderService _orderService = orderService;
         private readonly ICartService _cartService = cartService;
 
@@ -122,8 +124,8 @@ namespace api.Controllers
                                     Status = OrderStatus.Open
                                 });
 
-                            // Re-calculate stock for ordered items then empty basket
-                            await _cartService.RecalculateStockThenArchiveAsync(cartId);
+                            // Empty basket
+                            await _cartService.ArchiveAsync(cartId);
                         }
                         catch (Exception exp)
                         {

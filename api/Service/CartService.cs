@@ -9,9 +9,9 @@ namespace api.Service
 {
     public interface ICartService
     {
+        Task ArchiveAsync(int cartId);
         Task<CartViewModel?> GetAsync(int userId);
         Task<CartViewModel?> GetAsync(CartUserDto dto);
-        Task RecalculateStockThenArchiveAsync(int cartId);
         Task SetUserIdAsync(int userId, Guid guestCheckoutId);
     }
 
@@ -30,26 +30,6 @@ namespace api.Service
         private readonly IProductVariantRepository _productVariantRepository = productVariantRepository;
 
 
-        public async Task RecalculateStockThenArchiveAsync(int cartId)
-        {
-            var orderedItems = await _cartProductRepository.GetBasketAsync(cartId, incArchived: true);
-
-            foreach (var item in orderedItems.Where(x => x.Stock is not null))
-            {
-                if (item.VariantId.HasValue)
-                {
-                    await _productVariantRepository.UpdateStockAsync(item.VariantId.Value, item.Quantity);
-                }
-                else
-                {
-                    await _productRepository.UpdateStockAsync(item.ProductId, item.Quantity);
-                }
-            }
-
-            await ArchiveAsync(cartId);
-        }
-
-
         public async Task EmptyAsync(User user)
         {
             var cart = await _cartRepository.GetByUserIdAsync(user.Id);
@@ -60,6 +40,12 @@ namespace api.Service
             }
 
             await ArchiveAsync(cart.Id);
+        }
+
+
+        public async Task ArchiveAsync(int cartId)
+        {
+            await _cartRepository.EmptyAsync(cartId);
         }
 
         public async Task<CartViewModel?> GetAsync(int userId)
@@ -113,11 +99,5 @@ namespace api.Service
                 TotalStr = total.ToCurrencyGbp()
             };
         }
-
-        private async Task ArchiveAsync(int cartId)
-        {
-            await _cartRepository.EmptyAsync(cartId);
-        }
-
     }
 }

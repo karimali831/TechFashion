@@ -21,10 +21,10 @@ export const cartApi = createApi({
         }),
         updateProductQuantity: builder.mutation<
             void,
-            { id: number; quantity: number }
+            { id: number; quantity: number; replinish: boolean }
         >({
-            query: ({ id, quantity }) => ({
-                url: `Cart/UpdateProductQuantity/${id}/${quantity}`,
+            query: ({ id, quantity, replinish }) => ({
+                url: `Cart/UpdateProductQuantity/${id}/${quantity}/${replinish}`,
                 method: "GET",
             }),
             invalidatesTags: ["Cart", "PaymentIntent"],

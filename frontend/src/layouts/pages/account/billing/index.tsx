@@ -96,14 +96,23 @@ function Billing(): JSX.Element {
     return (
         <MDBox mt={4} className="home">
             <h1>Account</h1>
+
+            <Box mt={2} display="flex" alignItems={"center"}>
+                <Icon fontSize="medium" sx={{ mr: 1 }}>
+                    person_outline
+                </Icon>
+                <Typography sx={{ fontSize: 14 }}>
+                    {user.email} ({user.name})
+                </Typography>
+            </Box>
             <Box
-                mt={2}
+                mt={1}
                 display={"flex"}
                 alignItems={"center"}
                 sx={{ cursor: "pointer" }}
             >
-                <Icon fontSize="medium" sx={{ mr: 1 }}>
-                    person_outline
+                <Icon fontSize="small" sx={{ mr: 1 }} style={{ marginLeft: 3 }}>
+                    logout
                 </Icon>
                 <span
                     style={{ textDecoration: "underline" }}
@@ -112,6 +121,7 @@ function Billing(): JSX.Element {
                     Log out
                 </span>
             </Box>
+
             <Grid container mt={5} spacing={2}>
                 <Fade
                     in={true}

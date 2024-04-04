@@ -47,16 +47,14 @@ namespace api.Controllers
         [HttpGet("RemoveProduct/{id}")]
         public async Task<IActionResult> RemoveProduct([FromRoute] int id)
         {
-            var request = await _cartProductService.RemoveProductAsync(id);
-
+            await _cartProductService.RemoveProductAsync(id);
             return NoContent();
         }
 
-        [HttpGet("UpdateProductQuantity/{id}/{quantity}")]
-        public async Task<IActionResult> UpdateProductQuantity([FromRoute] int id, int quantity)
+        [HttpGet("UpdateProductQuantity/{id}/{quantity}/{replinish}")]
+        public async Task<IActionResult> UpdateProductQuantity([FromRoute] int id, int quantity, bool replinish)
         {
-            var request = await _cartProductService.UpdateProductQuantityAsync(id, quantity);
-
+            await _cartProductService.UpdateProductQuantityAsync(id, quantity, replinish);
             return NoContent();
         }
 
