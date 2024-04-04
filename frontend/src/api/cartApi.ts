@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { ICartProductDetail } from "src/interface/ICartProductDetail";
-import { baseApiUrl } from "./baseApi";
 import { IGuestCheckout } from "src/interface/IGuestCheckout";
+import { IApiResponse, baseApiUrl } from "./baseApi";
 
 export const cartApi = createApi({
     reducerPath: "cartApi",
@@ -19,17 +19,14 @@ export const cartApi = createApi({
             }),
             providesTags: ["Cart"],
         }),
-        updateProductQuantity: builder.mutation<
-            void,
-            { id: number; quantity: number; replinish: boolean }
-        >({
+        updateProductQuantity: builder.mutation<void, { id: number; quantity: number; replinish: boolean }>({
             query: ({ id, quantity, replinish }) => ({
                 url: `Cart/UpdateProductQuantity/${id}/${quantity}/${replinish}`,
                 method: "GET",
             }),
             invalidatesTags: ["Cart", "PaymentIntent"],
         }),
-        addProductToCart: builder.mutation<void, IAddProductToCartRequest>({
+        addProductToCart: builder.mutation<IApiResponse<boolean>, IAddProductToCartRequest>({
             query: (body) => ({
                 url: "Cart/AddProduct",
                 method: "POST",
@@ -44,10 +41,7 @@ export const cartApi = createApi({
             }),
             invalidatesTags: ["Cart", "PaymentIntent"],
         }),
-        createPaymentIntent: builder.query<
-            IPaymentIntentResponse,
-            IPaymentIntentRequest
-        >({
+        createPaymentIntent: builder.query<IPaymentIntentResponse, IPaymentIntentRequest>({
             query: (body) => ({
                 url: "Cart/CreatePaymentIntent",
                 method: "POST",

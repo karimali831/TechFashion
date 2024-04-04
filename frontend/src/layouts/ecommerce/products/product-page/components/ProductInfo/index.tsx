@@ -3,11 +3,7 @@ import Grid from "@mui/material/Grid";
 import Icon from "@mui/material/Icon";
 import isEqual from "lodash.isequal";
 import { useEffect, useState } from "react";
-import {
-    useAddProductToCartMutation,
-    useGetCartQuery,
-    useUpdateProductQuantityMutation,
-} from "src/api/cartApi";
+import { useAddProductToCartMutation, useGetCartQuery, useUpdateProductQuantityMutation } from "src/api/cartApi";
 import { useGetProductQuery } from "src/api/productApi";
 import { ActionButton } from "src/components/Buttons/ActionButton";
 import MDBadge from "src/components/MDBadge";
@@ -22,6 +18,7 @@ import { useAppDispatch, useAppSelector } from "src/state/Hooks";
 import { OpenCartOverlayAction } from "src/state/contexts/cart/Actions";
 import { getCartState } from "src/state/contexts/cart/Selectors";
 import { getUserState } from "src/state/contexts/user/Selectors";
+import Swal from "sweetalert2";
 
 interface IProps {
     item: IProductDetail[];
@@ -36,11 +33,11 @@ interface IProductVariableUnavailable {
 function ProductInfo({ item, loading }: IProps): JSX.Element {
     const [quantity, setQuantity] = useState<number>(1);
     const [variations, setVariations] = useState<IVariant[]>([]);
-    const [productVariantUnavailable, setProductVariantUnavailable] =
-        useState<IProductVariableUnavailable | null>(null);
+    const [productVariantUnavailable, setProductVariantUnavailable] = useState<IProductVariableUnavailable | null>(
+        null
+    );
 
-    const [addProductToCart, { isLoading: adding }] =
-        useAddProductToCartMutation();
+    const [addProductToCart, { isLoading: adding }] = useAddProductToCartMutation();
     const [updateProductQuantity] = useUpdateProductQuantityMutation();
 
     const { firebaseUid } = useAppSelector(getUserState);
@@ -55,23 +52,14 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
 
     const dispatch = useAppDispatch();
 
-    const variants = products?.variants.filter(
-        (x) => x.productId === item[0]?.id
-    );
+    const variants = products?.variants.filter((x) => x.productId === item[0]?.id);
 
     const itemsInCart: ICartProductDetail[] = cart?.products ?? [];
 
-    const product =
-        item.filter(
-            (x) => !x.variantId || isEqual(x.variantList, variations)
-        )[0] ?? item[0];
+    const product = item.filter((x) => !x.variantId || isEqual(x.variantList, variations))[0] ?? item[0];
 
     let itemInCart = itemsInCart.filter((x) =>
-        item.some(
-            (i) =>
-                i.id === x.productId &&
-                (!i.variantId || isEqual(x.variantList, variations))
-        )
+        item.some((i) => i.id === x.productId && (!i.variantId || isEqual(x.variantList, variations)))
     )[0];
 
     useEffect(() => {
@@ -86,9 +74,7 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
     }, [products]);
 
     useEffectSkipInitialRender(() => {
-        const productVariant = item.filter((x) =>
-            isEqual(x.variantList, variations)
-        )[0];
+        const productVariant = item.filter((x) => isEqual(x.variantList, variations))[0];
 
         if (!productVariant) {
             setProductVariantUnavailable({
@@ -102,10 +88,7 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
                     reason: "out-of-stock",
                     text: "Out of stock, please make another selection.",
                 });
-            } else if (
-                itemInCart?.stock &&
-                itemInCart.quantity + quantity > product.stock
-            ) {
+            } else if (itemInCart?.stock && itemInCart.quantity + quantity > product.stock) {
                 setProductVariantUnavailable({
                     reason: "quantity-exceeds-stock",
                     text: "Maximum quantity added",
@@ -155,7 +138,19 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
             })
                 .unwrap()
                 .then((payload) => {
-                    dispatch(OpenCartOverlayAction(true));
+                    if (payload.errorMsg) {
+                        Swal.fire({
+                            icon: "error",
+                            title: payload.errorMsg,
+                        });
+                        setProductVariantUnavailable({
+                            reason: "out-of-stock",
+                            text: "Unavailable",
+                        });
+                    } else {
+                        dispatch(OpenCartOverlayAction(true));
+                    }
+
                     setQuantity(1);
                 })
                 .catch((error) => {
@@ -165,14 +160,11 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
     };
 
     const updateVariant = (key: string, value: string) => {
-        setVariations(
-            variations.map((v) => (v.attribute === key ? { ...v, value } : v))
-        );
+        setVariations(variations.map((v) => (v.attribute === key ? { ...v, value } : v)));
     };
 
     const updateQuantity = (value: number) => {
-        if (value == 0 || productVariantUnavailable?.reason === "deleted")
-            return;
+        if (value == 0 || productVariantUnavailable?.reason === "deleted") return;
 
         if (itemInCart?.stock && itemInCart.quantity + value > product.stock) {
             setProductVariantUnavailable({
@@ -208,12 +200,7 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
                 <MDBox mb={1}>
                     {loading ? (
                         <Box>
-                            <Skeleton
-                                animation="wave"
-                                width="100%"
-                                height={25}
-                                variant="rectangular"
-                            />
+                            <Skeleton animation="wave" width="100%" height={25} variant="rectangular" />
                             <Skeleton
                                 animation="pulse"
                                 width="50%"
@@ -243,12 +230,7 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
                 </MDBox>
                 <MDBox mb={1}>
                     {loading ? (
-                        <Skeleton
-                            animation="pulse"
-                            width="25%"
-                            height={20}
-                            variant="rectangular"
-                        />
+                        <Skeleton animation="pulse" width="25%" height={20} variant="rectangular" />
                     ) : (
                         <MDTypography variant="h5" fontWeight="medium">
                             {product?.priceStr}
@@ -256,15 +238,12 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
                     )}
                 </MDBox>
                 {loading ? null : !!productVariantUnavailable &&
-                  productVariantUnavailable.reason !==
-                      "quantity-exceeds-stock" ? (
+                  productVariantUnavailable.reason !== "quantity-exceeds-stock" ? (
                     <MDBadge
                         variant="contained"
                         color="error"
                         badgeContent={
-                            productVariantUnavailable.reason === "out-of-stock"
-                                ? "out of stock"
-                                : "unavailable"
+                            productVariantUnavailable.reason === "out-of-stock" ? "out of stock" : "unavailable"
                         }
                         container
                     />
@@ -272,28 +251,16 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
                     <MDBadge
                         variant="contained"
                         color="success"
-                        badgeContent={
-                            (product.stock ? product.stock : "") + " in stock"
-                        }
+                        badgeContent={(product.stock ? product.stock : "") + " in stock"}
                         container
                     />
                 )}
 
                 <MDBox mt={3}>
-                    <Fade
-                        in={true}
-                        timeout={500}
-                        mountOnEnter={true}
-                        unmountOnExit={true}
-                    >
+                    <Fade in={true} timeout={500} mountOnEnter={true} unmountOnExit={true}>
                         <Box>
                             {loading ? (
-                                <Skeleton
-                                    width={"75%"}
-                                    height={100}
-                                    animation="pulse"
-                                    variant="rounded"
-                                />
+                                <Skeleton width={"75%"} height={100} animation="pulse" variant="rounded" />
                             ) : (
                                 variants?.map((variant, idx) => {
                                     const selectedVariant = variations?.filter(
@@ -306,10 +273,7 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
                                                 selected={selectedVariant}
                                                 variant={variant}
                                                 onClick={(value) => {
-                                                    updateVariant(
-                                                        variant.attribute,
-                                                        value
-                                                    );
+                                                    updateVariant(variant.attribute, value);
                                                 }}
                                             />
                                         </Grid>
@@ -342,9 +306,7 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
                                             color="text"
                                             fontWeight="regular"
                                         >
-                                            Quantity{" "}
-                                            {itemInCart &&
-                                                `(${itemInCart.quantity} in cart)`}
+                                            Quantity {itemInCart && `(${itemInCart.quantity} in cart)`}
                                         </MDTypography>
                                     </MDBox>
 
@@ -361,12 +323,8 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
                                     >
                                         <Icon
                                             style={{
-                                                color:
-                                                    quantity === 1
-                                                        ? "#333"
-                                                        : "#000",
-                                                cursor:
-                                                    quantity !== 1 && "pointer",
+                                                color: quantity === 1 ? "#333" : "#000",
+                                                cursor: quantity !== 1 && "pointer",
                                             }}
                                             onClick={() => {
                                                 if (quantity == 1) return;
@@ -390,12 +348,8 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
                                                 }}
                                                 // disabled={!!updatingProductId}
                                                 value={quantity}
-                                                onChange={(
-                                                    e: React.ChangeEvent<HTMLInputElement>
-                                                ) => {
-                                                    const value = Number(
-                                                        e.target.value
-                                                    );
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                    const value = Number(e.target.value);
                                                     if (value === 0) return;
                                                     updateQuantity(value);
                                                 }}
@@ -422,17 +376,9 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
                     <Grid item xs={12} lg={6} container>
                         <ActionButton
                             width={150}
-                            disabled={
-                                quantity === 0 ||
-                                !!productVariantUnavailable ||
-                                loading
-                            }
+                            disabled={quantity === 0 || !!productVariantUnavailable || loading}
                             loading={adding}
-                            text={
-                                productVariantUnavailable
-                                    ? "Unavailable"
-                                    : "add to cart"
-                            }
+                            text={productVariantUnavailable ? "Unavailable" : "add to cart"}
                             onClick={addToCart}
                         />
                     </Grid>
@@ -440,12 +386,7 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
                 <MDBox mt={4}>
                     {loading ? (
                         <Box>
-                            <Skeleton
-                                animation="pulse"
-                                width="100%"
-                                height={15}
-                                variant="rectangular"
-                            />
+                            <Skeleton animation="pulse" width="100%" height={15} variant="rectangular" />
                             <Skeleton
                                 animation="pulse"
                                 width="100%"
@@ -470,12 +411,7 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
                         </Box>
                     ) : (
                         <MDBox color="text" fontSize="1.25rem" lineHeight={1}>
-                            <MDTypography
-                                variant="body2"
-                                color="text"
-                                fontWeight="regular"
-                                verticalAlign="middle"
-                            >
+                            <MDTypography variant="body2" color="text" fontWeight="regular" verticalAlign="middle">
                                 {product?.description}
                             </MDTypography>
                         </MDBox>

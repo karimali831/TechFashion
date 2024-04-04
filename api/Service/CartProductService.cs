@@ -8,7 +8,7 @@ namespace api.Service
     public interface ICartProductService
     {
         Task<CartProductStock> StockCheckAsync(int id, bool IsVariant);
-        Task<bool> AddProductAsync(AddProductToCartDto dto);
+        Task<ApiResponse<bool>> AddProductAsync(AddProductToCartDto dto);
         Task RemoveProductAsync(int id);
         Task UpdateProductQuantityAsync(int id, int quantity, bool replinish);
     }
@@ -27,7 +27,7 @@ namespace api.Service
         private readonly IProductRepository _productRepository = productRepository;
         private readonly IProductVariantRepository _productVariantRepository = productVariantRepository;
 
-        public async Task<bool> AddProductAsync(AddProductToCartDto dto)
+        public async Task<ApiResponse<bool>> AddProductAsync(AddProductToCartDto dto)
         {
             int? cartId = null;
             if (dto.CartUser.FirebaseUid is not null)
@@ -36,7 +36,10 @@ namespace api.Service
 
                 if (user is null)
                 {
-                    throw new ApplicationException("FirebaseUid/user record not found");
+                    return new ApiResponse<bool>
+                    {
+                        ErrorMsg = "Something went wrong"
+                    };
                 }
 
                 var cart = await _cartRepository.GetByUserIdAsync(user.Id);
@@ -76,7 +79,10 @@ namespace api.Service
 
             if (!cartId.HasValue)
             {
-                throw new ApplicationException("An error occurred");
+                return new ApiResponse<bool>
+                {
+                    ErrorMsg = "Something went wrong"
+                };
             }
 
             var create = await InsertAndReturnViewModelAsync<CartProduct>(
@@ -93,11 +99,24 @@ namespace api.Service
                 if (!await UpdateStock(create.Data.Id, replinish: false, dto.Quantity))
                 {
                     await _cartProductRepository.RemoveProductAsync(create.Data.Id);
-                    return false;
+
+                    return new ApiResponse<bool>
+                    {
+                        ErrorMsg = "This product is now longer available"
+                    };
                 }
+
+
+                return new ApiResponse<bool>
+                {
+                    Data = true
+                };
             }
 
-            return create.ErrorMsg is not null;
+            return new ApiResponse<bool>
+            {
+                ErrorMsg = "Something went wrong"
+            };
         }
 
         public async Task RemoveProductAsync(int id)

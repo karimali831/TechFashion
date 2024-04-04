@@ -39,9 +39,9 @@ namespace api.Controllers
         [HttpPost("AddProduct")]
         public async Task<IActionResult> AddProduct([FromBody] AddProductToCartDto dto)
         {
-            var request = await _cartProductService.AddProductAsync(dto);
+            var response = await _cartProductService.AddProductAsync(dto);
 
-            return NoContent();
+            return Ok(response);
         }
 
         [HttpGet("RemoveProduct/{id}")]
