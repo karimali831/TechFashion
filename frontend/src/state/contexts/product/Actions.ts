@@ -5,4 +5,6 @@ const SelectedProductAction = createAction<IProductDetail[]>(
     "@@Product/SelectedProduct"
 );
 
-export { SelectedProductAction };
+const SetStockAction = createAction<number | null>("@@Cart/SetStock");
+
+export { SelectedProductAction, SetStockAction };

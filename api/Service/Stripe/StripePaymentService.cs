@@ -51,16 +51,16 @@ namespace api.Service.Stripe
 
             var total = cartProducts.Total;
 
-            foreach (var cp in cartProducts.Products.Where(x => x.Stock is not null))
-            {
-                bool productIsVariant = cp.VariantId.HasValue;
-                var stockCheck = await _cartProductService.StockCheckAsync(cp.VariantId ?? cp.ProductId, productIsVariant);
+            // foreach (var cp in cartProducts.Products.Where(x => x.Stock is not null))
+            // {
+            //     bool productIsVariant = cp.VariantId.HasValue;
+            //     var stockCheck = await _cartProductService.StockCheckAsync(cp.VariantId ?? cp.ProductId, productIsVariant);
 
-                if (stockCheck.Quantity >= stockCheck.Stock)
-                {
-                    total -= stockCheck.Price;
-                }
-            }
+            //     if (stockCheck.Quantity >= stockCheck.Stock)
+            //     {
+            //         total -= stockCheck.Price;
+            //     }
+            // }
 
             var amount = total * 100;
 

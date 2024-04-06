@@ -11,6 +11,7 @@ namespace api.Repository
         Task<Cart?> GetByGuestCheckoutIdAsync(Guid guestCheckoutId);
         Task EmptyAsync(int cartId);
         Task SetUserIdAsync(int userId, Guid guestCheckoutId);
+        Task ArchiveInactiveAsync();
     }
 
     public class CartRepository(IConfiguration configuration) : DapperBaseRepository(configuration), ICartRepository
@@ -46,6 +47,24 @@ namespace api.Repository
         public async Task<Cart> GetAsync(int id)
         {
             return await QueryFirstAsync<Cart>($"{DapperHelper.Select(Table, Fields)} WHERE Id = @id", new { id });
+        }
+
+        public async Task ArchiveInactiveAsync()
+        {
+            var sqlTxt = @$"
+                UPDATE Carts 
+                SET ArchiveDate = GETDATE(), ArchivedByJob = 1 
+                FROM Carts AS C
+                WHERE NOT Exists (
+                    SELECT CartId 
+                    FROM CartProducts AS CP
+                    WHERE CP.CartId = C.Id
+                    AND CP.RemovedDate IS NULL
+                )
+                AND C.ArchiveDate IS NULL
+            ";
+
+            await ExecuteAsync(sqlTxt);
         }
     }
 }

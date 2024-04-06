@@ -21,7 +21,7 @@ namespace api
 
             // Services
             services.AddScoped<IEbayFeedService, EbayFeedService>();
-
+            services.AddScoped<ICartJobService, CartJobService>();
             services.AddScoped<IStripeCouponService, StripeCouponService>();
             services.AddScoped<IStripeCustomerService, StripeCustomerService>();
             services.AddScoped<IStripeOrderService, StripeOrderService>();

@@ -6,7 +6,7 @@ import ProductInfo from "../../../../layouts/ecommerce/products/product-page/com
 import dataTableData from "../../../../layouts/ecommerce/products/product-page/data/dataTableData";
 import MDBox from "../../../../components/MDBox";
 import DataTable from "src/layouts/table/DataTable";
-import { Box, Icon, Skeleton } from "@mui/material";
+import { Box, Icon, LinearProgress, Skeleton } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
 import { getProductState } from "src/state/contexts/product/Selectors";
 import { useEffect } from "react";
@@ -32,9 +32,11 @@ function ProductPage(): JSX.Element {
         }
     }, [products]);
 
-    // if (selectedProduct.length === 0 || isLoading) {
-    //     return <LinearProgress />;
-    // }
+    const loading = selectedProduct.length === 0;
+
+    if (loading) {
+        return <LinearProgress />;
+    }
 
     return (
         <MDBox py={3} className="home">

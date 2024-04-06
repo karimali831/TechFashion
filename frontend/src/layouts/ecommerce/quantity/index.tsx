@@ -5,6 +5,8 @@ import { ICartProductDetail } from "src/interface/ICartProductDetail";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
 import { UpdatingProductIdAction } from "src/state/contexts/cart/Actions";
 import { getCartState } from "src/state/contexts/cart/Selectors";
+import { SetStockAction } from "src/state/contexts/product/Actions";
+import Swal from "sweetalert2";
 
 interface IProps {
     item: ICartProductDetail;
@@ -27,21 +29,36 @@ export const ProductQuantity = ({ item }: IProps) => {
 
     const onQuantityChange = async (
         id: number,
-        quantity: number,
+        value: number,
         replinish: boolean
     ) => {
-        if (updatingProductQuantity || quantity === 0) return;
+        if (updatingProductQuantity || value === 0) return;
 
-        if (quantity) {
+        if (value) {
             dispatch(UpdatingProductIdAction(id));
         }
+
         await updateProductQuantity({
             id,
-            quantity,
+            quantity: value,
             replinish,
         })
             .unwrap()
-            .then((payload) => {})
+            .then((payload) => {
+                if (payload.errorMsg) {
+                    Swal.fire({
+                        icon: "error",
+                        title: payload.errorMsg,
+                    });
+                    dispatch(SetStockAction(0));
+                } else {
+                    setQuantity({
+                        id,
+                        quantity: value,
+                    });
+                    dispatch(SetStockAction(payload.data));
+                }
+            })
             .catch((error) => {
                 console.error(error);
             })
@@ -72,16 +89,12 @@ export const ProductQuantity = ({ item }: IProps) => {
                     onClick={() => {
                         if (item.quantity == 1) return;
 
-                        const quantity = item.quantity - 1;
+                        const value =
+                            quantity?.id === item.id
+                                ? quantity.quantity
+                                : item.quantity;
 
-                        if (item.stock && quantity > item.stock) {
-                            return;
-                        }
-                        setQuantity({
-                            id: item.id,
-                            quantity,
-                        });
-                        onQuantityChange(item.id, quantity, true);
+                        onQuantityChange(item.id, value - 1, true);
                     }}
                 >
                     remove
@@ -107,7 +120,6 @@ export const ProductQuantity = ({ item }: IProps) => {
                         }
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             const value = Number(e.target.value);
-
                             if (value === 0) return;
 
                             setQuantity({
@@ -117,19 +129,13 @@ export const ProductQuantity = ({ item }: IProps) => {
                         }}
                         onBlur={(e: React.ChangeEvent<HTMLInputElement>) => {
                             const value = Number(e.target.value);
-
                             if (value === 0) return;
 
-                            const q =
-                                quantity?.id === item.id
-                                    ? quantity.quantity
-                                    : item.quantity;
-
-                            const replinish = value < q;
+                            const replinish = value < item.quantity;
                             onQuantityChange(item.id, value, replinish);
                         }}
                     />
-                    {item.stock && (
+                    {/* {item.stock && (
                         <span
                             style={{
                                 position: "relative",
@@ -138,24 +144,21 @@ export const ProductQuantity = ({ item }: IProps) => {
                         >
                             {"/ " + item.stock}
                         </span>
-                    )}
+                    )} */}
                 </Box>
                 <Icon
                     sx={{
                         cursor: "pointer",
                     }}
                     onClick={() => {
-                        const quantity = item.quantity + 1;
+                        // const quantity = item.quantity + 1;
 
-                        if (item.stock && quantity > item.stock) {
-                            return;
-                        }
+                        const value =
+                            quantity?.id === item.id
+                                ? quantity.quantity
+                                : item.quantity;
 
-                        setQuantity({
-                            id: item.id,
-                            quantity,
-                        });
-                        onQuantityChange(item.id, quantity, false);
+                        onQuantityChange(item.id, value + 1, false);
                     }}
                 >
                     add

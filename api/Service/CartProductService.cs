@@ -7,10 +7,10 @@ namespace api.Service
 {
     public interface ICartProductService
     {
-        Task<CartProductStock> StockCheckAsync(int id, bool IsVariant);
-        Task<ApiResponse<bool>> AddProductAsync(AddProductToCartDto dto);
-        Task RemoveProductAsync(int id);
-        Task UpdateProductQuantityAsync(int id, int quantity, bool replinish);
+        Task<IList<CartProductStock>> StockCheckAsync(int id, bool IsVariant);
+        Task<ApiResponse<int>> AddProductAsync(AddProductToCartDto dto);
+        Task<ApiResponse<int>> RemoveProductAsync(int id);
+        Task<ApiResponse<int>> UpdateProductQuantityAsync(int id, int quantity, bool replinish);
     }
 
     public class CartProductService(
@@ -27,7 +27,7 @@ namespace api.Service
         private readonly IProductRepository _productRepository = productRepository;
         private readonly IProductVariantRepository _productVariantRepository = productVariantRepository;
 
-        public async Task<ApiResponse<bool>> AddProductAsync(AddProductToCartDto dto)
+        public async Task<ApiResponse<int>> AddProductAsync(AddProductToCartDto dto)
         {
             int? cartId = null;
             if (dto.CartUser.FirebaseUid is not null)
@@ -36,7 +36,7 @@ namespace api.Service
 
                 if (user is null)
                 {
-                    return new ApiResponse<bool>
+                    return new ApiResponse<int>
                     {
                         ErrorMsg = "Something went wrong"
                     };
@@ -79,7 +79,7 @@ namespace api.Service
 
             if (!cartId.HasValue)
             {
-                return new ApiResponse<bool>
+                return new ApiResponse<int>
                 {
                     ErrorMsg = "Something went wrong"
                 };
@@ -96,47 +96,62 @@ namespace api.Service
 
             if (create is { Data: not null })
             {
-                if (!await UpdateStock(create.Data.Id, replinish: false, dto.Quantity))
+                var stockCheck = await UpdateStock(create.Data.Id, replinish: false, dto.Quantity, newItem: true);
+
+                if (!stockCheck.HasValue)
                 {
                     await _cartProductRepository.RemoveProductAsync(create.Data.Id);
 
-                    return new ApiResponse<bool>
+                    return new ApiResponse<int>
                     {
-                        ErrorMsg = "This product is now longer available"
+                        ErrorMsg = "Quantity not available or is now out of stock"
                     };
                 }
 
 
-                return new ApiResponse<bool>
+                return new ApiResponse<int>
                 {
-                    Data = true
+                    Data = stockCheck.Value
                 };
             }
 
-            return new ApiResponse<bool>
+            return new ApiResponse<int>
             {
                 ErrorMsg = "Something went wrong"
             };
         }
 
-        public async Task RemoveProductAsync(int id)
+        public async Task<ApiResponse<int>> RemoveProductAsync(int id)
         {
-            if (await UpdateStock(id, quantity: 0, replinish: true))
+            var stockCheck = await UpdateStock(id, quantity: 0, replinish: true, newItem: false);
+
+            if (stockCheck.HasValue)
             {
-                await _cartProductRepository.RemoveProductAsync(id);
+                if (await _cartProductRepository.RemoveProductAsync(id))
+                {
+                    return new ApiResponse<int> { Data = stockCheck.Value };
+                }
             }
+
+            return new ApiResponse<int> { ErrorMsg = "Something went wrong." };
         }
 
-        public async Task UpdateProductQuantityAsync(int id, int quantity, bool replinish)
+        public async Task<ApiResponse<int>> UpdateProductQuantityAsync(int id, int quantity, bool replinish)
         {
+            var stockCheck = await UpdateStock(id, replinish, quantity, newItem: false);
 
-            if (await UpdateStock(id, replinish, quantity))
+            if (stockCheck.HasValue)
             {
-                await _cartProductRepository.UpdateProductQuantityAsync(id, quantity);
+                if (await _cartProductRepository.UpdateProductQuantityAsync(id, quantity))
+                {
+                    return new ApiResponse<int> { Data = stockCheck.Value };
+                }
             }
+
+            return new ApiResponse<int> { ErrorMsg = "Quantity not available" };
         }
 
-        public async Task<CartProductStock> StockCheckAsync(int id, bool IsVariant)
+        public async Task<IList<CartProductStock>> StockCheckAsync(int id, bool IsVariant)
         {
             if (IsVariant)
             {
@@ -146,35 +161,49 @@ namespace api.Service
             return await _cartProductRepository.ProductStockCheckAsync(id);
         }
 
-        private async Task<bool> UpdateStock(int id, bool replinish, int quantity)
+        private async Task<int?> UpdateStock(int id, bool replinish, int quantity, bool newItem)
         {
             var cartProduct = await _cartProductRepository.GetAsync(id);
 
             bool productIsVariant = cartProduct.VariantId.HasValue;
             var stockCheck = await StockCheckAsync(cartProduct.VariantId ?? cartProduct.ProductId!.Value, productIsVariant);
 
-            if (stockCheck.Stock is null)
-                return false;
+            var stock = stockCheck.FirstOrDefault()?.Stock;
+            var originalStock = stockCheck.FirstOrDefault()?.OriginalStock;
 
-            if (!replinish && stockCheck.Quantity > stockCheck.Stock)
-                return false;
+            if (stock is null || originalStock is null)
+                return null;
 
-            var stock = replinish ?
-                stockCheck.Stock.Value + (quantity == 0 ? stockCheck.Quantity : quantity) :
-                stockCheck.Stock.Value - quantity;
+            var quantityInCart = stockCheck.Sum(x => x.Quantity) + (newItem ? 0 : 1);
 
-            stock = stock < 0 ? 0 : stock;
+            if (quantityInCart > originalStock && !replinish)
+                return null;
+
+            // Quantity -> 0 means deleting. 
+            // We need to update stock to be total cart quantiy minus user quantity.
+            if (replinish)
+            {
+                quantityInCart = quantity == 0 ?
+                    stockCheck.Where(x => x.CartProductId != id).Sum(x => x.Quantity) :
+                    quantity;
+            }
+
+            var calcStock = originalStock.Value - quantityInCart;
+            calcStock = calcStock < 0 ? 0 : calcStock;
+
+            if (calcStock > originalStock)
+                return null;
 
             if (productIsVariant)
             {
-                await _productVariantRepository.UpdateStockAsync(stockCheck.Id, stock);
+                await _productVariantRepository.UpdateStockAsync(stockCheck.First().Id, calcStock);
             }
             else
             {
-                await _productRepository.UpdateStockAsync(stockCheck.Id, stock);
+                await _productRepository.UpdateStockAsync(stockCheck.First().Id, calcStock);
             }
 
-            return true;
+            return calcStock;
         }
     }
 }

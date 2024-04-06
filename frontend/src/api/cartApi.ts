@@ -19,14 +19,20 @@ export const cartApi = createApi({
             }),
             providesTags: ["Cart"],
         }),
-        updateProductQuantity: builder.mutation<void, { id: number; quantity: number; replinish: boolean }>({
+        updateProductQuantity: builder.mutation<
+            IApiResponse<number>,
+            { id: number; quantity: number; replinish: boolean }
+        >({
             query: ({ id, quantity, replinish }) => ({
                 url: `Cart/UpdateProductQuantity/${id}/${quantity}/${replinish}`,
                 method: "GET",
             }),
             invalidatesTags: ["Cart", "PaymentIntent"],
         }),
-        addProductToCart: builder.mutation<IApiResponse<boolean>, IAddProductToCartRequest>({
+        addProductToCart: builder.mutation<
+            IApiResponse<number>,
+            IAddProductToCartRequest
+        >({
             query: (body) => ({
                 url: "Cart/AddProduct",
                 method: "POST",
@@ -34,14 +40,17 @@ export const cartApi = createApi({
             }),
             invalidatesTags: ["Cart", "PaymentIntent"],
         }),
-        removeProductFromCart: builder.mutation<void, number>({
+        removeProductFromCart: builder.mutation<IApiResponse<number>, number>({
             query: (id) => ({
                 url: `Cart/RemoveProduct/${id}`,
                 method: "GET",
             }),
             invalidatesTags: ["Cart", "PaymentIntent"],
         }),
-        createPaymentIntent: builder.query<IPaymentIntentResponse, IPaymentIntentRequest>({
+        createPaymentIntent: builder.query<
+            IPaymentIntentResponse,
+            IPaymentIntentRequest
+        >({
             query: (body) => ({
                 url: "Cart/CreatePaymentIntent",
                 method: "POST",

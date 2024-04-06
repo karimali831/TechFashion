@@ -20,6 +20,8 @@ import { getUserState } from "src/state/contexts/user/Selectors";
 import { Page } from "src/enum/Page";
 import { ShowPageAction } from "src/state/contexts/app/Actions";
 import { ProductQuantity } from "../quantity";
+import Swal from "sweetalert2";
+import { SetStockAction } from "src/state/contexts/product/Actions";
 
 interface IProps {
     isOverlay: boolean;
@@ -47,7 +49,16 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
 
         await removeProductFromCart(id)
             .unwrap()
-            .then((payload) => {})
+            .then((payload) => {
+                if (payload.errorMsg) {
+                    Swal.fire({
+                        icon: "error",
+                        title: payload.errorMsg,
+                    });
+                } else {
+                    dispatch(SetStockAction(payload.data));
+                }
+            })
             .catch((error) => {
                 console.error(error);
             })
