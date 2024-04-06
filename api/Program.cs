@@ -110,7 +110,7 @@ app.UseHangfireDashboard("/jobs", new DashboardOptions()
 }, JobStorage.Current);
 
 
-BackgroundJob.Enqueue(() => Console.WriteLine("Hello world from Hangfire!"));
+// BackgroundJob.Enqueue(() => Console.WriteLine("Hello world from Hangfire!"));
 
 using var scope = app.Services.CreateScope();
 RecurringJob.AddOrUpdate("Remove inactive carts",
