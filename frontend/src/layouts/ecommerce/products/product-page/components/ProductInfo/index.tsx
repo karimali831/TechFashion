@@ -124,7 +124,8 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
                         });
                         dispatch(SetStockAction(0));
                     } else {
-                        dispatch(SetStockAction(payload.data));
+                        const stock = payload.data === 0 ? null : payload.data;
+                        dispatch(SetStockAction(stock));
                         dispatch(OpenCartOverlayAction(true));
                     }
                     setQuantity(1);
@@ -151,7 +152,8 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
                         });
                         dispatch(SetStockAction(0));
                     } else {
-                        dispatch(SetStockAction(payload.data));
+                        const stock = payload.data === 0 ? null : payload.data;
+                        dispatch(SetStockAction(stock));
                         dispatch(OpenCartOverlayAction(true));
                     }
 

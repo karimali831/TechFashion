@@ -50,13 +50,18 @@ export const ProductQuantity = ({ item }: IProps) => {
                         icon: "error",
                         title: payload.errorMsg,
                     });
+                    setQuantity({
+                        id,
+                        quantity: item.quantity,
+                    });
                     dispatch(SetStockAction(0));
                 } else {
                     setQuantity({
                         id,
                         quantity: value,
                     });
-                    dispatch(SetStockAction(payload.data));
+                    const stock = payload.data === 0 ? null : payload.data;
+                    dispatch(SetStockAction(stock));
                 }
             })
             .catch((error) => {

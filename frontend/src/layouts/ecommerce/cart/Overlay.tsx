@@ -56,7 +56,8 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
                         title: payload.errorMsg,
                     });
                 } else {
-                    dispatch(SetStockAction(payload.data));
+                    const stock = payload.data === 0 ? null : payload.data;
+                    dispatch(SetStockAction(stock));
                 }
             })
             .catch((error) => {

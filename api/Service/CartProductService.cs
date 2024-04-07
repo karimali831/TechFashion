@@ -11,6 +11,7 @@ namespace api.Service
         Task<ApiResponse<int>> AddProductAsync(AddProductToCartDto dto);
         Task<ApiResponse<int>> RemoveProductAsync(int id);
         Task<ApiResponse<int>> UpdateProductQuantityAsync(int id, int quantity, bool replinish);
+        Task UpdateStockAsync(int id, int stock, bool isVariant);
     }
 
     public class CartProductService(
@@ -168,42 +169,48 @@ namespace api.Service
             bool productIsVariant = cartProduct.VariantId.HasValue;
             var stockCheck = await StockCheckAsync(cartProduct.VariantId ?? cartProduct.ProductId!.Value, productIsVariant);
 
-            var stock = stockCheck.FirstOrDefault()?.Stock;
-            var originalStock = stockCheck.FirstOrDefault()?.OriginalStock;
+            if (!stockCheck.Any())
+                return 0;
 
-            if (stock is null || originalStock is null)
+            var remainingStock = stockCheck.First().Stock;
+            var originalStock = stockCheck.First().OriginalStock;
+
+            var userQuantity = stockCheck.First(x => x.CartProductId == id).Quantity;
+
+            if (quantity > originalStock)
                 return null;
 
-            var quantityInCart = stockCheck.Sum(x => x.Quantity) + (newItem ? 0 : 1);
+            var quantityInCart = stockCheck.Sum(x => x.Quantity);
 
             if (quantityInCart > originalStock && !replinish)
                 return null;
 
-            // Quantity -> 0 means deleting. 
-            // We need to update stock to be total cart quantiy minus user quantity.
-            if (replinish)
-            {
-                quantityInCart = quantity == 0 ?
-                    stockCheck.Where(x => x.CartProductId != id).Sum(x => x.Quantity) :
-                    quantity;
-            }
+            var quantityTotal = quantityInCart -
+                (replinish ? userQuantity - quantity : userQuantity - quantity);
 
-            var calcStock = originalStock.Value - quantityInCart;
-            calcStock = calcStock < 0 ? 0 : calcStock;
+            var stock = originalStock - (newItem ? quantityInCart : quantityTotal);
 
-            if (calcStock > originalStock)
+
+            if (stock > originalStock)
                 return null;
 
-            if (productIsVariant)
+            if (!replinish && quantityTotal > originalStock)
+                return null;
+
+            await UpdateStockAsync(stockCheck.First().Id, stock, productIsVariant);
+            return stock;
+        }
+
+        public async Task UpdateStockAsync(int id, int stock, bool isVariant)
+        {
+            if (isVariant)
             {
-                await _productVariantRepository.UpdateStockAsync(stockCheck.First().Id, calcStock);
+                await _productVariantRepository.UpdateStockAsync(id, stock);
             }
             else
             {
-                await _productRepository.UpdateStockAsync(stockCheck.First().Id, calcStock);
+                await _productRepository.UpdateStockAsync(id, stock);
             }
-
-            return calcStock;
         }
     }
 }

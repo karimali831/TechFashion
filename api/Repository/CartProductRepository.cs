@@ -9,12 +9,13 @@ namespace api.Repository
     {
         Task<IList<CartProductStock>> ProductStockCheckAsync(int productId);
         Task<IList<CartProductStock>> ProductVariantStockCheckAsync(int productVariantId);
+        Task<IList<CartProductStock>> ProductsStockCheckAsync();
         Task<CartProduct> GetAsync(int id);
         Task<bool> AddAsync(CartProduct model);
         Task<bool> RemoveProductAsync(int id);
         Task<bool> UpdateProductQuantityAsync(int id, int quantity);
         Task<IList<CartProductDetail>> GetBasketAsync(int cartId, bool incArchived = false);
-        Task RemoveInactiveAsync();
+        Task RemoveInactiveAsync(int id);
     }
 
     public class CartProductRepository(IConfiguration configuration) : DapperBaseRepository(configuration),
@@ -26,12 +27,14 @@ namespace api.Repository
         public async Task<IList<CartProductStock>> ProductStockCheckAsync(int productId)
         {
             var sqlTxt = @$"
-                SELECT p.Id, cp.Id AS CartProductId, p.Stock, cp.Quantity, p.Price, p.OriginalStock
+                SELECT p.Id, cp.Id AS CartProductId, p.Stock, cp.Quantity, p.Price, p.OriginalStock, 0 AS IsVariant
                 FROM Products AS P
                 JOIN CartProducts AS CP
                 ON cp.ProductId = P.Id AND cp.VariantId IS NULL
                 WHERE p.Id = @productId
-                AND cp.RemovedDate IS NULL";
+                AND cp.RemovedDate IS NULL
+                AND p.Stock IS NOT NULL
+                AND p.OriginalStock IS NOT NULL";
 
             return (await QueryAsync<CartProductStock>(sqlTxt, new { productId })).ToList();
         }
@@ -39,14 +42,42 @@ namespace api.Repository
         public async Task<IList<CartProductStock>> ProductVariantStockCheckAsync(int productVariantId)
         {
             var sqlTxt = @$"
-                SELECT pv.Id, cp.Id, pv.Stock, cp.Quantity, pv.Price, pv.OriginalStock
+                SELECT pv.Id, cp.Id AS CartProductId, pv.Stock, cp.Quantity, pv.Price, pv.OriginalStock, 1 AS IsVariant
                 FROM ProductVariants AS PV
                 JOIN CartProducts AS CP
                 ON cp.VariantId = pv.Id
                 WHERE pv.Id = @productVariantId
-                AND cp.RemovedDate IS NULL";
+                AND cp.RemovedDate IS NULL
+                AND pv.Stock IS NOT NULL
+                AND pv.OriginalStock IS NOT NULL";
 
             return (await QueryAsync<CartProductStock>(sqlTxt, new { productVariantId })).ToList();
+        }
+
+        public async Task<IList<CartProductStock>> ProductsStockCheckAsync()
+        {
+            var sqlTxt = @$"
+                SELECT p.Id, cp.Id AS CartProductId, p.Stock, cp.Quantity, p.Price, p.OriginalStock, 0 AS IsVariant
+                FROM Products AS P
+                JOIN CartProducts AS CP
+                ON cp.ProductId = P.Id AND cp.VariantId IS NULL
+                WHERE GETDATE() > DATEADD(minute, 30, cp.CreatedDate)
+                AND cp.RemovedDate IS NULL
+                AND p.Stock IS NOT NULL
+                AND p.OriginalStock IS NOT NULL
+
+                UNION
+
+                SELECT pv.Id, cp.Id, pv.Stock, cp.Quantity, pv.Price, pv.OriginalStock, 1
+                FROM ProductVariants AS PV
+                JOIN CartProducts AS CP
+                ON cp.VariantId = pv.Id
+                WHERE GETDATE() > DATEADD(minute, 30, cp.CreatedDate)
+                AND cp.RemovedDate IS NULL
+                AND pv.Stock IS NOT NULL
+                AND pv.OriginalStock IS NOT NULL";
+
+            return (await QueryAsync<CartProductStock>(sqlTxt)).ToList();
         }
 
         public async Task<bool> UpdateProductQuantityAsync(int id, int quantity)
@@ -119,15 +150,12 @@ namespace api.Repository
 
         public async Task<bool> RemoveProductAsync(int id)
         {
-            return await ExecuteAsync(@$"
-                ;UPDATE {Table}
-                SET RemovedDate = @date
-                WHERE Id = @id
-            ", new
-            {
-                date = DateTime.UtcNow,
-                id
-            });
+            return await ExecuteAsync($"UPDATE {Table} SET RemovedDate = @date WHERE Id = @id",
+                new
+                {
+                    date = DateTime.UtcNow,
+                    id
+                });
         }
 
         public async Task<CartProduct> GetAsync(int id)
@@ -135,16 +163,9 @@ namespace api.Repository
             return await QueryFirstAsync<CartProduct>($"{DapperHelper.Select(Table, Fields)} WHERE Id = @id", new { id });
         }
 
-        public async Task RemoveInactiveAsync()
+        public async Task RemoveInactiveAsync(int id)
         {
-            var sqlTxt = @$"
-                UPDATE {Table} 
-                SET RemovedDate = GETDATE(), RemovedByJob = 1 
-                WHERE CreatedDate < DATEADD(minute, 30, GETDATE())
-                AND RemovedDate IS NULL
-            ";
-
-            await ExecuteAsync(sqlTxt);
+            await ExecuteAsync($"UPDATE {Table} SET RemovedDate = GETDATE(), RemovedByJob = 1 WHERE Id = @id", new { id });
         }
     }
 }
