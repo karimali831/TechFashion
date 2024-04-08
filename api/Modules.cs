@@ -17,6 +17,7 @@ namespace api
         {
             // Singleton
             services.AddSingleton<ICacheService, CacheService>();
+            services.AddSingleton<ICsvImportService, CsvImportService>();
             services.AddSingleton<IExceptionHandlerService, ExceptionHandlerService>();
 
             // Services
@@ -28,7 +29,7 @@ namespace api
             services.AddScoped<IStripePaymentService, StripePaymentService>();
             services.AddScoped<IStripePaymentMethodService, StripePaymentMethodService>();
             services.AddScoped<IStripePromotionService, StripePromotionService>();
-
+            services.AddScoped<IProductImportService, ProductImportService>();
             services.AddScoped<ICartProductService, CartProductService>();
             services.AddScoped<ICartService, CartService>();
             services.AddScoped<ICustomerAddressService, CustomerAddressService>();

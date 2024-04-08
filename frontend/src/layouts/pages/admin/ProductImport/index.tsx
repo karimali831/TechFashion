@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
+import { baseApiUrl } from "src/api/baseApi";
 import MDBox from "src/components/MDBox";
 
 export const ProductImport = () => {
@@ -19,7 +20,10 @@ export const ProductImport = () => {
         e.preventDefault();
 
         async function fetchData() {
-            const res: any = await axios.post("http://127.0.0.1:8000/end_point_name_here/", formData);
+            const res: any = await axios.post(
+                baseApiUrl + "ProductImport/Upload",
+                formData
+            );
             console.log(res.data);
         }
         fetchData();
@@ -30,7 +34,10 @@ export const ProductImport = () => {
             <h1>Import Ebay Prodocts</h1>
             <form onSubmit={handleSubmit}>
                 <input type="file" accept=".csv" onChange={handleChange} />
-                <button type="submit" className="bg-blue-500 px-4 py-2 rounded-md font-semibold">
+                <button
+                    type="submit"
+                    className="bg-blue-500 px-4 py-2 rounded-md font-semibold"
+                >
                     fetch
                 </button>
             </form>

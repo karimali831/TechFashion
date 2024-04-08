@@ -1,32 +1,24 @@
+using api.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ProductImportController : ControllerBase
+    public class ProductImportController(IProductImportService productImportService) : ControllerBase
     {
+        private readonly IProductImportService _productImportService = productImportService;
+
         [DisableRequestSizeLimit]
         [RequestFormLimits(MultipartBodyLengthLimit = 234217728)]
         [HttpPost("Upload")]
-        public async Task<ActionResult> CsvUpload()
+        public IActionResult CsvUpload()
         {
-            var uploadedFiles = HttpContext.Request.Form.Files;
-            foreach (var uploadedFile in uploadedFiles)
-            {
-                string fileFullPath = @"../sometempfolder/tempfile.txt";
-                if (System.IO.File.Exists(fileFullPath))
-                    System.IO.File.Delete(fileFullPath);
+            var file = HttpContext.Request.Form.Files;
+            _productImportService.DoAsync(file[0]);
 
-                using (FileStream stream = System.IO.File.Open(fileFullPath, FileMode.Create, FileAccess.Write))
-                {
-                    await uploadedFile.CopyToAsync(stream);
-                }
-                string csvContents = System.IO.File.ReadAllText(fileFullPath);
-                // ProcessCSVFile(csvContents);
-            }
-
-            return Ok();
+            return NoContent();
         }
     }
+
 }

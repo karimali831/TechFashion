@@ -1,3 +1,5 @@
+using api.Data;
+using api.Helper;
 using api.Infrastructure;
 using api.Models;
 
@@ -14,6 +16,8 @@ namespace api.Repository
         IProductRepository
     {
         private const string Table = "Products";
+        private static readonly string[] Fields = typeof(Product).DapperFields();
+
 
         public async Task<IList<ProductCatalogue>> GetCatalogueAsync()
         {
@@ -88,6 +92,11 @@ namespace api.Repository
         public async Task UpdateStockAsync(int id, int stock)
         {
             await ExecuteAsync($"UPDATE {Table} SET Stock = @stock WHERE Id = @id AND Stock IS NOT NULL", new { id, stock });
+        }
+
+        public async Task AddAsync(Product model)
+        {
+            await ExecuteAsync(DapperHelper.Insert(Table, Fields), model);
         }
     }
 }
