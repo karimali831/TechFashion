@@ -7,4 +7,5 @@ export interface IRoute {
     path?: string;
     url: string;
     displayOnHeader?: boolean;
+    adminOnly?: boolean;
 }

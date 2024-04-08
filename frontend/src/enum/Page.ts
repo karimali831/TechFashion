@@ -11,4 +11,5 @@ export enum Page {
     Order = "Order",
     Account = "Account",
     Addresses = "addresses",
+    ProductImport = "Product Import",
 }

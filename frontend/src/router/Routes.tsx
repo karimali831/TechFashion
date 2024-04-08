@@ -1,17 +1,18 @@
+import { Cart } from "src/layouts/ecommerce/cart";
+import { Success } from "src/layouts/ecommerce/payment/Success";
+import ProductPage from "src/layouts/ecommerce/products/product-page";
+import { Addresses } from "src/layouts/pages/account/address";
+import Billing from "src/layouts/pages/account/billing";
+import ResetPassword from "src/layouts/pages/account/resetpassword";
+import { ProductImport } from "src/layouts/pages/admin/ProductImport";
+import Contact from "src/layouts/pages/contact";
 import Home from "src/layouts/pages/home";
+import Login from "src/layouts/pages/login";
+import { AccountOrder } from "src/layouts/pages/order";
+import Products from "src/layouts/pages/products";
+import Register from "src/layouts/pages/register";
 import { Page } from "../enum/Page";
 import { IRoute } from "./Route";
-import Login from "src/layouts/pages/login";
-import Register from "src/layouts/pages/register";
-import ResetPassword from "src/layouts/pages/account/resetpassword";
-import Products from "src/layouts/pages/products";
-import ProductPage from "src/layouts/ecommerce/products/product-page";
-import { Cart } from "src/layouts/ecommerce/cart";
-import Contact from "src/layouts/pages/contact";
-import { Success } from "src/layouts/ecommerce/payment/Success";
-import Billing from "src/layouts/pages/account/billing";
-import { AccountOrder } from "src/layouts/pages/order";
-import { Addresses } from "src/layouts/pages/account/address";
 
 export const AppRoutes: IRoute[] = [
     {
@@ -90,5 +91,13 @@ export const AppRoutes: IRoute[] = [
         element: <Addresses />,
         memberOnly: true,
         url: "/account/addresses",
+    },
+    {
+        page: Page.ProductImport,
+        element: <ProductImport />,
+        memberOnly: true,
+        adminOnly: true,
+        url: "/admin/productimport",
+        displayOnHeader: true,
     },
 ];
