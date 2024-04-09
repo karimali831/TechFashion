@@ -9,6 +9,7 @@ namespace api.Data
         public string Description { get; set; } = string.Empty;
         public decimal? Price { get; set; }
         public int? Stock { get; set; }
+        public int? OriginalStock { get; set; }
         public required bool Active { get; set; } = true;
         public long? EbayItemNo { get; set; }
         public DateTime CreatedDate => DateTime.UtcNow;

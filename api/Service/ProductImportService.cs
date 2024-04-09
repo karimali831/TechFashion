@@ -28,48 +28,61 @@ namespace api.Service
             var products = new List<Product>();
             var productVariants = new List<ProductVariant>();
 
-            foreach (var product in listing)
+            var productsTopLevel = listing.GroupBy(x => x.ItemNo);
+            var ids = new List<(int ProductId, long ItemNo)>();
+
+            // Add products
+            foreach (var ptl in productsTopLevel)
             {
-                var productId =
-                    await _productRepository.AddAsync(new Product
+                var itemNo = ptl.Key;
+                var firstProduct = ptl.First();
+
+                var dbProdId = await _productRepository.InsertOrUpdateEbayItemAsync(
+                    new Product
                     {
-                        EbayItemNo = product.ItemNo,
-                        Slug = product.Title.GenerateSlug(),
-                        Sku = product.Sku,
-                        Title = product.Title,
-                        Price = product.Price,
-                        Stock = product.Stock,
+                        EbayItemNo = itemNo,
+                        Slug = firstProduct.Title.GenerateSlug(),
+                        Sku = firstProduct.Sku,
+                        Title = firstProduct.Title,
+                        Price = firstProduct.Price,
+                        Stock = firstProduct.Stock,
+                        OriginalStock = firstProduct.Stock,
                         Active = false
                     });
 
-                if (product.Variants != "")
+                ids.Add((dbProdId, itemNo));
+            }
+
+            // Add product variants
+            foreach (var product in listing.Where(x => x.Variants != ""))
+            {
+                var list = new List<ProductVariantObj>();
+                var variants = product.Variants.Split("|");
+
+                foreach (var variant in variants)
                 {
-                    var list = new List<ProductVariantObj>();
-                    var variants = product.Variants.Split("|");
+                    var key = variant.Split("=")[0];
 
-                    foreach (var variant in variants)
+                    if (key == "")
+                        continue;
+
+                    var options = variant.Split("=")[1];
+                    var values = options.Split(";");
+
+                    foreach (var value in values)
                     {
-                        var key = variant.Split("=")[0];
-
-                        if (key == "")
-                            continue;
-
-                        var options = variant.Split("=")[1];
-                        var values = options.Split(";");
-
-                        foreach (var value in values)
+                        list.Add(new ProductVariantObj
                         {
-                            list.Add(new ProductVariantObj
-                            {
-                                Attribute = key,
-                                Value = value
-                            });
-                        }
-
-
+                            Attribute = key,
+                            Value = value
+                        });
                     }
+                }
 
-                    productVariants.Add(new ProductVariant
+                var productId = ids.First(x => x.ItemNo == product.ItemNo).ProductId;
+
+                await _productVariantRepository.InsertOrUpdateAsync(
+                    new ProductVariant
                     {
                         ProductId = productId,
                         Variant = JsonConvert.SerializeObject(list),
@@ -78,7 +91,6 @@ namespace api.Service
                         Stock = product.Stock,
                         Price = product.Price
                     });
-                }
             }
         }
     }

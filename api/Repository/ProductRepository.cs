@@ -10,7 +10,7 @@ namespace api.Repository
         Task<IList<ProductDetail>> GetAllAsync();
         Task<IList<ProductCatalogue>> GetCatalogueAsync();
         Task UpdateStockAsync(int id, int stock);
-        Task<int> AddAsync(Product model);
+        Task<int> InsertOrUpdateEbayItemAsync(Product model);
     }
 
     public class ProductRepository(IConfiguration configuration) : DapperBaseRepository(configuration),
@@ -95,10 +95,31 @@ namespace api.Repository
             await ExecuteAsync($"UPDATE {Table} SET Stock = @stock WHERE Id = @id AND Stock IS NOT NULL", new { id, stock });
         }
 
-        public async Task<int> AddAsync(Product model)
+        public async Task<int> InsertOrUpdateEbayItemAsync(Product model)
         {
+            if (!model.EbayItemNo.HasValue)
+                throw new ApplicationException("Not an ebay item");
+
+            var existing = await GetByEbayItemNoAsync(model.EbayItemNo.Value);
+
+            if (existing is not null)
+            {
+                await UpdateAsync(model);
+                return existing.Id;
+            }
+
             var result = await QueryAsync<int>(DapperHelper.Insert(Table, Fields), model);
             return result.Single();
+        }
+
+        private async Task<bool> UpdateAsync(Product model)
+        {
+            return await ExecuteAsync(DapperHelper.Update(Table, Fields), model);
+        }
+
+        private async Task<Product?> GetByEbayItemNoAsync(long itemNo)
+        {
+            return await QueryFirstOrDefaultAsync<Product>($"{DapperHelper.Select(Table, Fields)} WHERE EbayItemNo = @itemNo", new { itemNo });
         }
     }
 }

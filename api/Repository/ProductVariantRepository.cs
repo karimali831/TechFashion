@@ -9,7 +9,7 @@ namespace api.Repository
         Task<IEnumerable<Variant>> GetAllAttributesAsync();
         Task<IList<ProductVariant>> GetAllByProductIdsAsync(IList<int> productIds);
         Task UpdateStockAsync(int id, int stock);
-        Task<int> AddAsync(ProductVariant model);
+        Task<bool> InsertOrUpdateAsync(ProductVariant model);
     }
 
     public class ProductVariantRepository(IConfiguration configuration) : DapperBaseRepository(configuration),
@@ -37,10 +37,26 @@ namespace api.Repository
             await ExecuteAsync($"UPDATE {Table} SET Stock = @stock WHERE Id = @id AND Stock IS NOT NULL", new { id, stock });
         }
 
-        public async Task<int> AddAsync(ProductVariant model)
+        public async Task<bool> InsertOrUpdateAsync(ProductVariant model)
         {
-            var result = await QueryAsync<int>(DapperHelper.Insert(Table, Fields), model);
-            return result.Single();
+            var existing = await GetByIdAsync(model.Id);
+
+            if (existing is not null)
+            {
+                return await UpdateAsync(model);
+            }
+
+            return await ExecuteAsync(DapperHelper.Insert(Table, Fields), model);
+        }
+
+        private async Task<bool> UpdateAsync(ProductVariant model)
+        {
+            return await ExecuteAsync(DapperHelper.Update(Table, Fields), model);
+        }
+
+        private async Task<ProductVariant?> GetByIdAsync(int id)
+        {
+            return await QueryFirstOrDefaultAsync<ProductVariant>($"{DapperHelper.Select(Table, Fields)} WHERE Id = @id", new { id });
         }
     }
 }
