@@ -10,6 +10,7 @@ namespace api.Repository
         Task<IList<ProductDetail>> GetAllAsync();
         Task<IList<ProductCatalogue>> GetCatalogueAsync();
         Task UpdateStockAsync(int id, int stock);
+        Task<int> AddAsync(Product model);
     }
 
     public class ProductRepository(IConfiguration configuration) : DapperBaseRepository(configuration),
@@ -94,9 +95,10 @@ namespace api.Repository
             await ExecuteAsync($"UPDATE {Table} SET Stock = @stock WHERE Id = @id AND Stock IS NOT NULL", new { id, stock });
         }
 
-        public async Task AddAsync(Product model)
+        public async Task<int> AddAsync(Product model)
         {
-            await ExecuteAsync(DapperHelper.Insert(Table, Fields), model);
+            var result = await QueryAsync<int>(DapperHelper.Insert(Table, Fields), model);
+            return result.Single();
         }
     }
 }

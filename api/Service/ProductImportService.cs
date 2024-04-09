@@ -1,13 +1,15 @@
 using api.Data;
+using api.Helper;
 using api.Models;
 using api.Models.Ebay;
 using api.Repository;
+using Newtonsoft.Json;
 
 namespace api.Service
 {
     public interface IProductImportService
     {
-        void DoAsync(IFormFile file);
+        Task DoAsync(IFormFile file);
     }
 
     public class ProductImportService(
@@ -19,55 +21,65 @@ namespace api.Service
         private readonly IProductRepository _productRepository = productRepository;
         private readonly IProductVariantRepository _productVariantRepository = productVariantRepository;
 
-        public void DoAsync(IFormFile file)
+        public async Task DoAsync(IFormFile file)
         {
             var listing = _csvImportService.Read<ProductActiveListing>(file);
 
-            var products= new List<Product>();
+            var products = new List<Product>();
             var productVariants = new List<ProductVariant>();
 
-            int idx = 1;
             foreach (var product in listing)
             {
-                if (product.Variants == "")
-                {
-                    products.Add(new Product
+                var productId =
+                    await _productRepository.AddAsync(new Product
                     {
-                        
+                        EbayItemNo = product.ItemNo,
+                        Slug = product.Title.GenerateSlug(),
+                        Sku = product.Sku,
+                        Title = product.Title,
+                        Price = product.Price,
+                        Stock = product.Stock,
+                        Active = false
+                    });
+
+                if (product.Variants != "")
+                {
+                    var list = new List<ProductVariantObj>();
+                    var variants = product.Variants.Split("|");
+
+                    foreach (var variant in variants)
+                    {
+                        var key = variant.Split("=")[0];
+
+                        if (key == "")
+                            continue;
+
+                        var options = variant.Split("=")[1];
+                        var values = options.Split(";");
+
+                        foreach (var value in values)
+                        {
+                            list.Add(new ProductVariantObj
+                            {
+                                Attribute = key,
+                                Value = value
+                            });
+                        }
+
+
+                    }
+
+                    productVariants.Add(new ProductVariant
+                    {
+                        ProductId = productId,
+                        Variant = JsonConvert.SerializeObject(list),
+                        Variant2 = "",
+                        Sku = product.Sku,
+                        Stock = product.Stock,
+                        Price = product.Price
                     });
                 }
-
-                var list = new List<ProductVariantObj>();
-
-                var variants = product.Variants.Split("|");
-
-                foreach (var variant in variants)
-                {
-                    var key = variant.Split("=")[0];
-
-                    if (key == "")
-                        continue;
-
-                    var options = variant.Split("=")[1];
-
-                    var values = options.Split(";");
-
-                    foreach (var value in values)
-                    {
-                        list.Add(new ProductVariantObj
-                        {
-                            Attribute = key,
-                            Value = value
-                        });
-                    }
-                }
-
-
-                tt.Add(idx, list);
-                idx++;
             }
-
-            var ok = tt;
         }
     }
 }

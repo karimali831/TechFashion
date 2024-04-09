@@ -1,3 +1,5 @@
+using Slugify;
+
 namespace api.Helper
 {
     public static class StringHelper
@@ -12,6 +14,11 @@ namespace api.Helper
         {
             var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
             return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+        }
+
+        public static string GenerateSlug(this string text)
+        {
+            return new SlugHelper().GenerateSlug(text);
         }
     }
 }
