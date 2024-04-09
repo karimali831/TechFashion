@@ -35,7 +35,7 @@ const Products = () => {
 
     return (
         <Fade in={true} timeout={500} mountOnEnter={true} unmountOnExit={true}>
-            <div className="grid-1">
+            <div className="grid-1 content">
                 {isLoading
                     ? (() => {
                           const arr = [];

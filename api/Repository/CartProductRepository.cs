@@ -18,7 +18,7 @@ namespace api.Repository
         Task RemoveInactiveAsync(int id);
     }
 
-    public class CartProductRepository(IConfiguration configuration) : DapperBaseRepository(configuration),
+    public class CartProductRepository(DapperContext context) : DapperBaseRepository(context),
         ICartProductRepository
     {
         private static readonly string Table = "CartProducts";

@@ -20,7 +20,7 @@ namespace api.Repository
         Task<int> CreateAsync(CreateUsertDto dto);
     }
 
-    public class UserRepository(IConfiguration configuration) : DapperBaseRepository(configuration),
+    public class UserRepository(DapperContext context) : DapperBaseRepository(context),
         IUserRepository
     {
         private const string Table = "[dbo].[Users]";

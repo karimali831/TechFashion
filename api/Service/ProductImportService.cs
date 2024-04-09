@@ -25,28 +25,38 @@ namespace api.Service
         {
             try
             {
-
-
                 var listing = _csvImportService.Read<ProductActiveListing>(file);
-
                 var products = new List<Product>();
                 var productVariants = new List<ProductVariant>();
 
                 var productsTopLevel = listing.GroupBy(x => x.ItemNo);
                 var ids = new List<(int ProductId, long ItemNo)>();
 
+                // var titles = productsTopLevel.SelectMany(x => x).Select(x => x.Title);
+
                 // Add products
+                int idx = 1;
                 foreach (var ptl in productsTopLevel)
                 {
                     var itemNo = ptl.Key;
                     var firstProduct = ptl.First();
 
+                    if (await _productRepository.SkuExists(firstProduct.Sku))
+                        continue;
+
+                    var slug = firstProduct.Title.GenerateSlug();
+
+                    if (await _productRepository.SlugExists(slug))
+                    {
+                        slug += "-" + idx; ;
+                    }
+
                     var dbProdId = await _productRepository.InsertOrUpdateEbayItemAsync(
                         new Product
                         {
                             EbayItemNo = itemNo,
-                            Slug = firstProduct.Title.GenerateSlug(),
-                            Sku = firstProduct.Sku,
+                            Slug = slug,
+                            Sku = firstProduct.Sku == "None" ? null : firstProduct.Sku,
                             Title = firstProduct.Title,
                             Price = firstProduct.Price,
                             Stock = firstProduct.Stock,
@@ -55,11 +65,15 @@ namespace api.Service
                         });
 
                     ids.Add((dbProdId, itemNo));
+                    idx++;
                 }
 
                 // Add product variants
                 foreach (var product in listing.Where(x => x.Variants != ""))
                 {
+                    if (await _productVariantRepository.SkuExists(product.Sku))
+                        continue;
+
                     var list = new List<ProductVariantObj>();
                     var variants = product.Variants.Split("|");
 
@@ -91,8 +105,9 @@ namespace api.Service
                             ProductId = productId,
                             Variant = JsonConvert.SerializeObject(list),
                             Variant2 = "",
-                            Sku = product.Sku,
+                            Sku = product.Sku == "None" ? null : product.Sku,
                             Stock = product.Stock,
+                            OriginalStock = product.Stock,
                             Price = product.Price
                         });
                 }

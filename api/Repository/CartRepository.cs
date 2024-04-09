@@ -14,7 +14,7 @@ namespace api.Repository
         Task ArchiveInactiveAsync();
     }
 
-    public class CartRepository(IConfiguration configuration) : DapperBaseRepository(configuration), ICartRepository
+    public class CartRepository(DapperContext context) : DapperBaseRepository(context), ICartRepository
     {
         private const string Table = "Carts";
         private static readonly string[] Fields = typeof(Cart).DapperFields();

@@ -9,7 +9,7 @@ namespace api.Repository
         Task AddAsync(Order model);
     }
 
-    public class ReturnRepository(IConfiguration configuration) : DapperBaseRepository(configuration), IReturnRepository
+    public class ReturnRepository(DapperContext context) : DapperBaseRepository(context), IReturnRepository
     {
         private const string Table = "OrderReturns";
         private static readonly string[] Fields = typeof(Order).DapperFields();

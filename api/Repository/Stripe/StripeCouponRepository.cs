@@ -10,7 +10,7 @@ namespace api.Repository.Stripe
         Task<IEnumerable<StripeCoupon>> GetAllAsync();
     }
 
-    public class StripeCouponRepository(IConfiguration configuration) : DapperBaseRepository(configuration),
+    public class StripeCouponRepository(DapperContext context) : DapperBaseRepository(context),
      IStripeCouponRepository
     {
         private const string Table = "[dbo].[StripeCoupons]";

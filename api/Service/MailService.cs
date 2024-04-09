@@ -57,14 +57,14 @@ namespace CloudChef.Library.Services
 
             var mail = new MailMessage
             {
-                From = new MailAddress(fromEmail, fromName),
+                From = new MailAddress(fromEmail!, fromName),
                 Subject = subject,
                 Body = emailBody,
                 IsBodyHtml = true,
                 DeliveryNotificationOptions = DeliveryNotificationOptions.OnSuccess
             };
 
-            mail.ReplyToList.Add(new MailAddress(replyToEmail, replyToName));
+            mail.ReplyToList.Add(new MailAddress(replyToEmail!, replyToName));
 
             foreach (var email in sendTo)
             {

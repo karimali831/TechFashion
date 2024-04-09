@@ -6,6 +6,10 @@
     padding: 20px 250px;
 }
 
+.content {
+    padding: 0 250px;
+}
+
 .hero {
     display: flex;
     width: 100%;
@@ -308,6 +312,10 @@
 
 /*responsiveness*/
 @media (max-width: 768px) {
+    .content {
+        padding: 0;
+    }
+
     .home {
         padding: 20px 20px;
         width: 100% !important;

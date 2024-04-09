@@ -13,7 +13,7 @@ namespace api.Repository.Stripe
         Task<bool> AddAsync(StripePromotion model);
     }
 
-    public class StripePromotionRepository(IConfiguration configuration) : DapperBaseRepository(configuration),
+    public class StripePromotionRepository(DapperContext context) : DapperBaseRepository(context),
         IStripePromotionRepository
     {
         private const string Table = "[dbo].[StripePromotions]";

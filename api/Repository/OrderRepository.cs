@@ -14,7 +14,7 @@ namespace api.Repository
         Task<IList<OrderItem>> GetOrderedItemsAsync(int orderRef);
     }
 
-    public class OrderRepository(IConfiguration configuration) : DapperBaseRepository(configuration), IOrderRepository
+    public class OrderRepository(DapperContext context) : DapperBaseRepository(context), IOrderRepository
     {
         private const string Table = "Orders";
         private static readonly string[] Fields = typeof(Order).DapperFields();

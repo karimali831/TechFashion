@@ -7,13 +7,15 @@ namespace api.Repository
 {
     public interface IProductRepository
     {
+        Task<bool> SlugExists(string slug);
         Task<IList<ProductDetail>> GetAllAsync();
         Task<IList<ProductCatalogue>> GetCatalogueAsync();
         Task UpdateStockAsync(int id, int stock);
         Task<int> InsertOrUpdateEbayItemAsync(Product model);
+        Task<bool> SkuExists(string sku);
     }
 
-    public class ProductRepository(IConfiguration configuration) : DapperBaseRepository(configuration),
+    public class ProductRepository(DapperContext context) : DapperBaseRepository(context),
         IProductRepository
     {
         private const string Table = "Products";
@@ -120,6 +122,16 @@ namespace api.Repository
         private async Task<Product?> GetByEbayItemNoAsync(long itemNo)
         {
             return await QueryFirstOrDefaultAsync<Product>($"{DapperHelper.Select(Table, Fields)} WHERE EbayItemNo = @itemNo", new { itemNo });
+        }
+
+        public async Task<bool> SlugExists(string slug)
+        {
+            return await ItemExistsAsync(Table, "Slug = @slug", new { slug });
+        }
+
+        public async Task<bool> SkuExists(string sku)
+        {
+            return await ItemExistsAsync(Table, "Sku = @sku", new { sku });
         }
     }
 }

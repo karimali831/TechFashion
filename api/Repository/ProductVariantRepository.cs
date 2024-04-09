@@ -10,9 +10,10 @@ namespace api.Repository
         Task<IList<ProductVariant>> GetAllByProductIdsAsync(IList<int> productIds);
         Task UpdateStockAsync(int id, int stock);
         Task<bool> InsertOrUpdateAsync(ProductVariant model);
+        Task<bool> SkuExists(string sku);
     }
 
-    public class ProductVariantRepository(IConfiguration configuration) : DapperBaseRepository(configuration),
+    public class ProductVariantRepository(DapperContext context) : DapperBaseRepository(context),
         IProductVariantRepository
     {
         private const string Table = "ProductVariants";
@@ -57,6 +58,11 @@ namespace api.Repository
         private async Task<ProductVariant?> GetByIdAsync(int id)
         {
             return await QueryFirstOrDefaultAsync<ProductVariant>($"{DapperHelper.Select(Table, Fields)} WHERE Id = @id", new { id });
+        }
+
+        public async Task<bool> SkuExists(string sku)
+        {
+            return await ItemExistsAsync(Table, "Sku = @sku", new { sku });
         }
     }
 }

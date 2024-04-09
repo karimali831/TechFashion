@@ -16,7 +16,7 @@ namespace api.Repository
         Task<bool> DeleteAsync(int id);
     }
 
-    public class CustomerAddressRepository(IConfiguration configuration) : DapperBaseRepository(configuration), ICustomerAddressRepository
+    public class CustomerAddressRepository(DapperContext context) : DapperBaseRepository(context), ICustomerAddressRepository
     {
         private const string Table = "CustomerAddress";
         private static readonly string[] Fields = typeof(CustomerAddress).DapperFields();

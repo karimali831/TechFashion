@@ -1,5 +1,7 @@
+using api.Data;
 using api.ExceptionHandler;
 using api.ExceptionHandler.Sentry;
+using api.Infrastructure;
 using api.Repository;
 using api.Repository.EF;
 using api.Repository.Stripe;
@@ -16,6 +18,7 @@ namespace api
         public static IServiceCollection Modules(this IServiceCollection services)
         {
             // Singleton
+            services.AddSingleton<DapperContext>();
             services.AddSingleton<ICacheService, CacheService>();
             services.AddSingleton<ICsvImportService, CsvImportService>();
             services.AddSingleton<IExceptionHandlerService, ExceptionHandlerService>();

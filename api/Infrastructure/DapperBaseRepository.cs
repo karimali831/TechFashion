@@ -18,15 +18,16 @@ namespace api.Infrastructure
         Task<bool> ItemExistsAsync<T>(string table, T id);
     }
 
-    public abstract class DapperBaseRepository(IConfiguration configuration) : IDapperBaseRepository, IDisposable
+    public abstract class DapperBaseRepository(DapperContext context) : IDapperBaseRepository
     {
-        private readonly IDbConnection _dbConnection = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
+        private readonly DapperContext _context = context;
 
         public async Task<IEnumerable<T>> QueryAsync<T>(string query, object? parameters = null)
         {
             try
             {
-                return await _dbConnection.QueryAsync<T>(query, parameters);
+                using var connection = _context.CreateConnection();
+                return await connection.QueryAsync<T>(query, parameters);
             }
             catch (Exception exp)
             {
@@ -38,7 +39,9 @@ namespace api.Infrastructure
         {
             try
             {
-                return await _dbConnection.ExecuteScalarAsync<bool>(@$"
+                using var connection = _context.CreateConnection();
+
+                return await connection.ExecuteScalarAsync<bool>(@$"
                     ;SELECT CAST(CASE WHEN EXISTS (SELECT 1 FROM {table} WHERE {where}) THEN 1 ELSE 0 END as BIT)", parameters
                 );
             }
@@ -52,7 +55,9 @@ namespace api.Infrastructure
         {
             try
             {
-                return await _dbConnection.ExecuteScalarAsync<bool>($";SELECT count(1) FROM {table} WHERE Id = @id",
+                using var connection = _context.CreateConnection();
+
+                return await connection.ExecuteScalarAsync<bool>($";SELECT count(1) FROM {table} WHERE Id = @id",
                     new { id });
             }
             catch (Exception exp)
@@ -65,7 +70,8 @@ namespace api.Infrastructure
         {
             try
             {
-                return await _dbConnection.QueryFirstOrDefaultAsync<T>(query, parameters);
+                using var connection = _context.CreateConnection();
+                return await connection.QueryFirstOrDefaultAsync<T>(query, parameters);
             }
             catch (Exception exp)
             {
@@ -77,7 +83,8 @@ namespace api.Infrastructure
         {
             try
             {
-                return await _dbConnection.QueryFirstAsync<T>(query, parameters);
+                using var connection = _context.CreateConnection();
+                return await connection.QueryFirstAsync<T>(query, parameters);
             }
             catch (Exception exp)
             {
@@ -89,7 +96,8 @@ namespace api.Infrastructure
         {
             try
             {
-                return await _dbConnection.QuerySingleOrDefaultAsync<T>(query, parameters);
+                using var connection = _context.CreateConnection();
+                return await connection.QuerySingleOrDefaultAsync<T>(query, parameters);
             }
             catch (Exception exp)
             {
@@ -101,7 +109,8 @@ namespace api.Infrastructure
         {
             try
             {
-                return await _dbConnection.ExecuteScalarAsync<int>(query, parameters);
+                using var connection = _context.CreateConnection();
+                return await connection.ExecuteScalarAsync<int>(query, parameters);
             }
             catch (Exception exp)
             {
@@ -113,7 +122,9 @@ namespace api.Infrastructure
         {
             try
             {
-                await _dbConnection.ExecuteAsync(query, parameters);
+                using var connection = _context.CreateConnection();
+                await connection.ExecuteAsync(query, parameters);
+
                 return true;
             }
             catch (SqlException exp)
@@ -126,7 +137,8 @@ namespace api.Infrastructure
         {
             try
             {
-                return await _dbConnection.ExecuteScalarAsync<T>(query, parameters);
+                using var connection = _context.CreateConnection();
+                return await connection.ExecuteScalarAsync<T>(query, parameters);
             }
             catch (Exception exp)
             {
@@ -138,17 +150,13 @@ namespace api.Infrastructure
         {
             try
             {
-                return await _dbConnection.QuerySingleAsync<T>(query, parameters);
+                using var connection = _context.CreateConnection();
+                return await connection.QuerySingleAsync<T>(query, parameters);
             }
             catch (Exception exp)
             {
                 throw new Exception(exp.Message);
             }
-        }
-
-        public void Dispose()
-        {
-            _dbConnection.Dispose();
         }
     }
 }

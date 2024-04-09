@@ -9,7 +9,7 @@ namespace api.Repository.Stripe
         Task<int> AddAsync(StripePayment model);
     }
 
-    public class StripePaymentRepository(IConfiguration configuration) : DapperBaseRepository(configuration),
+    public class StripePaymentRepository(DapperContext context) : DapperBaseRepository(context),
      IStripePaymentRepository
     {
         private const string Table = "[dbo].[StripePayments]";

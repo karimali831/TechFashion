@@ -12,7 +12,7 @@ namespace api.Repository
         Task<bool> VerifyAsync(string email, int code);
     }
 
-    public class EmailVerificationRepository(IConfiguration configuration) : DapperBaseRepository(configuration), IEmailVerificationRepository
+    public class EmailVerificationRepository(DapperContext context) : DapperBaseRepository(context), IEmailVerificationRepository
     {
         private const string Table = "[dbo].[EmailVerification]";
         private static readonly string[] Fields = typeof(EmailVerification).DapperFields();
