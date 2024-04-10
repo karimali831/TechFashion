@@ -5,31 +5,39 @@ import PopularProducts from "./PopularProducts";
 import Deals from "./Deals";
 import ProductsOnSale from "./ProductsOnSale";
 import Showcase from "./Showcase";
-import { motion } from "framer-motion";
+import banner from "src/assets/img/ecommerce/banner.jpg";
+import MDBox from "src/components/MDBox";
+import { Box, Fade } from "@mui/material";
+
 const Home = (): JSX.Element => {
     return (
-        <motion.div
-            className="home"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-
-            //  initial={{ width: 0 }}
-            // animate={{ width: "100%" }}
-            // exit={{
-            //     x: window.innerWidth,
-            //     transition: {
-            //         duration: 0.3,
-            //     },
-            // }}
-        >
-            <Hero />
-            <Brands />
-            <PopularProducts />
-            <Deals />
-            <ProductsOnSale />
-            <Showcase />
-        </motion.div>
+        <Box>
+            <Fade
+                in={true}
+                mountOnEnter={true}
+                unmountOnExit={true}
+                timeout={500}
+            >
+                <MDBox component="img" src={banner} alt="Product Image" />
+            </Fade>
+            {/* <Category /> */}
+            <Fade
+                in={true}
+                mountOnEnter={true}
+                unmountOnExit={true}
+                timeout={500}
+                style={{ transitionDelay: "250ms" }}
+            >
+                <Box className="content">
+                    <Hero />
+                    <Brands />
+                    <PopularProducts />
+                    <Deals />
+                    <ProductsOnSale />
+                    <Showcase />
+                </Box>
+            </Fade>
+        </Box>
     );
 };
 

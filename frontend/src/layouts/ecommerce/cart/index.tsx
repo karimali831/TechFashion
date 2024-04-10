@@ -48,7 +48,7 @@ export const Cart = () => {
     }
 
     return (
-        <MDBox className="home">
+        <MDBox className="content">
             <Card
                 sx={{
                     p: 2,

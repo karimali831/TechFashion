@@ -31,7 +31,7 @@ export const AccountOrder = () => {
     }
 
     return (
-        <MDBox mt={4} className="home">
+        <MDBox mt={4} className="content">
             <h1>Account</h1>
             <span
                 className="standard-text link"

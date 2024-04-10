@@ -3,6 +3,7 @@ import {
     FirebaseAuthEmptyAction,
     LoginSuccessAction,
     SetEmailVerificationAction,
+    SetEmailVerificationAttemptAction,
     SetFirebaseUidAction,
     SigninLoadingAction,
 } from "./Actions";
@@ -36,5 +37,8 @@ export const userReducer = createReducer(userInitialState, (builder) => {
         })
         .addCase(SetEmailVerificationAction, (state, action) => {
             state.verificationEmail = action.payload;
+        })
+        .addCase(SetEmailVerificationAttemptAction, (state, action) => {
+            state.emailVerificationAttempt = action.payload;
         });
 });

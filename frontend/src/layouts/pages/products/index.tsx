@@ -1,4 +1,4 @@
-import { Fade, Paper, styled } from "@mui/material";
+import { Fade, Grid, Paper, styled } from "@mui/material";
 import { SelectedProductAction } from "src/state/contexts/product/Actions";
 import ProductItem from "./ProductItem";
 import { useGetProductQuery } from "src/api/productApi";
@@ -34,35 +34,48 @@ const Products = () => {
     };
 
     return (
-        <Fade in={true} timeout={500} mountOnEnter={true} unmountOnExit={true}>
-            <div className="grid-1 content">
+        <Fade
+            in={true}
+            timeout={500}
+            mountOnEnter={true}
+            unmountOnExit={true}
+            className="content"
+        >
+            <Grid container={true} spacing={3}>
                 {isLoading
                     ? (() => {
                           const arr = [];
                           for (let i = 0; i < 3; i++) {
                               arr.push(
-                                  <Item key={i} className="product-item">
-                                      <ProductItem index={i} loading={true} />
-                                  </Item>
+                                  <Grid item>
+                                      <Item key={i} className="product-item">
+                                          <ProductItem
+                                              index={i}
+                                              loading={true}
+                                          />
+                                      </Item>
+                                  </Grid>
                               );
                           }
                           return arr;
                       })()
                     : products.catalogue.map((product, index) => (
-                          <Item
-                              key={index}
-                              className="product-item"
-                              sx={{ cursor: "pointer" }}
-                              onClick={() => onProductClick(product)}
-                          >
-                              <ProductItem
-                                  item={product}
-                                  index={index}
-                                  loading={false}
-                              />
-                          </Item>
+                          <Grid item>
+                              <Item
+                                  key={index}
+                                  className="product-item"
+                                  sx={{ cursor: "pointer" }}
+                                  onClick={() => onProductClick(product)}
+                              >
+                                  <ProductItem
+                                      item={product}
+                                      index={index}
+                                      loading={false}
+                                  />
+                              </Item>
+                          </Grid>
                       ))}
-            </div>
+            </Grid>
         </Fade>
     );
 };

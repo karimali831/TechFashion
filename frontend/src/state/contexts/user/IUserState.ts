@@ -8,6 +8,7 @@ export interface IUserState {
     firebaseUid: string | null;
     signingIn: boolean;
     verificationEmail: IVerificationEmail;
+    emailVerificationAttempt: number;
 }
 
 export const userInitialState: IUserState = {
@@ -20,6 +21,7 @@ export const userInitialState: IUserState = {
         verified: false,
         fullAccountExists: false,
     },
+    emailVerificationAttempt: 1,
 };
 
 export type IFirebaseUser = User;

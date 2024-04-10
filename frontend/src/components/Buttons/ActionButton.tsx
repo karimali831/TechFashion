@@ -49,6 +49,7 @@ export const ActionButton: FC<IProps> = ({
         <Button
             sx={{
                 background: bgColor,
+                fontFamily: "Assistant, sans-serif",
                 width: fullWidth ? "100%" : width ?? "15%",
                 minWidth: 120,
                 borderColor: outlined && "#121212",

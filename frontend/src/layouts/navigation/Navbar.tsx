@@ -7,42 +7,26 @@ import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
-import {
-    Badge,
-    CircularProgress,
-    FormControl,
-    Icon,
-    Select,
-    SelectChangeEvent,
-} from "@mui/material";
+import { Badge, Button, Icon } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
 import {
     OpenCartAccountModalAction,
     OpenCartOverlayAction,
-    OpenSelectAddressModalAction,
     OpenVerifyEmailModalAction,
     SetAddressIdAction,
-    SetGuestCheckoutAction,
 } from "src/state/contexts/cart/Actions";
 import { getCartState } from "src/state/contexts/cart/Selectors";
 import { OverlaySlider, OverlaySliderSize } from "src/components/OverlaySlider";
 import { CartOverlay } from "../ecommerce/cart/Overlay";
 import { useGetCartQuery } from "src/api/cartApi";
 import { ICartProductDetail } from "src/interface/ICartProductDetail";
-import { MDModal } from "src/components/MDModal";
 import { getUserState } from "src/state/contexts/user/Selectors";
 import { auth } from "src/config/firebase";
 import { ShowPageAction } from "src/state/contexts/app/Actions";
 import { Page } from "src/enum/Page";
-import { FormInput } from "src/components/Form";
-import { ActionButton } from "src/components/Buttons/ActionButton";
 import { AppRoutes } from "src/router/Routes";
-import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import MDTypography from "src/components/MDTypography";
-import { CodeVerification } from "src/components/Form/CodeVerification";
 import axios from "axios";
 import { IApiResponse, baseApiUrl } from "src/api/baseApi";
 import {
@@ -52,29 +36,40 @@ import {
 } from "src/api/userApi";
 import { SetEmailVerificationAction } from "src/state/contexts/user/Actions";
 import Swal from "sweetalert2";
-import MDBox from "src/components/MDBox";
+import { getAppState } from "src/state/contexts/app/Selectors";
+import { ShippingAddressModal } from "../ecommerce/modals/ShippingAddress";
+import { VerifyEmailModal } from "../ecommerce/modals/VerifyEmail";
+import { GuestCheckoutModal } from "../ecommerce/modals/GuestCheckout";
 
-function NavbarV2() {
-    const navigate = useNavigate();
+const MenuLinkStyle: React.CSSProperties = {
+    cursor: "pointer",
+    marginRight: 30,
+    fontFamily: "Assistant, sans-serif",
+    color: "#000",
+    fontSize: 14,
+    textTransform: "none",
+    letterSpacing: 0.6,
+    fontWeight: 400,
+    textUnderlineOffset: 3,
+    transitionBehavior: "normal",
+    transitionDuration: "0.1s",
+    transitionProperty: "text-decoration",
+    transitionTimingFunction: "ease",
+};
+
+function Navbar() {
+    const [anchorElCategories, setAnchorElCategories] =
+        React.useState<null | HTMLElement>(null);
+    const openCategories = Boolean(anchorElCategories);
+
+    const { page } = useAppSelector(getAppState);
     const { user, firebaseUid } = useAppSelector(getUserState);
-    const {
-        guestCheckout,
-        openOverlay,
-        openAccountModal,
-        openVerifyEmailModal,
-        openSelectAddressModal,
-        addressId,
-    } = useAppSelector(getCartState);
+    const { guestCheckout, openOverlay, openAccountModal } =
+        useAppSelector(getCartState);
 
-    const [emailVerificationAttempt, setEmailVerificationAttempt] =
-        useState<number>(1);
-    const [email, setEmail] = useState<string>(guestCheckout?.email ?? "");
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
-    const { data: account, isLoading: accountLoading } = useAccountDetailsQuery(
-        user?.id,
-        { skip: !user }
-    );
+    const { data: account } = useAccountDetailsQuery(user?.id, { skip: !user });
 
     const defaultAddress = account?.addresses.filter((x) => x.main)[0];
 
@@ -143,222 +138,24 @@ function NavbarV2() {
         dispatch(ShowPageAction(page));
     };
 
-    const verifyEmail = () => {
-        if (guestCheckout.email !== email) {
-            setEmailVerificationAttempt(emailVerificationAttempt + 1);
-        }
-        dispatch(
-            SetGuestCheckoutAction({
-                ...guestCheckout,
-                email,
-            })
-        );
-
-        dispatch(OpenCartAccountModalAction(false));
-        dispatch(OpenVerifyEmailModalAction(true));
+    const handleCategoriesClose = () => {
+        setAnchorElCategories(null);
     };
 
-    const navToLoginOrRegister = (page: Page) => {
-        dispatch(OpenCartAccountModalAction(false));
-
-        if (page === Page.Login) {
-            navigate("/login?withCart=true");
-        }
-
-        if (page === Page.Register) {
-            navigate("/register?withCart=true");
-        }
-    };
-
-    const changeEmail = () => {
-        dispatch(
-            SetGuestCheckoutAction({
-                ...guestCheckout,
-                email: "",
-            })
-        );
-
-        dispatch(OpenCartAccountModalAction(true));
-        dispatch(OpenVerifyEmailModalAction(false));
+    const handleCategoriesClick = (
+        event: React.MouseEvent<HTMLButtonElement>
+    ) => {
+        setAnchorElCategories(event.currentTarget);
     };
 
     return (
-        <Box>
-            <MDModal
-                title="Saved shipping addresses"
-                open={openSelectAddressModal}
-                content={
-                    <MDBox mt={4}>
-                        <MDBox mb={1.5} lineHeight={0} display="inline-block">
-                            <MDTypography
-                                component="label"
-                                variant="button"
-                                color="text"
-                                fontWeight="regular"
-                            >
-                                Select address
-                            </MDTypography>
-                        </MDBox>
-                        {accountLoading ? (
-                            <CircularProgress size={16} />
-                        ) : (
-                            <FormControl
-                                fullWidth={true}
-                                variant="filled"
-                                size="medium"
-                            >
-                                <Select
-                                    labelId="saved-addresses"
-                                    value={addressId?.toString()}
-                                    variant="standard"
-                                    label="Address"
-                                    onChange={(event: SelectChangeEvent) => {
-                                        dispatch(
-                                            SetAddressIdAction(
-                                                Number(event.target.value)
-                                            )
-                                        );
-                                        dispatch(
-                                            OpenSelectAddressModalAction(false)
-                                        );
-                                    }}
-                                >
-                                    {account?.addresses.map((address, idx) => (
-                                        <MenuItem key={idx} value={address.id}>
-                                            {address.line1} {address.city}{" "}
-                                            {address.postalCode}{" "}
-                                            {address.country} ({address.name})
-                                        </MenuItem>
-                                    ))}
-                                    <MenuItem value={0}>
-                                        Enter new address in checkout
-                                    </MenuItem>
-                                </Select>
-                            </FormControl>
-                        )}
-                    </MDBox>
-                }
-                onClose={() => dispatch(OpenSelectAddressModalAction(false))}
-            />
-            <MDModal
-                title="Verify Email"
-                open={openVerifyEmailModal}
-                content={
-                    <Box mt={2} textAlign={"center"}>
-                        {firebaseUid === null && (
-                            <MDTypography variant="text" fontWeight="regular">
-                                Use your email to sign in — no password needed
-                            </MDTypography>
-                        )}
-                        <Box mt={1} mb={2}>
-                            <MDTypography
-                                variant="caption"
-                                fontWeight="regular"
-                            >
-                                Confirm it's you by entering the code sent to
-                                your email:
-                            </MDTypography>{" "}
-                            <MDTypography variant="caption" fontWeight="medium">
-                                {user?.email ?? email}
-                            </MDTypography>
-                        </Box>
-                        <Box mt={2} sx={{ borderBottom: "1px solid #ccc" }} />
-                        <Box mt={2}>
-                            <MDTypography
-                                variant="caption"
-                                fontWeight="regular"
-                            >
-                                If you haven't received the email in last 10
-                                minutes, you can{" "}
-                                <MDTypography
-                                    variant="caption"
-                                    fontWeight="regular"
-                                    textDecoration="underline"
-                                    onClick={() =>
-                                        setEmailVerificationAttempt(
-                                            emailVerificationAttempt + 1
-                                        )
-                                    }
-                                >
-                                    request another code
-                                </MDTypography>
-                                {firebaseUid === null ? (
-                                    <>
-                                        {" or "}
-                                        <MDTypography
-                                            variant="caption"
-                                            fontWeight="regular"
-                                            textDecoration="underline"
-                                            onClick={changeEmail}
-                                        >
-                                            change your email address
-                                        </MDTypography>
-                                        {". "}
-                                    </>
-                                ) : null}
-                            </MDTypography>
-                            <Box mt={2}>
-                                <CodeVerification
-                                    attempt={emailVerificationAttempt}
-                                />
-                            </Box>
-                        </Box>
-                    </Box>
-                }
-                onClose={() => dispatch(OpenVerifyEmailModalAction(false))}
-            />
-            <MDModal
-                title="Guest Checkout"
-                content={
-                    <Box>
-                        <Box mt={1} mb={1}>
-                            <span
-                                onClick={() => navToLoginOrRegister(Page.Login)}
-                                style={{
-                                    textDecoration: "underline",
-                                    cursor: "pointer",
-                                }}
-                            >
-                                Login
-                            </span>{" "}
-                            or{" "}
-                            <span
-                                onClick={() =>
-                                    navToLoginOrRegister(Page.Register)
-                                }
-                                style={{
-                                    textDecoration: "underline",
-                                    cursor: "pointer",
-                                }}
-                            >
-                                Register
-                            </span>{" "}
-                            for faster checkout.
-                        </Box>
-                        <FormInput
-                            placeholder="Enter email address"
-                            validation={{
-                                value: email,
-                                minCharsRequired: 3,
-                                maxCharsRequired: 100,
-                                emailValidator: true,
-                            }}
-                            small={true}
-                            onChange={(value) => setEmail(value)}
-                        />
-                        <Box mt={2}>
-                            <ActionButton
-                                fullWidth={true}
-                                disabled={email.length < 4}
-                                text="Verify Email"
-                                onClick={verifyEmail}
-                            />
-                        </Box>
-                    </Box>
-                }
-                open={openAccountModal && !!guestCheckout}
-                onClose={() => dispatch(OpenCartAccountModalAction(false))}
-            />
+        <Box
+            className="content"
+            sx={{ borderBottom: ".1rem solid rgba(0,0,0, .08)" }}
+        >
+            <ShippingAddressModal />
+            <VerifyEmailModal />
+            <GuestCheckoutModal />
             {openOverlay && (
                 <OverlaySlider
                     size={OverlaySliderSize.Small}
@@ -369,9 +166,15 @@ function NavbarV2() {
             )}
             <AppBar
                 position="static"
-                style={{ background: "transparent", color: "black" }}
+                sx={{
+                    background: "transparent",
+                    color: "black",
+                    display: "flex",
+                    justifyContent: "center",
+                    height: { xs: 60, md: 85 },
+                }}
             >
-                <Container>
+                <Container maxWidth={false}>
                     <Toolbar disableGutters>
                         {/* <Box sx={{ display: { xs: "none", md: "flex" } }}>
                             <img
@@ -385,24 +188,23 @@ function NavbarV2() {
                             />
                         </Box> */}
                         <Typography
-                            variant="h6"
+                            variant="h2"
                             noWrap
                             component="a"
                             href="/"
                             sx={{
                                 mr: 5,
-                                // ml: 2,
                                 display: { xs: "none", md: "flex" },
-                                fontFamily: "'Ysabeau SC', sans-serif",
-                                fontWeight: 900,
-                                lineHeight: 1,
-                                fontSize: 52,
-                                letterSpacing: 8,
-                                color: "inherit",
+                                color: "rgba(0, 0, 0, 0.75)",
+                                fontFamily: "Assistant, sans-serif",
+                                fontSize: 24,
+                                fontWeight: 400,
+                                letterSpacing: 0.6,
+                                lineHeight: 2.4,
                                 textDecoration: "none",
                             }}
                         >
-                            Store
+                            My Store
                         </Typography>
 
                         <Box
@@ -465,42 +267,77 @@ function NavbarV2() {
                                 mr: 2,
                                 display: { xs: "flex", md: "none" },
                                 flexGrow: 1,
-                                fontFamily: "'Ysabeau SC', sans-serif",
-                                fontWeight: 900,
-                                lineHeight: 1,
+                                color: "rgba(0, 0, 0, 0.75)",
+                                fontFamily: "Assistant, sans-serif",
                                 fontSize: 22,
-                                letterSpacing: 6,
-                                color: "inherit",
+                                fontWeight: 400,
+                                letterSpacing: 0.6,
+                                lineHeight: 1,
                                 textDecoration: "none",
                             }}
                         >
-                            Tech Fashion
+                            My store
                         </Typography>
                         <Box
                             sx={{
                                 flexGrow: 1,
-                                display: { xs: "none", md: "flex" },
+                                display: {
+                                    xs: "none",
+                                    md: "flex",
+                                    alignItems: "center",
+                                },
                             }}
                         >
                             {AppRoutes.filter((x) => x.displayOnHeader).map(
                                 (route) => (
-                                    <Button
+                                    <a
                                         key={route.page}
                                         onClick={() => navToPage(route.page)}
-                                        sx={{
-                                            my: 2,
-                                            color: "#999999",
-                                            display: "block",
-                                            fontSize: "1.2rem",
-                                            fontFamily:
-                                                "'Ysabeau SC', sans-serif",
-                                            textTransform: "capitalize",
+                                        style={{
+                                            ...MenuLinkStyle,
+                                            textDecoration:
+                                                page === route.page &&
+                                                "underline",
                                         }}
                                     >
                                         {route.page}
-                                    </Button>
+                                    </a>
                                 )
                             )}
+                            <Button
+                                id="basic-button"
+                                aria-controls={open ? "basic-menu" : undefined}
+                                aria-haspopup="true"
+                                aria-expanded={open ? "true" : undefined}
+                                onClick={handleCategoriesClick}
+                                style={MenuLinkStyle}
+                                sx={{ m: 0, p: 0 }}
+                            >
+                                Categories{" "}
+                                <Icon sx={{ ml: 1 }}>
+                                    {!openCategories
+                                        ? "keyboard_arrow_down"
+                                        : "keyboard_arrow_up"}
+                                </Icon>
+                            </Button>
+                            <Menu
+                                anchorEl={anchorElCategories}
+                                open={openCategories}
+                                onClose={handleCategoriesClose}
+                                MenuListProps={{
+                                    "aria-labelledby": "basic-button",
+                                }}
+                            >
+                                <MenuItem onClick={handleCategoriesClose}>
+                                    Profile
+                                </MenuItem>
+                                <MenuItem onClick={handleCategoriesClose}>
+                                    My account
+                                </MenuItem>
+                                <MenuItem onClick={handleCategoriesClose}>
+                                    Logout
+                                </MenuItem>
+                            </Menu>
                         </Box>
 
                         <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -534,44 +371,6 @@ function NavbarV2() {
                                     shopping_cart
                                 </Icon>
                             </Badge>
-                            {/* <Tooltip title="Open settings">
-                            <IconButton
-                                onClick={handleOpenUserMenu}
-                                sx={{ p: 0 }}
-                            >
-                                <Avatar
-                                    alt="Remy Sharp"
-                                    src="/static/images/avatar/2.jpg"
-                                />
-                            </IconButton>
-                        </Tooltip>
-                        <Menu
-                            sx={{ mt: "45px" }}
-                            id="menu-appbar"
-                            anchorEl={anchorElUser}
-                            anchorOrigin={{
-                                vertical: "top",
-                                horizontal: "right",
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: "top",
-                                horizontal: "right",
-                            }}
-                            open={Boolean(anchorElUser)}
-                            onClose={handleCloseUserMenu}
-                        >
-                            {settings.map((setting) => (
-                                <MenuItem
-                                    key={setting}
-                                    onClick={handleCloseUserMenu}
-                                >
-                                    <Typography textAlign="center">
-                                        {setting}
-                                    </Typography>
-                                </MenuItem>
-                            ))}
-                        </Menu> */}
                         </Box>
                     </Toolbar>
                 </Container>
@@ -579,4 +378,4 @@ function NavbarV2() {
         </Box>
     );
 }
-export default NavbarV2;
+export default Navbar;

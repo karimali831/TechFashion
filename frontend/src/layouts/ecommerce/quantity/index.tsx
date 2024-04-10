@@ -112,8 +112,7 @@ export const ProductQuantity = ({ item }: IProps) => {
                             width: 40,
                             border: 0,
                             outline: 0,
-                            fontSize: 20,
-                            marginBottom: 6,
+                            fontSize: 18,
                             marginRight: 6,
                             textAlign: "center",
                         }}

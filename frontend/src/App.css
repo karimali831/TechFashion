@@ -1,10 +1,37 @@
-@import url("https://fonts.googleapis.com/css2?family=Ysabeau+SC:wght@1;100;200;300;400;500;600;700;800;900;1000&display=swap");
+/* @import url("https://fonts.googleapis.com/css2?family=Ysabeau+SC:wght@1;100;200;300;400;500;600;700;800;900;1000&display=swap"); */
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Ysabeau SC", sans-serif;
+    /* font-family: "Ysabeau SC", sans-serif; */
+}
+
+body {
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    font-family: "Assistant", sans-serif;
+    font-size: 14px;
+    grid-template-columns: 100%;
+    min-height: 100%;
+    margin: 0;
+    font-size: 14px;
+    letter-spacing: 0.06rem;
+    line-height: calc(1 + 0.8 / 1);
+    font-style: normal;
+    font-weight: 400;
+}
+
+.content {
+    /* display: flex;
+    flex-direction: column; */
+    /* justify-content: space-between; */
+    padding: 0 250px;
+}
+
+a:active,
+a:hover {
+    text-decoration: underline;
 }
 
 .app {
@@ -217,6 +244,10 @@
 
 /*!*RESPONSIVENESS*!*/
 @media (max-width: 768px) {
+    .content {
+        padding: 0;
+    }
+
     /*navbar styles*/
     .navbar {
         display: flex;

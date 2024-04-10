@@ -30,7 +30,7 @@ export const Addresses = () => {
     const defaultAddress = account.addresses.filter((x) => x.main)[0];
 
     return (
-        <MDBox mt={4} className="home" display="flex" flexDirection="column">
+        <MDBox mt={4} className="content" display="flex" flexDirection="column">
             <Fade
                 in={true}
                 mountOnEnter={true}

@@ -13,6 +13,9 @@ const SignOutAction = createAction("@@User/SignOut");
 const SetEmailVerificationAction = createAction<IVerificationEmail>(
     "@@User/SetEmailVerification"
 );
+const SetEmailVerificationAttemptAction = createAction<number>(
+    "@@User/SetEmailVerificationAttempt"
+);
 
 export {
     FirebaseAuthEmptyAction,
@@ -22,4 +25,5 @@ export {
     SignOutAction,
     SetFirebaseUidAction,
     SetEmailVerificationAction,
+    SetEmailVerificationAttemptAction,
 };

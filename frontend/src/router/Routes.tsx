@@ -61,10 +61,10 @@ export const AppRoutes: IRoute[] = [
         url: "/cart",
     },
     {
-        page: Page.Contacts,
+        page: Page.Contact,
         element: <Contact />,
         memberOnly: false,
-        url: "/contacts",
+        url: "/contact",
         displayOnHeader: true,
     },
     {
@@ -98,6 +98,6 @@ export const AppRoutes: IRoute[] = [
         memberOnly: true,
         adminOnly: true,
         url: "/admin/productimport",
-        displayOnHeader: true,
+        displayOnHeader: false,
     },
 ];

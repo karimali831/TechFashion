@@ -30,6 +30,7 @@ interface Props extends TypographyProps {
         | "bottom";
     textGradient?: boolean;
     textDecoration?: string;
+    fontSize?: "small" | "medium" | "large" | number;
     children: ReactNode;
     opacity?: number;
     onClick?: () => void;
@@ -45,6 +46,7 @@ const MDTypography: FC<Props | any> = forwardRef(
             verticalAlign,
             textGradient,
             textDecoration,
+            fontSize,
             opacity,
             children,
             onClick,
@@ -54,12 +56,25 @@ const MDTypography: FC<Props | any> = forwardRef(
     ) => {
         const darkMode = false;
 
+        if (fontSize === "small") {
+            fontSize = 13;
+        } else if (fontSize === "medium") {
+            fontSize = 16;
+        } else if (fontSize === "large") {
+            fontSize = 18;
+        }
+
         return (
             <MDTypographyRoot
                 {...rest}
                 ref={ref}
                 onClick={onClick}
-                style={{ cursor: onClick ? "pointer" : undefined }}
+                style={{
+                    cursor: onClick ? "pointer" : undefined,
+                    fontFamily: "Assistant, sans-serif",
+                    letterSpacing: 1,
+                    fontSize,
+                }}
                 ownerState={{
                     color,
                     textTransform,
@@ -68,6 +83,7 @@ const MDTypography: FC<Props | any> = forwardRef(
                     opacity,
                     textGradient,
                     textDecoration,
+                    fontSize,
                     darkMode,
                 }}
             >
@@ -85,6 +101,7 @@ MDTypography.defaultProps = {
     verticalAlign: "unset",
     textGradient: false,
     textDecoration: "none",
+    fontSize: "medium",
     opacity: 1,
 };
 

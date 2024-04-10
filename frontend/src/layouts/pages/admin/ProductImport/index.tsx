@@ -30,7 +30,7 @@ export const ProductImport = () => {
     };
 
     return (
-        <MDBox className="home">
+        <MDBox className="content">
             <h1>Import Ebay Prodocts</h1>
             <form onSubmit={handleSubmit}>
                 <input type="file" accept=".csv" onChange={handleChange} />

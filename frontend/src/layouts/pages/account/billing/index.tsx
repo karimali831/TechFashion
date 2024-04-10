@@ -94,7 +94,7 @@ function Billing(): JSX.Element {
     const defaultAddress = account.addresses.filter((x) => x.main)[0];
 
     return (
-        <MDBox mt={4} className="home">
+        <MDBox mt={4} className="content">
             <h1>Account</h1>
 
             <Box mt={2} display="flex" alignItems={"center"}>
@@ -209,7 +209,7 @@ function Billing(): JSX.Element {
     );
 
     return (
-        <MDBox mt={4} className="home">
+        <MDBox mt={4} className="content">
             <Button
                 variant="contained"
                 onClick={() => dispatch(SignOutAction())}

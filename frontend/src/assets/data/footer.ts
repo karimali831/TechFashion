@@ -41,7 +41,7 @@ export const information: Footer[] = [
 export const pages: Footer[] = [
     {
         link: "/",
-        title: "home",
+        title: "content",
         id: 1,
     },
     {
@@ -55,7 +55,7 @@ export const pages: Footer[] = [
         id: 3,
     },
     {
-        link: "/contacts",
+        link: "/contact",
         title: "contact",
         id: 4,
     },

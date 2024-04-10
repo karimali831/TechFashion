@@ -22,6 +22,7 @@ import { ShowPageAction } from "src/state/contexts/app/Actions";
 import { ProductQuantity } from "../quantity";
 import Swal from "sweetalert2";
 import { SetStockAction } from "src/state/contexts/product/Actions";
+import { RandomImages } from "src/layouts/pages/products/ProductItem";
 
 interface IProps {
     isOverlay: boolean;
@@ -83,6 +84,8 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
         dispatch(OpenCartOverlayAction(false));
         dispatch(ShowPageAction(Page.Products));
     };
+
+    const randomNumber = Math.floor(Math.random() * RandomImages.length);
 
     return (
         <Box display="flex" flexDirection="column" height="100%">
@@ -176,7 +179,12 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
                                             >
                                                 <Box mr={2}>
                                                     <img
-                                                        src={product.imageSrc}
+                                                        // src={product.imageSrc}
+                                                        src={
+                                                            RandomImages[
+                                                                randomNumber
+                                                            ]
+                                                        }
                                                         alt="Product Image"
                                                         style={{
                                                             width: 120,
@@ -202,6 +210,7 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
                                                             component="label"
                                                             variant="button"
                                                             color="text"
+                                                            fontSize={15}
                                                             fontWeight="medium"
                                                             width={200}
                                                         >
@@ -217,7 +226,8 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
                                                                 component="label"
                                                                 variant="button"
                                                                 color="text"
-                                                                fontWeight="regular"
+                                                                fontSize={15}
+                                                                fontWeight="medium"
                                                             >
                                                                 {
                                                                     item.unitTotalStr
@@ -231,7 +241,7 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
                                                         color="text"
                                                         fontWeight="regular"
                                                         mt={1}
-                                                        mb={1}
+                                                        mb={0.5}
                                                     >
                                                         {product.priceStr}
                                                     </MDTypography>
@@ -252,7 +262,7 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
                                                     )}
 
                                                     <Box
-                                                        mt={2}
+                                                        mt={1.5}
                                                         display="flex"
                                                         alignItems="center"
                                                     >
@@ -305,7 +315,7 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
                                     variant="body2"
                                     color="text"
                                     fontWeight="strong"
-                                    fontSize={16}
+                                    fontSize={18}
                                     letterSpacing=".04rem"
                                 >
                                     Estimated total
@@ -319,7 +329,7 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
                                         variant="body2"
                                         color="text"
                                         fontWeight="strong"
-                                        fontSize={16}
+                                        fontSize={18}
                                         mt={1}
                                         letterSpacing=".04rem"
                                     >
@@ -338,7 +348,7 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
                                 fontSize={14}
                                 fontWeight={"regular"}
                                 letterSpacing=".04rem"
-                                mt={1}
+                                mt={0.5}
                                 mb={1}
                             >
                                 Taxes, discounts and shipping calculated at

@@ -6,7 +6,7 @@ export enum Page {
     Products = "Catalog",
     Product = "Product Info",
     Cart = "Cart",
-    Contacts = "Contacts",
+    Contact = "Contact",
     OrderSuccess = "Order Success",
     Order = "Order",
     Account = "Account",

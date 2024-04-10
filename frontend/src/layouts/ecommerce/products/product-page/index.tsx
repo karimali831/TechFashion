@@ -39,7 +39,7 @@ function ProductPage(): JSX.Element {
     }
 
     return (
-        <MDBox py={3} className="home">
+        <MDBox py={3} className="content">
             <Card sx={{ overflow: "visible" }}>
                 <MDBox p={3}>
                     <MDBox mb={3} display="flex" alignItems="center">

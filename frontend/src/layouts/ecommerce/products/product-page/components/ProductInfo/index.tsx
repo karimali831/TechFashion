@@ -214,7 +214,11 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
                             />
                         </Box>
                     ) : (
-                        <MDTypography variant="h3" fontWeight="bold">
+                        <MDTypography
+                            variant="h3"
+                            fontWeight="bold"
+                            fontSize={24}
+                        >
                             {product?.title}
                         </MDTypography>
                     )}
@@ -228,7 +232,11 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
                     <Icon>star_half</Icon>
                 </MDTypography>
                 <MDBox mt={1}>
-                    <MDTypography variant="h6" fontWeight="medium">
+                    <MDTypography
+                        variant="h6"
+                        fontWeight="medium"
+                        fontSize="large"
+                    >
                         Price
                     </MDTypography>
                 </MDBox>
@@ -241,7 +249,11 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
                             variant="rectangular"
                         />
                     ) : (
-                        <MDTypography variant="h5" fontWeight="medium">
+                        <MDTypography
+                            variant="h5"
+                            fontWeight="medium"
+                            fontSize="large"
+                        >
                             {product?.priceStr}
                         </MDTypography>
                     )}

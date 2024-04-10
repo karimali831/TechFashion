@@ -8,14 +8,31 @@ interface IProps {
     loading: boolean;
 }
 
+export const RandomImages: string[] = [
+    "https://d0e430-1f.myshopify.com/cdn/shop/files/KIGo0sX7KYchXMp.jpg?v=1712738008&width=360",
+    "https://d0e430-1f.myshopify.com/cdn/shop/files/4b890taYr39XmRR.jpg?v=1712737948&width=360",
+    "https://d0e430-1f.myshopify.com/cdn/shop/files/0eItXGV66LJnak8.jpg?v=1712737973&width=360",
+    "https://d0e430-1f.myshopify.com/cdn/shop/files/4upnmt8m6CYCew6.jpg?v=1712737948&width=360",
+    "https://d0e430-1f.myshopify.com/cdn/shop/files/U15mbtbXJ9dUlzO.jpg?v=1712737998&width=360",
+    "https://d0e430-1f.myshopify.com/cdn/shop/files/df9lITfB7UsInxQ.jpg?v=1712738020&width=360",
+    "https://d0e430-1f.myshopify.com/cdn/shop/files/phvQXoXvHMg46sQ.jpg?v=1712738038&width=360",
+    "https://d0e430-1f.myshopify.com/cdn/shop/files/KeNyoIK0FI3qDfi.png?v=1712737988&width=360",
+    "https://d0e430-1f.myshopify.com/cdn/shop/files/HQQnWOx8zxzqvde.png?v=1712737972&width=360",
+    "https://d0e430-1f.myshopify.com/cdn/shop/files/jzDgEgwWkDXnNku.jpg?v=1712737962&width=360",
+    "https://d0e430-1f.myshopify.com/cdn/shop/files/CBBdhk4MUc8BdT6.jpg?v=1712737983&width=360",
+    "https://d0e430-1f.myshopify.com/cdn/shop/files/xqGV4QpGs1lm8ku.jpg?v=1712737988&width=360",
+];
+
 const ProductItem = ({ index, item, loading }: IProps) => {
     // const { data } = useGetProductQuery();
 
     // const mainImage = data.details.filter(x => x.id === item.id)
     //     .map(x => x.imageMain)
 
+    const randomNumber = Math.floor(Math.random() * RandomImages.length);
+
     return (
-        <Box>
+        <Box sx={{ display: "flex" }}>
             <Fade
                 in={true}
                 mountOnEnter={true}
@@ -46,7 +63,11 @@ const ProductItem = ({ index, item, loading }: IProps) => {
                     </Box>
                 ) : (
                     <Box>
-                        <img src={item.imageSrc} className="zoom" />
+                        <img
+                            // src={item.imageSrc}
+                            src={RandomImages[randomNumber]}
+                            className="zoom"
+                        />
                         <Box
                             style={{ marginTop: 10 }}
                             display="flex"
