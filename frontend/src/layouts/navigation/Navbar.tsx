@@ -150,7 +150,7 @@ function Navbar() {
 
     return (
         <Box
-            className="content"
+            className="nav"
             sx={{ borderBottom: ".1rem solid rgba(0,0,0, .08)" }}
         >
             <ShippingAddressModal />

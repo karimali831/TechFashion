@@ -47,8 +47,8 @@ const Products = () => {
                           const arr = [];
                           for (let i = 0; i < 3; i++) {
                               arr.push(
-                                  <Grid item>
-                                      <Item key={i} className="product-item">
+                                  <Grid item key={i}>
+                                      <Item className="product-item">
                                           <ProductItem
                                               index={i}
                                               loading={true}
@@ -60,9 +60,8 @@ const Products = () => {
                           return arr;
                       })()
                     : products.catalogue.map((product, index) => (
-                          <Grid item>
+                          <Grid item key={index}>
                               <Item
-                                  key={index}
                                   className="product-item"
                                   sx={{ cursor: "pointer" }}
                                   onClick={() => onProductClick(product)}

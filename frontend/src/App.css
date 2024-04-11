@@ -22,11 +22,15 @@ body {
     font-weight: 400;
 }
 
+.nav {
+    padding: 0 220px;
+}
+
 .content {
     /* display: flex;
     flex-direction: column; */
     /* justify-content: space-between; */
-    padding: 0 250px;
+    padding: 20px 220px;
 }
 
 a:active,
@@ -54,7 +58,7 @@ a:hover {
     width: 100%;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 250px;
+    padding: 20px 220px;
 }
 
 .logo {
@@ -116,7 +120,7 @@ a:hover {
     background: black;
     height: 70px;
     color: #fff;
-    padding: 20px 250px;
+    padding: 20px 220px;
 }
 
 .category-links {
@@ -139,7 +143,7 @@ a:hover {
 /*footer */
 .footer {
     background: #262626;
-    padding: 70px 250px;
+    padding: 70px 220px;
     display: flex;
     justify-content: space-between;
     width: 100%;
@@ -244,8 +248,12 @@ a:hover {
 
 /*!*RESPONSIVENESS*!*/
 @media (max-width: 768px) {
-    .content {
+    .nav {
         padding: 0;
+    }
+
+    .content {
+        padding: 10px 5px;
     }
 
     /*navbar styles*/
@@ -254,7 +262,7 @@ a:hover {
         width: 100%;
         justify-content: space-between;
         align-items: center;
-        padding: 20px 250px;
+        padding: 20px 220px;
     }
 
     .logo {
@@ -319,7 +327,7 @@ a:hover {
         background: black;
         height: 70px;
         color: #fff;
-        padding: 20px 250px;
+        padding: 20px 220px;
     } */
 
     .category-links {

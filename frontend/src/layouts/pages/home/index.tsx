@@ -18,7 +18,12 @@ const Home = (): JSX.Element => {
                 unmountOnExit={true}
                 timeout={500}
             >
-                <MDBox component="img" src={banner} alt="Product Image" />
+                <MDBox
+                    component="img"
+                    src={banner}
+                    alt="Product Image"
+                    width={"100%"}
+                />
             </Fade>
             {/* <Category /> */}
             <Fade
