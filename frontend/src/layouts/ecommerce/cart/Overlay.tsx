@@ -250,6 +250,7 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
                                                             <MDTypography
                                                                 variant="h7"
                                                                 color="text"
+                                                                fontSize="small"
                                                                 key={idx}
                                                             >
                                                                 {

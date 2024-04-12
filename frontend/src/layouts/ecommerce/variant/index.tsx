@@ -1,4 +1,4 @@
-import { Box, Chip, Stack } from "@mui/material";
+import { Box, Chip } from "@mui/material";
 import { IProductAttribute } from "src/interface/IProductAttribute";
 
 interface IProps {
@@ -11,19 +11,20 @@ export const Variant = ({ variant, selected, onClick }: IProps) => {
     return (
         <Box mt={2}>
             <span>{variant.attribute}</span>
-            <Stack direction="row" spacing={1} mb={1} mt={1}>
+            <Box display="flex" flexWrap="wrap" mt={1}>
                 {variant.options.map((v) => {
                     return (
-                        <Chip
-                            key={v}
-                            size="medium"
-                            variant={selected === v ? "filled" : "outlined"}
-                            label={v}
-                            onClick={() => onClick(v)}
-                        />
+                        <Box mr={1} mb={1} key={v}>
+                            <Chip
+                                size="medium"
+                                variant={selected === v ? "filled" : "outlined"}
+                                label={v}
+                                onClick={() => onClick(v)}
+                            />
+                        </Box>
                     );
                 })}
-            </Stack>
+            </Box>
         </Box>
     );
 };

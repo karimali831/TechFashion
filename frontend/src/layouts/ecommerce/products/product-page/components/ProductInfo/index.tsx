@@ -298,18 +298,16 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
                                     )[0]?.value;
 
                                     return (
-                                        <Grid key={idx} item xs={12} lg={5}>
-                                            <Variant
-                                                selected={selectedVariant}
-                                                variant={variant}
-                                                onClick={(value) => {
-                                                    updateVariant(
-                                                        variant.attribute,
-                                                        value
-                                                    );
-                                                }}
-                                            />
-                                        </Grid>
+                                        <Variant
+                                            selected={selectedVariant}
+                                            variant={variant}
+                                            onClick={(value) => {
+                                                updateVariant(
+                                                    variant.attribute,
+                                                    value
+                                                );
+                                            }}
+                                        />
                                     );
                                 })
                             )}
