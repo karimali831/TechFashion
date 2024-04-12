@@ -38,30 +38,43 @@ export const VerifyEmailModal = () => {
             title="Verify Email"
             open={openVerifyEmailModal}
             content={
-                <Box mt={2} textAlign={"center"}>
+                <Box mt={1} textAlign={"center"}>
                     {firebaseUid === null && (
                         <MDTypography variant="text" fontWeight="regular">
                             Use your email to sign in — no password needed
                         </MDTypography>
                     )}
-                    <Box mt={1} mb={2}>
-                        <MDTypography variant="caption" fontWeight="regular">
+                    <Box>
+                        <MDTypography
+                            variant="caption"
+                            fontWeight="regular"
+                            fontSize="small"
+                        >
                             Confirm it's you by entering the code sent to your
                             email:
                         </MDTypography>{" "}
-                        <MDTypography variant="caption" fontWeight="medium">
+                        <MDTypography
+                            variant="caption"
+                            fontWeight="medium"
+                            fontSize="small"
+                        >
                             {user?.email ?? guestCheckout.email}
                         </MDTypography>
                     </Box>
                     <Box mt={2} sx={{ borderBottom: "1px solid #ccc" }} />
                     <Box mt={2}>
-                        <MDTypography variant="caption" fontWeight="regular">
+                        <MDTypography
+                            variant="caption"
+                            fontWeight="regular"
+                            fontSize="small"
+                        >
                             If you haven't received the email in last 10
                             minutes, you can{" "}
                             <MDTypography
                                 variant="caption"
                                 fontWeight="regular"
                                 textDecoration="underline"
+                                fontSize="small"
                                 onClick={() =>
                                     dispatch(
                                         SetEmailVerificationAttemptAction(

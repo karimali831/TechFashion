@@ -32,55 +32,57 @@ const ProductItem = ({ index, item, loading }: IProps) => {
     const randomNumber = Math.floor(Math.random() * RandomImages.length);
 
     return (
-        <Box sx={{ display: "flex" }}>
-            <Fade
-                in={true}
-                mountOnEnter={true}
-                unmountOnExit={true}
-                style={{
-                    transitionDelay: index !== 0 ? index * 100 + "ms" : "0ms",
-                }}
-            >
-                {loading ? (
+        <Fade
+            in={true}
+            mountOnEnter={true}
+            unmountOnExit={true}
+            style={{
+                transitionDelay: index !== 0 ? index * 100 + "ms" : "0ms",
+            }}
+        >
+            {loading ? (
+                <Box
+                    display="flex"
+                    flexDirection={"column"}
+                    overflow={"hidden"}
+                >
+                    <Skeleton animation="wave" height={235} className="zoom" />
                     <Box>
                         <Skeleton
                             width={"100%"}
-                            animation="wave"
-                            height={235}
+                            animation="pulse"
+                            height={30}
                         />
-                        <Box>
-                            <Skeleton
-                                width={"100%"}
-                                animation="pulse"
-                                height={35}
-                            />
-                            <Skeleton
-                                width={"100%"}
-                                animation="pulse"
-                                height={35}
-                            />
-                        </Box>
-                    </Box>
-                ) : (
-                    <Box>
-                        <img
-                            // src={item.imageSrc}
-                            src={RandomImages[randomNumber]}
-                            className="zoom"
+                        <Skeleton
+                            width={"100%"}
+                            animation="pulse"
+                            height={30}
                         />
-                        <Box
-                            style={{ marginTop: 10 }}
-                            display="flex"
-                            flexDirection="column"
-                            alignItems="flex-start"
-                        >
-                            <h3 className="title">{item.title}</h3>
-                            <span className="price">{item.priceStr}</span>
-                        </Box>
                     </Box>
-                )}
-            </Fade>
-        </Box>
+                </Box>
+            ) : (
+                <Box
+                    display="flex"
+                    flexDirection={"column"}
+                    overflow={"hidden"}
+                >
+                    <img
+                        // src={item.imageSrc}
+                        src={RandomImages[randomNumber]}
+                        className="zoom"
+                    />
+                    <Box
+                        style={{ marginTop: 10 }}
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="flex-start"
+                    >
+                        <h3 className="title">{item.title}</h3>
+                        <span className="price">{item.priceStr}</span>
+                    </Box>
+                </Box>
+            )}
+        </Fade>
     );
 };
 

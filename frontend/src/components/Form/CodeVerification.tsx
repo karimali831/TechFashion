@@ -139,7 +139,11 @@ export const CodeVerification = ({ attempt }: IProps) => {
                         }}
                     />
                     <Box p={2}>
-                        <MDTypography variant="caption" fontWeight="regular">
+                        <MDTypography
+                            variant="caption"
+                            fontWeight="regular"
+                            fontSize="small"
+                        >
                             By continuing, your email address will be saved with
                             Tech Fashion.
                         </MDTypography>

@@ -92,7 +92,7 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
             {loadingProducts ? (
                 <Box>
                     <MDTypography>
-                        <h2>Your cart</h2>
+                        <h1>Your cart</h1>
                         <CircularProgress />
                     </MDTypography>
                 </Box>
@@ -129,7 +129,7 @@ export const CartOverlay = ({ isOverlay }: IProps) => {
                     }}
                 >
                     <MDTypography>
-                        <h2>Your cart</h2>
+                        <h1>Your cart</h1>
                     </MDTypography>
 
                     <Box
