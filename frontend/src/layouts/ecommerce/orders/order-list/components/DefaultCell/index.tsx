@@ -5,17 +5,22 @@ interface Props {
     value: string;
     link?: boolean;
     suffix?: string | boolean;
+    maxLength?: number;
 }
 
-function DefaultCell({ value, link, suffix }: Props): JSX.Element {
+function DefaultCell({ value, link, suffix, maxLength }: Props): JSX.Element {
     return (
         <MDTypography
             variant="caption"
-            fontWeight="medium"
+            fontWeight="regular"
             color="text"
             sx={{ cursor: link ? "pointer" : "auto" }}
         >
-            {value}
+            {!maxLength
+                ? value
+                : value.length > maxLength
+                ? value.substring(0, maxLength) + "..."
+                : value}
             {suffix && (
                 <MDTypography
                     variant="caption"

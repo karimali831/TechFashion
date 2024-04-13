@@ -7,35 +7,42 @@ import { Order } from "src/layouts/pages/order/Order";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
 import { persistor } from "src/state/InitialiseStore";
 import { ResetGuestCheckoutAction } from "src/state/contexts/cart/Actions";
-import { getCartState } from "src/state/contexts/cart/Selectors";
+import { getUserState } from "src/state/contexts/user/Selectors";
 
 export const Success = () => {
     const params = new URLSearchParams(window.location.search);
     const paymentIntentId = params.get("payment_intent");
 
-    const { guestCheckout } = useAppSelector(getCartState);
+    const { firebaseUid } = useAppSelector(getUserState);
     const dispatch = useAppDispatch();
 
     const { data: order, isLoading } = useGetOrderQuery(paymentIntentId);
 
     useEffect(() => {
-        if (!!guestCheckout) {
+        if (!firebaseUid) {
             dispatch(ResetGuestCheckoutAction());
             persistor.purge();
         }
     }, []);
 
+    // http://localhost:5173/order/266098623
+
+    const loggedinStr =
+        firebaseUid &&
+        "You can view the status of your order or make changes to it by visiting your orders";
+
     return (
         <MDBox className="content">
             <Alert severity="success">
-                Payment successful. Your order is now being processed and you
-                will be notified once your items are dispatched.
+                Thanks for your order. We’ll let you know once your item(s) have
+                dispatched. Your estimated delivery date is indicated below.{" "}
+                {loggedinStr}
             </Alert>
-            {!!guestCheckout && !isLoading && (
+            {!firebaseUid && !isLoading && (
                 <Alert severity="info">
                     Your unique order link is : {baseWebUrl}
-                    {`/order/${order.ref}`}
-                    Or register an account to view all your orders.
+                    {`/order/${order.ref}`} {"  "} Alternatively, you can
+                    register an account to view all your orders.
                 </Alert>
             )}
             {isLoading ? <CircularProgress /> : <Order order={order} />}

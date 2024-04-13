@@ -11,6 +11,7 @@ import { useAppDispatch } from "src/state/Hooks";
 import DefaultCell from "src/layouts/ecommerce/orders/order-list/components/DefaultCell";
 import { useGetProductQuery } from "src/api/productApi";
 import { useGetOrderedItemsQuery } from "src/api/orderApi";
+import { IProductVariantObj } from "src/interface/IProductVariantObj";
 
 interface IProps {
     order: IOrderHistory;
@@ -20,12 +21,24 @@ const columns = [
     {
         Header: "Product",
         accessor: "product",
-        Cell: ({ value }: any) => <DefaultCell link={true} value={value} />,
+        Cell: ({ value }: any) => (
+            <DefaultCell link={true} value={value} maxLength={50} />
+        ),
     },
     {
-        Header: "SKU",
-        accessor: "sku",
-        Cell: ({ value }: any) => <DefaultCell value={value} />,
+        Header: "Variant",
+        accessor: "variantList",
+        Cell: ({ row }: any) => {
+            if (row.original.variantList.length == 0) return "-";
+
+            return row.original.variantList.map((book: IProductVariantObj) => (
+                <Box key={book.attribute}>
+                    <span>
+                        {book.attribute}: {book.value}
+                    </span>
+                </Box>
+            ));
+        },
     },
     {
         Header: "Price",

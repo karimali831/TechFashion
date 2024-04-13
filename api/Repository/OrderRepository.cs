@@ -98,7 +98,7 @@ namespace api.Repository
                     p.Id AS ProductId,
                     p.Title AS Product, 
                     p.Slug AS ProductSlug,
-                    P.Sku,
+                    NULL AS Variant,
                     cp.Quantity,
                     p.Price,
                     p.Price * cp.Quantity AS Total
@@ -110,7 +110,6 @@ namespace api.Repository
                 JOIN [Orders] AS O
                 ON O.CartId = C.Id
                 WHERE O.Ref = @orderRef
-                AND CP.RemovedDate IS NULL
                 AND CP.VariantId IS NULL
                 AND C.ArchiveDate IS NOT NULL
 
@@ -121,7 +120,7 @@ namespace api.Repository
                     p.Id,
                     p.Title, 
                     p.Slug,
-                    pv.Sku,
+                    pv.Variant,
                     cp.Quantity,
                     pv.Price,
                     pv.Price * cp.Quantity
@@ -135,7 +134,6 @@ namespace api.Repository
                 JOIN [Orders] AS O
                 ON O.CartId = C.Id
                 WHERE O.Ref = @orderRef
-                AND CP.RemovedDate IS NULL
                 AND C.ArchiveDate IS NOT NULL
             ";
 

@@ -17,6 +17,8 @@ export const Variant = ({ variant, selected, onClick }: IProps) => {
                         <Box mr={1} mb={1} key={v}>
                             <Chip
                                 size="medium"
+                                // color="secondary"
+                                style={{ padding: "15px 5px" }}
                                 variant={selected === v ? "filled" : "outlined"}
                                 label={v}
                                 onClick={() => onClick(v)}
