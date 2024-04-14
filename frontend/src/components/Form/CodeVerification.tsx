@@ -8,8 +8,6 @@ import { getCartState } from "src/state/contexts/cart/Selectors";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { useDispatch } from "react-redux";
-import { ShowPageAction } from "src/state/contexts/app/Actions";
-import { Page } from "src/enum/Page";
 import { getUserState } from "src/state/contexts/user/Selectors";
 import MDTypography from "../MDTypography";
 import { IVerificationEmail, IVerificationEmailRequest } from "src/api/userApi";

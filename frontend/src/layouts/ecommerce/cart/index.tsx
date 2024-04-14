@@ -10,7 +10,6 @@ import { getUserState } from "src/state/contexts/user/Selectors";
 import { ICartProductDetail } from "src/interface/ICartProductDetail";
 import { ShowPageAction } from "src/state/contexts/app/Actions";
 import { Page } from "src/enum/Page";
-import useEffectSkipInitialRender from "src/hooks/useEffectSkipInitialRender";
 import { useEffect } from "react";
 
 export const Cart = () => {

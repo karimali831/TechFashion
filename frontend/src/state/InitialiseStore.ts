@@ -25,7 +25,6 @@ import {
 import { auth } from "src/config/firebase";
 import { createBrowserHistory } from "history";
 import { rootSaga } from "./middleware/sagas/rootSaga";
-import { LocationChangeAction } from "./contexts/app/Actions";
 
 export const history = createBrowserHistory();
 
