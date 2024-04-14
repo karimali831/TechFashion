@@ -11,7 +11,6 @@ import MenuItem from "@mui/material/MenuItem";
 import { Badge, Button, Icon } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
 import {
-    OpenCartAccountModalAction,
     OpenCartOverlayAction,
     SetAddressIdAction,
 } from "src/state/contexts/cart/Actions";
@@ -26,18 +25,9 @@ import { ShowPageAction } from "src/state/contexts/app/Actions";
 import { Page } from "src/enum/Page";
 import { AppRoutes } from "src/router/Routes";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { IApiResponse, baseApiUrl } from "src/api/baseApi";
-import {
-    IVerificationEmail,
-    IVerificationEmailRequest,
-    useAccountDetailsQuery,
-} from "src/api/userApi";
-import { SetEmailVerificationAction } from "src/state/contexts/user/Actions";
-import Swal from "sweetalert2";
+import { useAccountDetailsQuery } from "src/api/userApi";
 import { getAppState } from "src/state/contexts/app/Selectors";
 import { ShippingAddressModal } from "../ecommerce/modals/ShippingAddress";
-import { GuestCheckoutModal } from "../ecommerce/modals/GuestCheckout";
 
 const MenuLinkStyle: React.CSSProperties = {
     cursor: "pointer",
@@ -62,8 +52,7 @@ function Navbar() {
 
     const { page } = useAppSelector(getAppState);
     const { user, firebaseUid } = useAppSelector(getUserState);
-    const { guestCheckout, openOverlay, openAccountModal } =
-        useAppSelector(getCartState);
+    const { guestCheckout, openOverlay } = useAppSelector(getCartState);
 
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
@@ -78,40 +67,6 @@ function Navbar() {
             dispatch(SetAddressIdAction(defaultAddress.id));
         }
     }, [defaultAddress]);
-
-    useEffect(() => {
-        if (openAccountModal && !user && guestCheckout?.email !== "") {
-            const checkVerificationEmail = async () =>
-                await axios.post<IApiResponse<IVerificationEmail>>(
-                    baseApiUrl + "User/CheckVerificationEmail",
-                    {
-                        email: guestCheckout.email,
-                        send: false,
-                        firebaseUid,
-                        guestCheckoutId: guestCheckout.id,
-                    } as IVerificationEmailRequest
-                );
-
-            checkVerificationEmail().then(({ data: response }) => {
-                if (response.errorMsg) {
-                    dispatch(OpenCartAccountModalAction(false));
-                    Swal.fire({
-                        title: "An error occurred",
-                        text: response.errorMsg,
-                    });
-                } else {
-                    dispatch(SetEmailVerificationAction(response.data));
-
-                    if (response.data.verified) {
-                        dispatch(OpenCartAccountModalAction(false));
-                        dispatch(ShowPageAction(Page.Cart));
-                    } else if (response.data.sent) {
-                        dispatch(OpenCartAccountModalAction(false));
-                    }
-                }
-            });
-        }
-    }, [openAccountModal]);
 
     const { data: cart } = useGetCartQuery({
         firebaseUid,
@@ -149,7 +104,6 @@ function Navbar() {
             sx={{ borderBottom: ".1rem solid rgba(0,0,0, .08)" }}
         >
             <ShippingAddressModal />
-            <GuestCheckoutModal />
             {openOverlay && (
                 <OverlaySlider
                     size={OverlaySliderSize.Small}

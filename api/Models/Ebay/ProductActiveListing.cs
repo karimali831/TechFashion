@@ -19,5 +19,9 @@ namespace api.Models.Ebay
         public required string Category { get; set; }
         [Name("eBay category 2 number")]
         public string? SecondCategory { get; set; }
+        [Name("eBay category 1 number")]
+        public int CatNo { get; set; }
+        [Name("eBay category 2 number")]
+        public int? Cat2No { get; set; }
     }
 }

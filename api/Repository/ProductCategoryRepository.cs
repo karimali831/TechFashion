@@ -1,6 +1,7 @@
 using api.Data;
 using api.Helper;
 using api.Infrastructure;
+using api.Models.Ebay;
 
 namespace api.Repository
 {
@@ -8,7 +9,7 @@ namespace api.Repository
     {
         Task<ProductCategory> GetAsync(int id);
         Task<ProductCategory?> GetByNameAsync(string name, bool isSecondCat);
-        Task<int> GetOrCreateAsync(string catName, string? secondCatName = null);
+        Task<int> GetOrCreateAsync(ProductActiveListing product);
     }
 
     public class ProductCategoryRepository(DapperContext context) : DapperBaseRepository(context), IProductCategoryRepository
@@ -29,11 +30,12 @@ namespace api.Repository
         }
 
 
-        public async Task<int> GetOrCreateAsync(string catName, string? secondCatName = null)
+        public async Task<int> GetOrCreateAsync(ProductActiveListing product)
         {
-            var existing = !string.IsNullOrEmpty(secondCatName) ?
-                await GetByNameAsync(secondCatName, isSecondCat: true) :
-                await GetByNameAsync(catName, isSecondCat: false);
+            // firstProduct.Category, firstProduct.SecondCategory, firstProduct.CatNo, firstProduct.Cat2No)
+            var existing = !string.IsNullOrEmpty(product.SecondCategory) ?
+                await GetByNameAsync(product.SecondCategory, isSecondCat: true) :
+                await GetByNameAsync(product.Category, isSecondCat: false);
 
             if (existing is not null)
             {
@@ -42,15 +44,17 @@ namespace api.Repository
 
             var model = new ProductCategory
             {
-                Name = catName
+                Name = product.Category,
+                EbayCatNo = product.CatNo
             };
 
-            if (!string.IsNullOrEmpty(secondCatName))
+            if (!string.IsNullOrEmpty(product.SecondCategory))
             {
                 var firstCategory = await QueryAsync<int>(DapperHelper.Insert(Table, Fields), model);
 
                 model.Cat2Id = firstCategory.Single();
-                model.Name = secondCatName;
+                model.EbayCatNo = product.Cat2No;
+                model.Name = product.SecondCategory;
             }
 
             var result = await QueryAsync<int>(DapperHelper.Insert(Table, Fields), model);

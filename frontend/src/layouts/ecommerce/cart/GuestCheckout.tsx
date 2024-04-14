@@ -1,25 +1,22 @@
-import { Box } from "@mui/material";
+import { Box, Fade } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ActionButton } from "src/components/Buttons/ActionButton";
 import { FormInput } from "src/components/Form";
-import { MDModal } from "src/components/MDModal";
+import MDBox from "src/components/MDBox";
 import { Page } from "src/enum/Page";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
 import { ShowPageAction } from "src/state/contexts/app/Actions";
-import {
-    OpenCartAccountModalAction,
-    SetGuestCheckoutAction,
-} from "src/state/contexts/cart/Actions";
+import { SetGuestCheckoutAction } from "src/state/contexts/cart/Actions";
 import { getCartState } from "src/state/contexts/cart/Selectors";
 import { SetEmailVerificationAttemptAction } from "src/state/contexts/user/Actions";
 import { getUserState } from "src/state/contexts/user/Selectors";
 
-export const GuestCheckoutModal = () => {
+export const GuestCheckout = () => {
     const navigate = useNavigate();
 
     const { emailVerificationAttempt } = useAppSelector(getUserState);
-    const { guestCheckout, openAccountModal } = useAppSelector(getCartState);
+    const { guestCheckout } = useAppSelector(getCartState);
 
     const [email, setEmail] = useState<string>(guestCheckout?.email ?? "");
 
@@ -38,13 +35,10 @@ export const GuestCheckoutModal = () => {
             })
         );
 
-        dispatch(OpenCartAccountModalAction(false));
         dispatch(ShowPageAction(Page.VerifyEmail));
     };
 
     const navToLoginOrRegister = (page: Page) => {
-        dispatch(OpenCartAccountModalAction(false));
-
         if (page === Page.Login) {
             navigate("/login?withCart=true");
         }
@@ -55,10 +49,10 @@ export const GuestCheckoutModal = () => {
     };
 
     return (
-        <MDModal
-            title="Guest Checkout"
-            content={
-                <Box>
+        <Fade in={true} mountOnEnter={true} unmountOnExit={true} timeout={500}>
+            <MDBox className="content" display="flex" justifyContent="center">
+                <Box className="content-border" minWidth={500}>
+                    <h1>Guest checkout</h1>
                     <Box mt={1} mb={1}>
                         <span
                             onClick={() => navToLoginOrRegister(Page.Login)}
@@ -101,9 +95,7 @@ export const GuestCheckoutModal = () => {
                         />
                     </Box>
                 </Box>
-            }
-            open={openAccountModal && !!guestCheckout}
-            onClose={() => dispatch(OpenCartAccountModalAction(false))}
-        />
+            </MDBox>
+        </Fade>
     );
 };

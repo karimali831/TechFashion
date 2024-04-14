@@ -54,12 +54,13 @@ namespace api.Service
                     }
 
                     var getOrAddCategory = await _productCategoryRepository
-                        .GetOrCreateAsync(firstProduct.Category, firstProduct.SecondCategory);
+                        .GetOrCreateAsync(firstProduct);
 
                     var dbProdId = await _productRepository.InsertOrUpdateEbayItemAsync(
                         new Product
                         {
                             CatId = getOrAddCategory,
+
                             EbayItemNo = itemNo,
                             Slug = slug,
                             Sku = firstProduct.Sku == "None" ? null : firstProduct.Sku,
