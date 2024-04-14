@@ -5,9 +5,6 @@ const OpenCartOverlayAction = createAction<boolean>("@@Cart/OpenCartOverlay");
 const OpenCartAccountModalAction = createAction<boolean>(
     "@@Cart/OpenCartAccountModal"
 );
-const OpenVerifyEmailModalAction = createAction<boolean>(
-    "@@Cart/OpenVerifyEmailModal"
-);
 const SetGuestCheckoutAction = createAction<IGuestCheckout | null>(
     "@@Cart/SetGuestCheckout"
 );
@@ -27,7 +24,6 @@ export {
     SetGuestCheckoutAction,
     ResetGuestCheckoutAction,
     UpdatingProductIdAction,
-    OpenVerifyEmailModalAction,
     OpenSelectAddressModalAction,
     SetAddressIdAction,
 };

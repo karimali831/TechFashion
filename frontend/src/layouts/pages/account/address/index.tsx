@@ -63,65 +63,72 @@ export const Addresses = () => {
                     )}
                 </MDBox>
             </Fade>
-
-            <Box
-                sx={{
-                    margin: "30px auto",
-                    borderRadius: 2,
-                    boxShadow: "0 0 0 0.1rem rgba(18, 18, 18, 0.1)",
-                    overflow: "auto",
-                }}
-            >
-                <Slide
-                    in={newAddress}
-                    direction="down"
+            <Box className="">
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        margin: "30px auto",
+                        borderRadius: 2,
+                        border:
+                            !newAddress && "1px solid rgba(238, 238, 238, 0.4)",
+                        // boxShadow: "0 0 0 0.1rem rgba(18, 18, 18, 0.1)",
+                        overflow: "auto",
+                    }}
+                >
+                    <Slide
+                        in={newAddress}
+                        direction="down"
+                        mountOnEnter={true}
+                        unmountOnExit={true}
+                        container={topElement.current}
+                    >
+                        <Box className="content-border" p={3} maxWidth={500}>
+                            <h2>New address</h2>
+                            <EditAddress
+                                onCancel={() => setNewAddress(false)}
+                            />
+                        </Box>
+                    </Slide>
+                </Box>
+                <Fade
+                    in={!!defaultAddress}
                     mountOnEnter={true}
                     unmountOnExit={true}
-                    container={topElement.current}
+                    timeout={500}
+                    style={{ transitionDelay: "100ms" }}
                 >
-                    <Box p={3}>
-                        <h2>New address</h2>
-                        <EditAddress onCancel={() => setNewAddress(false)} />
+                    <Box>
+                        <Address
+                            address={defaultAddress}
+                            count={account.addresses.length}
+                        />
                     </Box>
-                </Slide>
+                </Fade>
+                {account.addresses
+                    .filter((x) => !x.main)
+                    .map((address, idx) => {
+                        return (
+                            <Fade
+                                key={idx}
+                                in={true}
+                                mountOnEnter={true}
+                                unmountOnExit={true}
+                                timeout={500}
+                                style={{
+                                    transitionDelay: (idx + 2) * 100 + "ms",
+                                }}
+                            >
+                                <Box mt={4}>
+                                    <Address
+                                        address={address}
+                                        count={account.addresses.length}
+                                    />
+                                </Box>
+                            </Fade>
+                        );
+                    })}
             </Box>
-            <Fade
-                in={!!defaultAddress}
-                mountOnEnter={true}
-                unmountOnExit={true}
-                timeout={500}
-                style={{ transitionDelay: "100ms" }}
-            >
-                <Box>
-                    <Address
-                        address={defaultAddress}
-                        count={account.addresses.length}
-                    />
-                </Box>
-            </Fade>
-            {account.addresses
-                .filter((x) => !x.main)
-                .map((address, idx) => {
-                    return (
-                        <Fade
-                            key={idx}
-                            in={true}
-                            mountOnEnter={true}
-                            unmountOnExit={true}
-                            timeout={500}
-                            style={{
-                                transitionDelay: (idx + 2) * 100 + "ms",
-                            }}
-                        >
-                            <Box mt={4}>
-                                <Address
-                                    address={address}
-                                    count={account.addresses.length}
-                                />
-                            </Box>
-                        </Fade>
-                    );
-                })}
         </MDBox>
     );
 };

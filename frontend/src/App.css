@@ -33,6 +33,14 @@ body {
     padding: 20px 220px;
 }
 
+.content-border {
+    border: 1px solid #eee;
+    border-radius: 5px;
+    padding: 25px;
+    box-shadow: 0 5px 10px rgba(154, 160, 185, 0.05),
+        0 15px 40px rgba(166, 173, 201, 0.2);
+}
+
 a:active,
 a:hover {
     text-decoration: underline;

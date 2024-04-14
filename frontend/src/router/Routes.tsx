@@ -13,6 +13,7 @@ import Products from "src/layouts/pages/products";
 import Register from "src/layouts/pages/register";
 import { Page } from "../enum/Page";
 import { IRoute } from "./Route";
+import { VerifyEmail } from "src/layouts/pages/account/verifyemail";
 
 export const AppRoutes: IRoute[] = [
     {
@@ -98,6 +99,13 @@ export const AppRoutes: IRoute[] = [
         memberOnly: true,
         adminOnly: true,
         url: "/admin/productimport",
+        displayOnHeader: true,
+    },
+    {
+        page: Page.VerifyEmail,
+        element: <VerifyEmail />,
+        memberOnly: false,
+        url: "/account/verifyemail",
         displayOnHeader: false,
     },
 ];

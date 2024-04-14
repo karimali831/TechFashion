@@ -1,5 +1,6 @@
 import { createAction } from "@reduxjs/toolkit";
 import { Page } from "../../../enum/Page";
+import { IWelcome } from "./IAppState";
 
 export interface IPageParam {
     page: Page;
@@ -14,10 +15,12 @@ const ShowPageWithParamsAction = createAction<IPageParam>(
     "@@App/ShowPageWithParams"
 );
 const GoBackAction = createAction("@@App/Goback");
+const SetWelcomeTextAction = createAction<IWelcome>("@@App/SetWelcomeText");
 
 export {
     ShowPageAction,
     GoBackAction,
     LocationChangeAction,
     ShowPageWithParamsAction,
+    SetWelcomeTextAction,
 };

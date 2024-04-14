@@ -5,7 +5,6 @@ export interface ICartState {
     openAccountModal: boolean;
     guestCheckout: IGuestCheckout | null;
     updatingProductId: number | null;
-    openVerifyEmailModal: boolean;
     openSelectAddressModal: boolean;
     addressId: number;
 }
@@ -20,7 +19,6 @@ export const cartInitialState: ICartState = {
     openAccountModal: false,
     guestCheckout: initialiseGuestCheckout,
     updatingProductId: null,
-    openVerifyEmailModal: false,
     openSelectAddressModal: false,
     addressId: 0,
 };

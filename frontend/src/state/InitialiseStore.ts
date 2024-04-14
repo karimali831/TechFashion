@@ -74,7 +74,6 @@ onAuthStateChanged(auth, (user) => {
 });
 
 sagaMiddleware.run(rootSaga);
-store.dispatch(LocationChangeAction());
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type AppDispatch = typeof store.dispatch;

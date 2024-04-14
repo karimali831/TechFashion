@@ -15,10 +15,12 @@ namespace api.Service
     public class ProductImportService(
         ICsvImportService csvImportService,
         IProductRepository productRepository,
+        IProductCategoryRepository productCategoryRepository,
         IProductVariantRepository productVariantRepository) : IProductImportService
     {
         private readonly ICsvImportService _csvImportService = csvImportService;
         private readonly IProductRepository _productRepository = productRepository;
+        private readonly IProductCategoryRepository _productCategoryRepository = productCategoryRepository;
         private readonly IProductVariantRepository _productVariantRepository = productVariantRepository;
 
         public async Task DoAsync(IFormFile file)
@@ -51,9 +53,13 @@ namespace api.Service
                         slug += "-" + idx; ;
                     }
 
+                    var getOrAddCategory = await _productCategoryRepository
+                        .GetOrCreateAsync(firstProduct.Category, firstProduct.SecondCategory);
+
                     var dbProdId = await _productRepository.InsertOrUpdateEbayItemAsync(
                         new Product
                         {
+                            CatId = getOrAddCategory,
                             EbayItemNo = itemNo,
                             Slug = slug,
                             Sku = firstProduct.Sku == "None" ? null : firstProduct.Sku,

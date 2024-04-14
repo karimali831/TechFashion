@@ -79,7 +79,7 @@ export const Order = ({ order }: IProps) => {
                 timeout={500}
             >
                 <Grid item xl={9} md={12} xs={12}>
-                    <h1>Order {order.idStr}</h1>
+                    <h1>Order #{order.ref}</h1>
                     <span>Placed on {order.dateTimeStr}</span>
                     <Box
                         mt={1}
@@ -94,7 +94,7 @@ export const Order = ({ order }: IProps) => {
                                 rows: data,
                             }}
                             entriesPerPage={false}
-                            canSearch
+                            canSearch={false}
                             loading={isLoading}
                             onRowClick={(order) => {
                                 const productDetails = products.details.filter(
@@ -173,6 +173,9 @@ export const Order = ({ order }: IProps) => {
                         </Typography>
                         <Typography className="standard-text">
                             Payment: {order.paymentStatus}
+                        </Typography>
+                        <Typography className="standard-text">
+                            Arriving: Wednesday, April 3
                         </Typography>
                     </Box>
                     <Box mt={3}>

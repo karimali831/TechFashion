@@ -8,10 +8,6 @@ import { getCartState } from "src/state/contexts/cart/Selectors";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { useDispatch } from "react-redux";
-import {
-    OpenCartAccountModalAction,
-    OpenVerifyEmailModalAction,
-} from "src/state/contexts/cart/Actions";
 import { ShowPageAction } from "src/state/contexts/app/Actions";
 import { Page } from "src/enum/Page";
 import { getUserState } from "src/state/contexts/user/Selectors";
@@ -57,7 +53,6 @@ export const CodeVerification = ({ attempt }: IProps) => {
                     dispatch(SetEmailVerificationAction(response.data));
 
                     if (response.data.fullAccountExists) {
-                        dispatch(OpenVerifyEmailModalAction(false));
                         Swal.fire({
                             icon: "error",
                             title: "Account already exists, please login instead.",
@@ -91,11 +86,9 @@ export const CodeVerification = ({ attempt }: IProps) => {
                         icon: "success",
                         title: "Success",
                         text: "Your email address is now verified",
+                    }).then(() => {
+                        window.location.href = "/";
                     });
-
-                    dispatch(OpenVerifyEmailModalAction(false));
-                    dispatch(OpenCartAccountModalAction(false));
-                    dispatch(ShowPageAction(Page.Cart));
                 } else {
                     setErrorMsg(
                         "Verification code is incorrect or has expired. Please try again."

@@ -3,7 +3,6 @@ import {
     OpenCartAccountModalAction,
     OpenCartOverlayAction,
     OpenSelectAddressModalAction,
-    OpenVerifyEmailModalAction,
     ResetGuestCheckoutAction,
     SetAddressIdAction,
     SetGuestCheckoutAction,
@@ -27,9 +26,6 @@ export const cartReducer = createReducer(cartInitialState, (builder) => {
         })
         .addCase(UpdatingProductIdAction, (state, action) => {
             state.updatingProductId = action.payload;
-        })
-        .addCase(OpenVerifyEmailModalAction, (state, action) => {
-            state.openVerifyEmailModal = action.payload;
         })
         .addCase(OpenSelectAddressModalAction, (state, action) => {
             state.openSelectAddressModal = action.payload;

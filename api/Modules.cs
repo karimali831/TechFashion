@@ -60,6 +60,7 @@ namespace api
             services.AddScoped<IReturnRepository, ReturnRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IEmailVerificationRepository, EmailVerificationRepository>();
+            services.AddScoped<IProductCategoryRepository, ProductCategoryRepository>();
 
             return services;
         }

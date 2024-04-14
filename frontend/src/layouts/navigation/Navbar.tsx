@@ -13,7 +13,6 @@ import { useAppDispatch, useAppSelector } from "src/state/Hooks";
 import {
     OpenCartAccountModalAction,
     OpenCartOverlayAction,
-    OpenVerifyEmailModalAction,
     SetAddressIdAction,
 } from "src/state/contexts/cart/Actions";
 import { getCartState } from "src/state/contexts/cart/Selectors";
@@ -38,7 +37,6 @@ import { SetEmailVerificationAction } from "src/state/contexts/user/Actions";
 import Swal from "sweetalert2";
 import { getAppState } from "src/state/contexts/app/Selectors";
 import { ShippingAddressModal } from "../ecommerce/modals/ShippingAddress";
-import { VerifyEmailModal } from "../ecommerce/modals/VerifyEmail";
 import { GuestCheckoutModal } from "../ecommerce/modals/GuestCheckout";
 
 const MenuLinkStyle: React.CSSProperties = {
@@ -97,7 +95,6 @@ function Navbar() {
             checkVerificationEmail().then(({ data: response }) => {
                 if (response.errorMsg) {
                     dispatch(OpenCartAccountModalAction(false));
-                    dispatch(OpenVerifyEmailModalAction(false));
                     Swal.fire({
                         title: "An error occurred",
                         text: response.errorMsg,
@@ -107,11 +104,9 @@ function Navbar() {
 
                     if (response.data.verified) {
                         dispatch(OpenCartAccountModalAction(false));
-                        dispatch(OpenVerifyEmailModalAction(false));
                         dispatch(ShowPageAction(Page.Cart));
                     } else if (response.data.sent) {
                         dispatch(OpenCartAccountModalAction(false));
-                        dispatch(OpenVerifyEmailModalAction(true));
                     }
                 }
             });
@@ -154,7 +149,6 @@ function Navbar() {
             sx={{ borderBottom: ".1rem solid rgba(0,0,0, .08)" }}
         >
             <ShippingAddressModal />
-            <VerifyEmailModal />
             <GuestCheckoutModal />
             {openOverlay && (
                 <OverlaySlider

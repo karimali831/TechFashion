@@ -6,9 +6,9 @@ import { FormInput } from "src/components/Form";
 import { MDModal } from "src/components/MDModal";
 import { Page } from "src/enum/Page";
 import { useAppDispatch, useAppSelector } from "src/state/Hooks";
+import { ShowPageAction } from "src/state/contexts/app/Actions";
 import {
     OpenCartAccountModalAction,
-    OpenVerifyEmailModalAction,
     SetGuestCheckoutAction,
 } from "src/state/contexts/cart/Actions";
 import { getCartState } from "src/state/contexts/cart/Selectors";
@@ -39,7 +39,7 @@ export const GuestCheckoutModal = () => {
         );
 
         dispatch(OpenCartAccountModalAction(false));
-        dispatch(OpenVerifyEmailModalAction(true));
+        dispatch(ShowPageAction(Page.VerifyEmail));
     };
 
     const navToLoginOrRegister = (page: Page) => {

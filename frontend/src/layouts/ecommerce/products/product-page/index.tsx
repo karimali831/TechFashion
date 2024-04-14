@@ -39,9 +39,10 @@ function ProductPage(): JSX.Element {
     }
 
     return (
-        <MDBox py={3} className="content">
-            <Card sx={{ overflow: "visible" }}>
-                <MDBox p={3}>
+        <MDBox className="content">
+            {/* <Card sx={{ overflow: "visible" }}> */}
+            <Box className="content-border" sx={{ overflow: "visible" }}>
+                <MDBox>
                     <MDBox mb={3} display="flex" alignItems="center">
                         <Icon
                             onClick={() => dispatch(GoBackAction())}
@@ -93,7 +94,8 @@ function ProductPage(): JSX.Element {
                         />
                     </MDBox>
                 </MDBox>
-            </Card>
+            </Box>
+            {/* </Card> */}
         </MDBox>
     );
 }

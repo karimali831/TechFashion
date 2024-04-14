@@ -84,10 +84,11 @@ function Billing(): JSX.Element {
     const { user } = useAppSelector(getUserState);
 
     const { data: account, isLoading: accountLoading } = useAccountDetailsQuery(
-        user.id
+        user?.id,
+        { skip: !user }
     );
 
-    if (accountLoading) {
+    if (accountLoading || !user) {
         return <LinearProgress />;
     }
 
@@ -122,7 +123,7 @@ function Billing(): JSX.Element {
                 </span>
             </Box>
 
-            <Grid container mt={5} spacing={2}>
+            <Grid container mt={5} spacing={2} className="content-border">
                 <Fade
                     in={true}
                     mountOnEnter={true}
@@ -130,7 +131,7 @@ function Billing(): JSX.Element {
                     timeout={500}
                 >
                     <Grid item xl={9} md={12} xs={12}>
-                        <h2>Order history</h2>
+                        <h1>Order history</h1>
                         <Box mt={1}>
                             {account.orders.length === 0 ? (
                                 <span>You haven't placed any orders yet.</span>
@@ -169,7 +170,7 @@ function Billing(): JSX.Element {
                     }}
                 >
                     <Grid item xl={3} md={12} xs={12}>
-                        <h2>Account details</h2>
+                        <h2>Main address</h2>
                         {defaultAddress && (
                             <Box mt={1} display="flex" flexDirection="column">
                                 <Typography className="standard-text">

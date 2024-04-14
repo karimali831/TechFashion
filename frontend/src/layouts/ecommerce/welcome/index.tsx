@@ -1,11 +1,24 @@
 import { Box, Typography } from "@mui/material";
+import { useAppSelector } from "src/state/Hooks";
+import { getAppState } from "src/state/contexts/app/Selectors";
 
 export const Welcome = () => {
+    const { welcomeText } = useAppSelector(getAppState);
+
+    let backgroundImg = undefined;
+
+    if (welcomeText.variant === "promotion") {
+        backgroundImg = "linear-gradient(195deg, #EF5350, #E53935);";
+    } else if (welcomeText.variant === "success") {
+        backgroundImg = "linear-gradient(195deg, #66BB6A, #43A047);";
+    }
+
     return (
         <Box
             sx={{
                 height: 36,
-                background: "#000",
+                background: welcomeText.variant === "default" && "#000",
+                backgroundImage: backgroundImg,
                 color: "#fff",
                 display: "flex",
                 alignItems: "center",
@@ -21,7 +34,7 @@ export const Welcome = () => {
                     fontFamily: "Assistant, sans-serif",
                 }}
             >
-                Welcome to our Store
+                {welcomeText.text}
             </Typography>
         </Box>
     );

@@ -10,16 +10,14 @@ import { getUserState } from "src/state/contexts/user/Selectors";
 import { ICartProductDetail } from "src/interface/ICartProductDetail";
 import { ShowPageAction } from "src/state/contexts/app/Actions";
 import { Page } from "src/enum/Page";
-import { OpenVerifyEmailModalAction } from "src/state/contexts/cart/Actions";
 import useEffectSkipInitialRender from "src/hooks/useEffectSkipInitialRender";
 import { useEffect } from "react";
 
 export const Cart = () => {
     const dispatch = useAppDispatch();
 
-    const { firebaseUid, verificationEmail } = useAppSelector(getUserState);
-    const { guestCheckout, openVerifyEmailModal } =
-        useAppSelector(getCartState);
+    const { firebaseUid } = useAppSelector(getUserState);
+    const { guestCheckout } = useAppSelector(getCartState);
 
     const { data: cart, isLoading } = useGetCartQuery({
         firebaseUid,
@@ -33,15 +31,6 @@ export const Cart = () => {
             dispatch(ShowPageAction(Page.Products));
         }
     }, [itemsInCart]);
-
-    useEffectSkipInitialRender(() => {
-        const open =
-            !verificationEmail.verified &&
-            !openVerifyEmailModal &&
-            guestCheckout?.email !== "";
-
-        dispatch(OpenVerifyEmailModalAction(open));
-    }, [verificationEmail]);
 
     if (isLoading || itemsInCart.length === 0) {
         <LinearProgress />;

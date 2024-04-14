@@ -18,7 +18,7 @@ namespace api.Data
         public DbSet<StripePromotion> StripePromotions { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Variant> Variants { get; set; }
-
+        public DbSet<ProductCategory> ProductCategories { get; set; }
 
         public override int SaveChanges()
         {

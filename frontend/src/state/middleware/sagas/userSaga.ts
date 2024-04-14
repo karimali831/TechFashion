@@ -13,7 +13,10 @@ import {
 import { IUser } from "src/data/IUser";
 import { auth } from "src/config/firebase";
 import { IAxiosResponse, baseApiUrl } from "src/api/baseApi";
-import { ShowPageAction } from "src/state/contexts/app/Actions";
+import {
+    LocationChangeAction,
+    ShowPageAction,
+} from "src/state/contexts/app/Actions";
 import { Page } from "src/enum/Page";
 import { getGuestCheckoutId } from "src/state/contexts/cart/Selectors";
 import { ResetGuestCheckoutAction } from "src/state/contexts/cart/Actions";
@@ -37,6 +40,8 @@ export function* userLoggedOut() {
     } catch (error) {
         console.error(error);
         toast.error("An error occurred");
+    } finally {
+        yield put(LocationChangeAction());
     }
 }
 
@@ -70,6 +75,8 @@ export function* firebaseAuthenticated(action: PayloadAction<string>) {
         // persistor.purge();
     } catch (e) {
         toast.error("An error occurred");
+    } finally {
+        yield put(LocationChangeAction());
     }
 }
 

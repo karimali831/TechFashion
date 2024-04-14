@@ -12,4 +12,5 @@ export enum Page {
     Account = "Account",
     Addresses = "addresses",
     ProductImport = "Product Import",
+    VerifyEmail = "Verify Email",
 }
