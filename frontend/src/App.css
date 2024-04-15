@@ -277,6 +277,15 @@ a:hover {
         padding: 10px 5px;
     }
 
+    .content-uncentered {
+        margin: 0 10px;
+        padding: 10px 5px;
+    }
+
+    .content-small {
+        width: 390px;
+    }
+
     /*navbar styles*/
     .navbar {
         display: flex;

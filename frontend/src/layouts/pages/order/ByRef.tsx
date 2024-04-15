@@ -13,7 +13,7 @@ export const OrderByRef = () => {
     if (isLoading) return <LinearProgress />;
 
     return (
-        <MDBox className="content">
+        <MDBox className="content-uncentered">
             <Box className="content-border">
                 <Order order={order} displayItemsOnly={false} />
             </Box>

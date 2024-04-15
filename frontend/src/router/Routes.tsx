@@ -14,6 +14,7 @@ import { Page } from "../enum/Page";
 import { IRoute } from "./Route";
 import { VerifyEmail } from "src/layouts/pages/account/verifyemail";
 import { OrderByRef } from "src/layouts/pages/order/ByRef";
+import { AccountOrder } from "src/layouts/pages/order";
 
 export const AppRoutes: IRoute[] = [
     {
@@ -87,6 +88,14 @@ export const AppRoutes: IRoute[] = [
         memberOnly: false,
         url: "/order",
         path: "/order/:id",
+    },
+    ,
+    {
+        page: Page.AccountOrder,
+        element: <AccountOrder />,
+        memberOnly: true,
+        url: "/account/order",
+        path: "/account/order/:id",
     },
     {
         page: Page.Addresses,

@@ -1,4 +1,4 @@
-import { LinearProgress } from "@mui/material";
+import { Box, LinearProgress } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useAccountDetailsQuery } from "src/api/userApi";
 import MDBox from "src/components/MDBox";
@@ -31,7 +31,7 @@ export const AccountOrder = () => {
     }
 
     return (
-        <MDBox mt={4} className="content-uncentered">
+        <MDBox mt={2} className="content-uncentered">
             <h1>Account</h1>
             <span
                 className="standard-text link"
@@ -39,7 +39,9 @@ export const AccountOrder = () => {
             >
                 Return to Account details
             </span>
-            <Order order={order} displayItemsOnly={false} />
+            <Box mt={4}>
+                <Order order={order} displayItemsOnly={false} />
+            </Box>
         </MDBox>
     );
 };

@@ -9,6 +9,7 @@ export enum Page {
     Contact = "Contact",
     OrderSuccess = "Order Success",
     Order = "Order",
+    AccountOrder = "Account Order",
     Account = "Account",
     Addresses = "addresses",
     ProductImport = "Product Import",

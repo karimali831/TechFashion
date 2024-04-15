@@ -38,7 +38,7 @@ function ProductPage(): JSX.Element {
     }
 
     return (
-        <MDBox className="content">
+        <MDBox className="content-uncentered">
             {/* <Card sx={{ overflow: "visible" }}> */}
             <Box className="content-border" sx={{ overflow: "visible" }}>
                 <MDBox>

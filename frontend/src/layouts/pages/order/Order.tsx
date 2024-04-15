@@ -72,7 +72,7 @@ export const Order = ({ order, displayItemsOnly }: IProps) => {
     }
 
     return (
-        <Grid container mt={2} spacing={4}>
+        <Grid container spacing={4}>
             <Fade
                 in={true}
                 mountOnEnter={true}

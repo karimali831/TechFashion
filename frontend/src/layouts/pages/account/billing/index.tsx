@@ -123,7 +123,7 @@ function Billing(): JSX.Element {
                 </span>
             </Box>
 
-            <Grid container mt={5} spacing={2} className="content-border">
+            <Grid container mt={2} spacing={2} className="content-border">
                 <Fade
                     in={true}
                     mountOnEnter={true}
@@ -148,7 +148,7 @@ function Billing(): JSX.Element {
                                         onRowClick={(order) =>
                                             dispatch(
                                                 ShowPageWithParamsAction({
-                                                    page: Page.Order,
+                                                    page: Page.AccountOrder,
                                                     primaryId:
                                                         order.ref.toString(),
                                                 })
