@@ -9,9 +9,9 @@ namespace api.Service
     public interface IEmailVerificationService
     {
         Task<DateTime?> IsVerifiedAsync(int userId);
-        Task<EmailVerification?> GetUnverifiedAsync(string email);
+        Task<EmailVerification?> GetUnverifiedAsync(string email, Guid? guestCheckoutId = null);
         Task<bool> VerifyAsync(string email, int code);
-        Task<ApiResponse<bool>> SendAsync(string email);
+        Task<ApiResponse<bool>> SendAsync(VerificationEmailRequestDto request);
     }
 
     public class EmailVerificationService(
@@ -21,10 +21,11 @@ namespace api.Service
         private readonly IMailService _mailService = mailService;
         private readonly IEmailVerificationRepository _emailVerificationRepository = emailVerificationRepository;
 
-        public async Task<EmailVerification?> GetUnverifiedAsync(string email)
+        public async Task<EmailVerification?> GetUnverifiedAsync(string email, Guid? guestCheckoutId = null)
         {
-            return await _emailVerificationRepository.GetUnverifiedAsync(email);
+            return await _emailVerificationRepository.GetUnverifiedAsync(email, guestCheckoutId);
         }
+
 
         public async Task<DateTime?> IsVerifiedAsync(int userId)
         {
@@ -36,11 +37,12 @@ namespace api.Service
             return await _emailVerificationRepository.VerifyAsync(email, code);
         }
 
-        public async Task<ApiResponse<bool>> SendAsync(string email)
+        public async Task<ApiResponse<bool>> SendAsync(VerificationEmailRequestDto request)
         {
             try
             {
-                var existing = await GetUnverifiedAsync(email);
+                var guestCheckoutId = request.FirebaseUid is null ? request.GuestCheckoutId : null;
+                var existing = GetUnverifiedAsync(request.Email, guestCheckoutId);
 
                 if (existing is not null)
                 {
@@ -51,20 +53,20 @@ namespace api.Service
                 }
 
                 var otp = (NumberHelper.NextInt() % 1000000).ToString("000000");
-                var create = await _emailVerificationRepository.CreateAsync(email, int.Parse(otp));
+                var create = await _emailVerificationRepository.CreateAsync(request.Email, int.Parse(otp), guestCheckoutId);
 
                 if (!create)
                     throw new ApplicationException("An error occurred");
 
                 string mailBody = @$"
                 <hr /><br /> 
-                Sign in to Tech Fashion as {email} <br /><br />
+                Sign in to Tech Fashion as {request.Email} <br /><br />
                 Enter this code to sign in: <br /> <br />
                 <h1>{otp}</h1><br /> 
                 This code will expire in 10 minutes and can only be used once.
             ";
 
-                await _mailService.SendAsync("Sign in to Tech Fashion", email, mailBody);
+                await _mailService.SendAsync("Sign in to Tech Fashion", request.Email, mailBody);
 
                 return new ApiResponse<bool>
                 {

@@ -98,7 +98,7 @@ namespace api.Controllers
                     {
                         if (request.Send && response.Data.Verified is false)
                         {
-                            var result = await _emailVerificationService.SendAsync(request.Email);
+                            var result = await _emailVerificationService.SendAsync(request);
 
                             response.Data.Sent = result.Data is true;
                             response.Data.Verified = false;
