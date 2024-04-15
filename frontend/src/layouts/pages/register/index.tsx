@@ -35,7 +35,7 @@ const Register = (): JSX.Element => {
     const { user, authSuccess, signingIn, firebaseUid } =
         useAppSelector(getUserState);
 
-    const { data: cart, isLoading } = useGetCartQuery({
+    const { data: cart } = useGetCartQuery({
         firebaseUid,
         guestCheckoutId: guestCheckout?.id,
     });
