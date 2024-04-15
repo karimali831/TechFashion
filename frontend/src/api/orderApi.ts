@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { baseApiUrl } from "./baseApi";
-import { IOrderHistory } from "src/data/IOrderHistory";
+import { IOrderDetail } from "src/data/IOrderDetail";
 
 export const orderApi = createApi({
     reducerPath: "orderApi",
@@ -9,13 +9,19 @@ export const orderApi = createApi({
         baseUrl: baseApiUrl + "Order/",
     }),
     endpoints: (builder) => ({
-        getOrder: builder.query<IOrderHistory, string>({
-            query: (paymentIntentId) => ({
-                url: `Get/${paymentIntentId}`,
+        getOrder: builder.query<IOrderDetail, number>({
+            query: (id) => ({
+                url: `Get/${id}`,
                 method: "GET",
             }),
         }),
-        getOrderedItems: builder.query<IOrderHistory[], number>({
+        getOrderByRef: builder.query<IOrderDetail, string>({
+            query: (ref) => ({
+                url: `GetByRef/${ref}`,
+                method: "GET",
+            }),
+        }),
+        getOrderedItems: builder.query<IOrderDetail[], number>({
             query: (orderRef) => ({
                 url: `GetOrderedItems/${orderRef}`,
                 method: "GET",
@@ -24,4 +30,8 @@ export const orderApi = createApi({
     }),
 });
 
-export const { useGetOrderQuery, useGetOrderedItemsQuery } = orderApi;
+export const {
+    useGetOrderQuery,
+    useGetOrderByRefQuery,
+    useGetOrderedItemsQuery,
+} = orderApi;

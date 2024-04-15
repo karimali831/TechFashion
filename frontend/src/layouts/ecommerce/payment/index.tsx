@@ -5,7 +5,11 @@ import Checkout from "./Checkout";
 import MDAlert from "src/components/MDAlert";
 import { useAppSelector } from "src/state/Hooks";
 import { getCartState } from "src/state/contexts/cart/Selectors";
-import { useCreatePaymentIntentQuery, useGetCartQuery } from "src/api/cartApi";
+import {
+    IPaymentIntentResponse,
+    useCreatePaymentIntentQuery,
+    useGetCartQuery,
+} from "src/api/cartApi";
 import { getUserState } from "src/state/contexts/user/Selectors";
 import { ICustomerAddress } from "src/data/ICustomerAddress";
 import { useAccountDetailsQuery } from "src/api/userApi";
@@ -31,25 +35,26 @@ const appearance = {
 const loader = "auto";
 
 export type CheckoutProps = {
-    clientSecret: string;
-    total: string;
+    paymentIntent: IPaymentIntentResponse;
     guestEmail: string | null;
     address: ICustomerAddress | null;
 };
 
 const CheckoutPage = ({
-    clientSecret,
-    total,
+    paymentIntent,
     guestEmail,
     address,
 }: CheckoutProps) => (
     <Elements
         stripe={stripePromise}
-        options={{ clientSecret, appearance, loader }}
+        options={{
+            clientSecret: paymentIntent.clientSecret,
+            appearance,
+            loader,
+        }}
     >
         <Checkout
-            clientSecret={clientSecret}
-            total={total}
+            paymentIntent={paymentIntent}
             guestEmail={guestEmail}
             address={address}
         />
@@ -107,8 +112,7 @@ export const Payment = () => {
 
     return (
         <CheckoutPage
-            clientSecret={paymentIntent.clientSecret}
-            total={paymentIntent.amount}
+            paymentIntent={paymentIntent}
             guestEmail={firebaseUid === null && guestCheckout?.email}
             address={address}
         />

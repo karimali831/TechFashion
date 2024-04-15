@@ -22,7 +22,7 @@ import StatusCell from "src/layouts/ecommerce/orders/order-list/components/Statu
 import { OrderStatus } from "src/enum/OrderStatus";
 import DefaultCell from "src/layouts/ecommerce/orders/order-list/components/DefaultCell";
 import IdCell2 from "src/layouts/ecommerce/orders/order-list/components/IdCell2";
-import { IOrderHistory } from "src/data/IOrderHistory";
+import { IOrderDetail } from "src/data/IOrderDetail";
 import {
     ShowPageAction,
     ShowPageWithParamsAction,
@@ -95,7 +95,7 @@ function Billing(): JSX.Element {
     const defaultAddress = account.addresses.filter((x) => x.main)[0];
 
     return (
-        <MDBox mt={4} className="content">
+        <MDBox mt={4} className="content-uncentered">
             <h1>Account</h1>
 
             <Box mt={2} display="flex" alignItems={"center"}>
@@ -137,7 +137,7 @@ function Billing(): JSX.Element {
                                 <span>You haven't placed any orders yet.</span>
                             ) : (
                                 <Box>
-                                    <DataTable<IOrderHistory>
+                                    <DataTable<IOrderDetail>
                                         table={{
                                             columns,
                                             rows: account.orders,

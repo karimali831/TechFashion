@@ -1,7 +1,7 @@
 import { ICustomerAddress } from "src/data/ICustomerAddress";
-import { IOrderHistory } from "src/data/IOrderHistory";
+import { IOrderDetail } from "src/data/IOrderDetail";
 
 export interface IAccount {
-    orders: IOrderHistory[];
+    orders: IOrderDetail[];
     addresses: ICustomerAddress[];
 }

@@ -113,9 +113,9 @@ const Login = (): JSX.Element => {
 
     return (
         <Fade in={true} mountOnEnter={true} unmountOnExit={true} timeout={500}>
-            <div className="login">
-                <form>
-                    <h1>Account</h1>
+            <Box className="content">
+                <form className="content-border content-small">
+                    <h1>Login</h1>
                     <FormInput
                         placeholder="Email"
                         validation={formFields.email}
@@ -179,7 +179,7 @@ const Login = (): JSX.Element => {
                         onClick={handleLogin}
                     />
                 </form>
-            </div>
+            </Box>
         </Fade>
     );
 };

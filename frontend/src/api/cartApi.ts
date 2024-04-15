@@ -75,6 +75,7 @@ export interface ICartResponse {
     id: number;
     products: ICartProductDetail[];
     total: number;
+    showGuestCheckout: boolean;
     totalStr: string;
 }
 
@@ -94,6 +95,7 @@ export interface IPaymentIntentRequest {
 }
 
 export interface IPaymentIntentResponse {
+    orderId: number;
     clientSecret: string | null;
     errorMsg: string | null;
     coupon: string | null;

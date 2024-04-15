@@ -65,7 +65,10 @@ namespace api.Service
 
                 if (cart is null)
                 {
-                    var model = new Cart { GuestCheckoutId = dto.CartUser.GuestCheckoutId };
+                    var model = new Cart
+                    {
+                        GuestCheckoutId = dto.CartUser.GuestCheckoutId
+                    };
 
                     await _context.Carts.AddAsync(model);
                     await _context.SaveChangesAsync();

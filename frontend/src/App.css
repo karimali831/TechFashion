@@ -27,10 +27,23 @@ body {
 }
 
 .content {
-    /* display: flex;
-    flex-direction: column; */
-    /* justify-content: space-between; */
+    display: flex;
+    /* justify-content: center; */
+    flex-direction: column;
+    align-items: center;
     padding: 20px 220px;
+}
+
+.content-uncentered {
+    padding: 20px 220px;
+}
+
+.content-full {
+    width: 100%;
+}
+
+.content-small {
+    width: 420px;
 }
 
 .content-border {

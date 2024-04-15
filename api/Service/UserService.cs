@@ -7,14 +7,13 @@ namespace api.Service
 {
     public interface IUserService
     {
-        Task<User?> GetAsync(string? firebaseUid, Guid? guestCheckoutId);
         Task<User?> GetByIdAsync(int id);
         Task<User?> GetFullAccByEmailAsync(string email);
         Task<User?> GetByFirebaseUIdAsync(string id, Guid? guestCheckoutId = null);
         Task<User?> GetByEmailAsync(string email);
         Task<User?> GetByGuestCheckoutIdAsync(Guid guestCheckoutId);
         Task<User?> GetByCustomerIdAsync(string customerId);
-        Task<User?> CreateGuestAccountAsync(GuestCheckoutDto dto);
+        Task<User?> CreateGuestAccountAsync(string email);
         Task SetCustomerIdAsync(string customerId, int userId);
         Task SetStripeCustomerDeletedAsync(string customerId, DateTime? deletedDate);
         Task<ApiResponse<User>> CreateAsync(CreateUsertDto dto);
@@ -48,29 +47,17 @@ namespace api.Service
 
             if (user is not null)
             {
+                guestCheckoutId = user.FirebaseUid is null ? guestCheckoutId : null;
+
                 user.MainAddress = await _customerAddressService.GetMainAsync(user.Id);
-                user.EmailVerified = (await _emailVerificationRepository.IsVerifiedAsync(user.Id)).HasValue;
+                user.EmailVerified = (await _emailVerificationRepository
+                    .IsVerifiedAsync(user.Id, guestCheckoutId)).HasValue;
 
                 // If items were added to a cart on a guest account, we need to update entities to reflect this.
-                if (guestCheckoutId.HasValue)
-                {
-                    await _cartRepository.SetUserIdAsync(user.Id, guestCheckoutId.Value);
-                }
-            }
-
-            return user;
-        }
-
-        public async Task<User?> GetAsync(string? firebaseUid, Guid? guestCheckoutId)
-        {
-            User? user = null;
-            if (firebaseUid is not null)
-            {
-                user = await GetByFirebaseUIdAsync(firebaseUid);
-            }
-            else if (guestCheckoutId.HasValue)
-            {
-                user = await GetByGuestCheckoutIdAsync(guestCheckoutId.Value);
+                // if (guestCheckoutId.HasValue)
+                // {
+                //     await _cartRepository.SetUserIdAsync(user.Id, guestCheckoutId.Value);
+                // }
             }
 
             return user;
@@ -101,10 +88,10 @@ namespace api.Service
             return await _userRepository.GetByCustomerIdAsync(customerId);
         }
 
-        public async Task<User?> CreateGuestAccountAsync(GuestCheckoutDto dto)
+        public async Task<User?> CreateGuestAccountAsync(string email)
         {
-            await _userRepository.CreateGuestAccountAsync(dto);
-            return await GetByEmailAsync(dto.Email);
+            await _userRepository.CreateGuestAccountAsync(email);
+            return await GetByEmailAsync(email);
         }
 
         public async Task SetCustomerIdAsync(string customerId, int userId)
@@ -155,14 +142,15 @@ namespace api.Service
 
             if (exists is not null)
             {
-                var verified = await _emailVerificationRepository.IsVerifiedAsync(exists.Id);
+                var guestCheckoutId = dto.FirebaseUid is null ? dto.GuestCheckoutId : null;
+                var verified = await _emailVerificationRepository.IsVerifiedAsync(exists.Id, guestCheckoutId);
 
                 if (!verified.HasValue)
                 {
 
                 }
 
-                if (exists.FirebaseUid is null)
+                if (exists.FirebaseUid is null && dto.FirebaseUid is not null)
                 {
                     // This will change a guest account to a full account
                     await _userRepository.SetFirebaseUidAsync(dto.FirebaseUid, dto.Name, exists.Id);

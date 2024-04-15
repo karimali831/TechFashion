@@ -8,12 +8,12 @@ import { ProductImport } from "src/layouts/pages/admin/ProductImport";
 import Contact from "src/layouts/pages/contact";
 import Home from "src/layouts/pages/home";
 import Login from "src/layouts/pages/login";
-import { AccountOrder } from "src/layouts/pages/order";
 import Products from "src/layouts/pages/products";
 import Register from "src/layouts/pages/register";
 import { Page } from "../enum/Page";
 import { IRoute } from "./Route";
 import { VerifyEmail } from "src/layouts/pages/account/verifyemail";
+import { OrderByRef } from "src/layouts/pages/order/ByRef";
 
 export const AppRoutes: IRoute[] = [
     {
@@ -73,6 +73,7 @@ export const AppRoutes: IRoute[] = [
         element: <Success />,
         memberOnly: false,
         url: "/ordersuccess",
+        path: "/ordersuccess/:id",
     },
     {
         page: Page.Account,
@@ -82,10 +83,10 @@ export const AppRoutes: IRoute[] = [
     },
     {
         page: Page.Order,
-        element: <AccountOrder />,
-        memberOnly: true,
-        url: "/account/order",
-        path: "/account/order/:id",
+        element: <OrderByRef />,
+        memberOnly: false,
+        url: "/order",
+        path: "/order/:id",
     },
     {
         page: Page.Addresses,

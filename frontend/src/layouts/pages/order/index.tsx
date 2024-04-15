@@ -31,7 +31,7 @@ export const AccountOrder = () => {
     }
 
     return (
-        <MDBox mt={4} className="content">
+        <MDBox mt={4} className="content-uncentered">
             <h1>Account</h1>
             <span
                 className="standard-text link"
@@ -39,7 +39,7 @@ export const AccountOrder = () => {
             >
                 Return to Account details
             </span>
-            <Order order={order} />
+            <Order order={order} displayItemsOnly={false} />
         </MDBox>
     );
 };

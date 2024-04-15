@@ -25,104 +25,98 @@ namespace api.Service
 
         public async Task DoAsync(IFormFile file)
         {
-            try
+            var listing = _csvImportService.Read<ProductActiveListing>(file);
+            var products = new List<Product>();
+            var productVariants = new List<ProductVariant>();
+
+            var productsTopLevel = listing.GroupBy(x => x.ItemNo);
+            var ids = new List<(int ProductId, long ItemNo)>();
+
+            // Add products
+            int idx = 1;
+            foreach (var ptl in productsTopLevel)
             {
-                var listing = _csvImportService.Read<ProductActiveListing>(file);
-                var products = new List<Product>();
-                var productVariants = new List<ProductVariant>();
+                var itemNo = ptl.Key;
+                var firstProduct = ptl.First();
 
-                var productsTopLevel = listing.GroupBy(x => x.ItemNo);
-                var ids = new List<(int ProductId, long ItemNo)>();
+                if (await _productRepository.SkuExists(firstProduct.Sku))
+                    continue;
 
-                // var titles = productsTopLevel.SelectMany(x => x).Select(x => x.Title);
+                var slug = firstProduct.Title.GenerateSlug();
 
-                // Add products
-                int idx = 1;
-                foreach (var ptl in productsTopLevel)
+                if (await _productRepository.SlugExists(slug))
                 {
-                    var itemNo = ptl.Key;
-                    var firstProduct = ptl.First();
-
-                    if (await _productRepository.SkuExists(firstProduct.Sku))
-                        continue;
-
-                    var slug = firstProduct.Title.GenerateSlug();
-
-                    if (await _productRepository.SlugExists(slug))
-                    {
-                        slug += "-" + idx; ;
-                    }
-
-                    var getOrAddCategory = await _productCategoryRepository
-                        .GetOrCreateAsync(firstProduct);
-
-                    var dbProdId = await _productRepository.InsertOrUpdateEbayItemAsync(
-                        new Product
-                        {
-                            CatId = getOrAddCategory,
-
-                            EbayItemNo = itemNo,
-                            Slug = slug,
-                            Sku = firstProduct.Sku == "None" ? null : firstProduct.Sku,
-                            Title = firstProduct.Title,
-                            Price = firstProduct.Price,
-                            Stock = firstProduct.Stock,
-                            OriginalStock = firstProduct.Stock,
-                            Active = true
-                        });
-
-                    ids.Add((dbProdId, itemNo));
-                    idx++;
+                    slug += "-" + idx; ;
                 }
 
-                // Add product variants
-                foreach (var product in listing.Where(x => x.Variants != ""))
+                var getOrAddCategory = await _productCategoryRepository
+                    .GetOrCreateAsync(firstProduct);
+
+                var dbProdId = await _productRepository.InsertOrUpdateEbayItemAsync(
+                    new Product
+                    {
+                        CatId = getOrAddCategory,
+
+                        EbayItemNo = itemNo,
+                        Slug = slug,
+                        Sku = firstProduct.Sku == "None" ? null : firstProduct.Sku,
+                        Title = firstProduct.Title,
+                        Price = firstProduct.Price,
+                        Stock = firstProduct.Stock,
+                        OriginalStock = firstProduct.Stock,
+                        Active = true
+                    });
+
+                ids.Add((dbProdId, itemNo));
+                idx++;
+            }
+
+            // Add product variants
+            var filteredVariants = listing.Where(x => x.Variants != "" && string.IsNullOrEmpty(x.CurrentPrice));
+
+            foreach (var product in filteredVariants)
+            {
+                if (await _productVariantRepository.SkuExists(product.Sku))
+                    continue;
+
+                var list = new List<ProductVariantObj>();
+                var variants = product.Variants.Split("|");
+
+                foreach (var variant in variants)
                 {
-                    if (await _productVariantRepository.SkuExists(product.Sku))
+                    var key = variant.Split("=")[0];
+
+                    if (key == "")
                         continue;
 
-                    var list = new List<ProductVariantObj>();
-                    var variants = product.Variants.Split("|");
+                    var options = variant.Split("=")[1];
+                    var values = options.Split(";");
 
-                    foreach (var variant in variants)
+                    foreach (var value in values)
                     {
-                        var key = variant.Split("=")[0];
-
-                        if (key == "")
-                            continue;
-
-                        var options = variant.Split("=")[1];
-                        var values = options.Split(";");
-
-                        foreach (var value in values)
+                        list.Add(new ProductVariantObj
                         {
-                            list.Add(new ProductVariantObj
-                            {
-                                Attribute = key,
-                                Value = value
-                            });
-                        }
-                    }
-
-                    var productId = ids.First(x => x.ItemNo == product.ItemNo).ProductId;
-
-                    await _productVariantRepository.InsertOrUpdateAsync(
-                        new ProductVariant
-                        {
-                            ProductId = productId,
-                            Variant = JsonConvert.SerializeObject(list),
-                            Variant2 = "",
-                            Sku = product.Sku == "None" ? null : product.Sku,
-                            Stock = product.Stock,
-                            OriginalStock = product.Stock,
-                            Price = product.Price
+                            Attribute = key,
+                            Value = value
                         });
+                    }
                 }
+
+                var productId = ids.First(x => x.ItemNo == product.ItemNo).ProductId;
+
+                await _productVariantRepository.InsertOrUpdateAsync(
+                    new ProductVariant
+                    {
+                        ProductId = productId,
+                        Variant = JsonConvert.SerializeObject(list),
+                        Variant2 = "",
+                        Sku = product.Sku == "None" ? null : product.Sku,
+                        Stock = product.Stock,
+                        OriginalStock = product.Stock,
+                        Price = product.Price
+                    });
             }
-            catch (Exception exp)
-            {
-                var tt = "";
-            }
+
         }
     }
 }

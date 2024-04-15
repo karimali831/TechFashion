@@ -11,12 +11,14 @@ namespace api.Controllers
         IHub sentryHub,
         IUserService userService,
         IAccountService accountService,
+        ICartService cartService,
         ICustomerAddressService customerAddressService,
         IEmailVerificationService emailVerificationService) : ControllerBase
     {
         private readonly IHub _sentryHub = sentryHub;
         private readonly IUserService _userService = userService;
         private readonly IAccountService _accountService = accountService;
+        private readonly ICartService _cartService = cartService;
         private readonly ICustomerAddressService _customerAddressService = customerAddressService;
         private readonly IEmailVerificationService _emailVerificationService = emailVerificationService;
 
@@ -79,17 +81,29 @@ namespace api.Controllers
                 else
                 {
 
-                    var user = await _userService.GetAsync(request.FirebaseUid, request.GuestCheckoutId);
+                    var user = request.FirebaseUid is not null ?
+                        await _userService.GetByFirebaseUIdAsync(request.FirebaseUid) :
+                        await _userService.GetByEmailAsync(request.Email);
 
                     if (user is not null)
                     {
-                        var verifiedExisting = await _emailVerificationService.IsVerifiedAsync(user.Id);
+                        var guestCheckoutId = request.FirebaseUid is null ? request.GuestCheckoutId : null;
+                        var verifiedExisting = await _emailVerificationService.IsVerifiedAsync(user.Id, guestCheckoutId);
 
                         if (verifiedExisting.HasValue)
                         {
                             response.Data.Sent = true;
                             response.Data.Verified = true;
                         }
+                    }
+                    else
+                    {
+                        user = await _userService.CreateGuestAccountAsync(request.Email);
+                    }
+
+                    if (request.FirebaseUid is null)
+                    {
+                        await _cartService.SetUserIdAsync(user!.Id, request.GuestCheckoutId!.Value);
                     }
 
                     var unverifiedExisting = await _emailVerificationService.GetUnverifiedAsync(request.Email);

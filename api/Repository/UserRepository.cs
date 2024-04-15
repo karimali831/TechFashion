@@ -13,7 +13,7 @@ namespace api.Repository
         Task<User?> GetByEmailAsync(string email);
         Task<User?> GetByGuestCheckoutIdAsync(Guid guestCheckoutId);
         Task<User?> GetByCustomerIdAsync(string customerId);
-        Task CreateGuestAccountAsync(GuestCheckoutDto dto);
+        Task CreateGuestAccountAsync(string email);
         Task SetStripeCustomerIdAsync(string customerId, int userId);
         Task SetStripeCustomerDeletedAsync(string customerId, DateTime? deletedDate);
         Task SetFirebaseUidAsync(string firebaseUid, string name, int userId);
@@ -61,13 +61,9 @@ namespace api.Repository
             return await QuerySingleOrDefaultAsync<User>($"{DapperHelper.Select(Table, Fields)} WHERE StripeCustomerId = @customerId AND RemovedDate IS NULL", new { customerId });
         }
 
-        public async Task CreateGuestAccountAsync(GuestCheckoutDto dto)
+        public async Task CreateGuestAccountAsync(string email)
         {
-            await ExecuteAsync($"INSERT INTO {Table} (Email) VALUES (@email)",
-                new
-                {
-                    email = dto.Email
-                });
+            await ExecuteAsync($"INSERT INTO {Table} (Email) VALUES (@email)", new { email });
         }
 
         public async Task SetStripeCustomerIdAsync(string customerId, int userId)

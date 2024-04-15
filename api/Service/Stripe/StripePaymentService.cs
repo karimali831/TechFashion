@@ -10,21 +10,20 @@ namespace api.Service.Stripe
     public interface IStripePaymentService
     {
         Task<int> AddAsync(StripePayment model);
-        Task<PaymentIntentResponse> CreateIntentAsync(User user,
-            int cartId,
-            int? addressId = null,
+        Task<PaymentIntentResponse> CreateIntentAsync(
+            int orderId,
+            User customer,
+            PaymentIntentRequest request,
             StripeCoupon? coupon = null,
             string? promoCode = null);
     }
 
     public class StripePaymentService(
         ICartService cartService,
-        ICartProductService cartProductService,
         IStripePaymentRepository stripePaymentRepository) : IStripePaymentService
     {
         private readonly PaymentIntentService _paymentIntentService = new();
         private readonly ICartService _cartService = cartService;
-        private readonly ICartProductService _cartProductService = cartProductService;
         private readonly IStripePaymentRepository _stripePaymentRepository = stripePaymentRepository;
 
         public async Task<int> AddAsync(StripePayment model)
@@ -32,14 +31,15 @@ namespace api.Service.Stripe
             return await _stripePaymentRepository.AddAsync(model);
         }
 
-        public async Task<PaymentIntentResponse> CreateIntentAsync(User user,
-            int cartId,
-            int? addressId = null,
+        public async Task<PaymentIntentResponse> CreateIntentAsync(
+            int orderId,
+            User customer,
+            PaymentIntentRequest request,
             StripeCoupon? coupon = null,
             string? promoCode = null)
         {
             decimal discountedAmount = 0;
-            var cartProducts = await _cartService.GetAsync(user.Id);
+            var cartProducts = await _cartService.GetAsync(customer.Id, customer.FirebaseUid);
 
             if (cartProducts is null)
             {
@@ -50,18 +50,6 @@ namespace api.Service.Stripe
             }
 
             var total = cartProducts.Total;
-
-            // foreach (var cp in cartProducts.Products.Where(x => x.Stock is not null))
-            // {
-            //     bool productIsVariant = cp.VariantId.HasValue;
-            //     var stockCheck = await _cartProductService.StockCheckAsync(cp.VariantId ?? cp.ProductId, productIsVariant);
-
-            //     if (stockCheck.Quantity >= stockCheck.Stock)
-            //     {
-            //         total -= stockCheck.Price;
-            //     }
-            // }
-
             var amount = total * 100;
 
             if (coupon is not null)
@@ -82,15 +70,8 @@ namespace api.Service.Stripe
             {
                 var metaData = new Dictionary<string, string>
                 {
-                    { "CartId", cartId.ToString() }
+                    { "OrderId", orderId.ToString() }
                 };
-
-                // AddressId will be null when an address from local db
-                // is not selected in PaymentElement
-                if (addressId.HasValue)
-                {
-                    metaData.Add("AddressId", addressId.Value.ToString());
-                }
 
                 if (promoCode is not null)
                 {
@@ -101,13 +82,14 @@ namespace api.Service.Stripe
                     new PaymentIntentCreateOptions
                     {
                         Amount = (long)amount,
-                        Customer = user.StripeCustomerId,
+                        Customer = customer.StripeCustomerId,
                         Currency = "gbp",
                         Metadata = metaData
                     });
 
                 return new PaymentIntentResponse
                 {
+                    OrderId = orderId,
                     ClientSecret = create.ClientSecret,
                     Coupon = coupon?.Name,
                     DiscountedAmount = discountedAmount.ToCurrencyGbp(),

@@ -1,6 +1,7 @@
 using api.Data;
 using api.Data.Stripe;
 using api.Dto.Stripe;
+using api.Enum;
 using api.Service.Stripe;
 
 namespace api.Service
@@ -12,13 +13,13 @@ namespace api.Service
 
     public class StripeOrderService(
         IUserService userService,
-        ICartService cartService,
+        IOrderService orderService,
         IStripePaymentService stripePaymentService,
         IStripeCustomerService stripeCustomerService,
         IStripePromotionService stripePromotionService) : IStripeOrderService
     {
         private readonly IUserService _userService = userService;
-        private readonly ICartService _cartService = cartService;
+        private readonly IOrderService _orderService = orderService;
         private readonly IStripePaymentService _stripePaymentService = stripePaymentService;
         private readonly IStripeCustomerService _stripeCustomerService = stripeCustomerService;
         private readonly IStripePromotionService _stripePromotionService = stripePromotionService;
@@ -47,28 +48,11 @@ namespace api.Service
                 }
                 else
                 {
-                    var userByGuestCheckout = await _userService.GetByGuestCheckoutIdAsync(request.GuestUser.Id);
-
-                    if (userByGuestCheckout is not null)
-                    {
-                        // if (userByGuestCheckout.Email == "")
-                        // {
-                        //     await _userService.SetEmailAsync(userByGuestCheckout.Email, request.GuestUser.Id);
-                        // }
-
-                        user = userByGuestCheckout;
-                    }
-                    else
-                    {
-                        user = await _userService.CreateGuestAccountAsync(request.GuestUser);
-
-                    }
+                    user = await _userService.GetByGuestCheckoutIdAsync(request.GuestUser.Id);
                 }
 
                 if (user is null)
                     throw new ApplicationException("An error occurred");
-
-                await _cartService.SetUserIdAsync(user.Id, request.GuestUser.Id);
             }
 
             if (user is null)
@@ -93,9 +77,31 @@ namespace api.Service
                 coupon = couponByPromoCode;
             }
 
-            return await _stripePaymentService.CreateIntentAsync(user,
-                request.CartId,
-                request.AddressId,
+            var order = await _orderService.GetPendingByCartIdAsync(request.CartId);
+            int orderId;
+
+            if (order is not null)
+            {
+                orderId = order.Id;
+
+                if (request.AddressId != order.ShippingAddressId)
+                {
+                    await _orderService.UpdateShippingAddressIdAsync(orderId, request.AddressId);
+                }
+            }
+            else
+            {
+                orderId = await _orderService.AddAsync(
+                     new Order
+                     {
+                         CartId = request.CartId,
+                         ShippingAddressId = request.AddressId,
+                         Status = OrderStatus.Created
+                     });
+            }
+
+            return await _stripePaymentService.CreateIntentAsync(orderId, user,
+                request,
                 coupon,
                 request.PromoCode
             );

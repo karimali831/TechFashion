@@ -22,7 +22,6 @@ namespace api.Controllers
         IExceptionHandlerService exceptionHandlerService,
         IStripePaymentMethodService stripePaymentMethodService,
         ICustomerAddressService customerAddressService,
-        ICartProductService cartProductService,
         IOrderService orderService,
         ICartService cartService) : Controller
     {
@@ -32,7 +31,6 @@ namespace api.Controllers
         private readonly IExceptionHandlerService _exceptionHandlerService = exceptionHandlerService;
         private readonly IStripePaymentMethodService _stripePaymentMethodService = stripePaymentMethodService;
         private readonly ICustomerAddressService _customerAddressService = customerAddressService;
-        private readonly ICartProductService _cartProductService = cartProductService;
         private readonly IOrderService _orderService = orderService;
         private readonly ICartService _cartService = cartService;
 
@@ -87,15 +85,18 @@ namespace api.Controllers
 
                                 });
 
-                            int shippingAddressId;
+                            var orderId = int.Parse(paymentIntent.Metadata.First(x => x.Key == "OrderId").Value);
+                            var order = await _orderService.GetAsync(orderId);
 
-                            if (paymentIntent.Shipping is not null)
+                            order.PaymentId = paymentId;
+                            order.Status = OrderStatus.Open;
+
+                            if (order.ShippingAddressId is null && paymentIntent.Shipping is not null)
                             {
-
                                 var shippingName = paymentIntent.Shipping.Name;
                                 var shippingAddress = paymentIntent.Shipping.Address;
 
-                                shippingAddressId = await _customerAddressService.GetOrAddAsync(
+                                order.ShippingAddressId = await _customerAddressService.GetOrAddAsync(
                                     new CustomerAddress
                                     {
                                         UserId = user.Id,
@@ -107,25 +108,15 @@ namespace api.Controllers
                                         Country = shippingAddress.Country
                                     });
                             }
-                            else
-                            {
-                                shippingAddressId = int.Parse(paymentIntent.Metadata.First(x => x.Key == "AddressId").Value);
-                            }
 
-                            var cartId = int.Parse(paymentIntent.Metadata.First(x => x.Key == "CartId").Value);
-
-                            // Create order
-                            await _orderService.AddAsync(
-                                new Order
-                                {
-                                    CartId = cartId,
-                                    PaymentId = paymentId,
-                                    ShippingAddressId = shippingAddressId,
-                                    Status = OrderStatus.Open
-                                });
+                            // Update order
+                            await _orderService.UpdateAsync(order);
 
                             // Empty basket
-                            await _cartService.ArchiveAsync(cartId);
+                            await _cartService.ArchiveAsync(order.CartId);
+
+                            // Send email
+                            await _orderService.SendOrderSuccessEmailAsync(user.Email, order.Ref);
                         }
                         catch (Exception exp)
                         {

@@ -8,7 +8,7 @@ namespace api.Service
 {
     public interface IEmailVerificationService
     {
-        Task<DateTime?> IsVerifiedAsync(int userId);
+        Task<DateTime?> IsVerifiedAsync(int userId, Guid? guestCheckoutId);
         Task<EmailVerification?> GetUnverifiedAsync(string email);
         Task<bool> VerifyAsync(string email, int code);
         Task<ApiResponse<bool>> SendAsync(string email);
@@ -26,9 +26,9 @@ namespace api.Service
             return await _emailVerificationRepository.GetUnverifiedAsync(email);
         }
 
-        public async Task<DateTime?> IsVerifiedAsync(int userId)
+        public async Task<DateTime?> IsVerifiedAsync(int userId, Guid? guestCheckoutId)
         {
-            return await _emailVerificationRepository.IsVerifiedAsync(userId);
+            return await _emailVerificationRepository.IsVerifiedAsync(userId, guestCheckoutId);
         }
 
         public async Task<bool> VerifyAsync(string email, int code)

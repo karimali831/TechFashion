@@ -1,6 +1,6 @@
 import { Grid, Fade, Typography, Box, LinearProgress } from "@mui/material";
 import MDTypography from "src/components/MDTypography";
-import { IOrderHistory } from "src/data/IOrderHistory";
+import { IOrderDetail } from "src/data/IOrderDetail";
 import { IOrderItem } from "src/data/IOrderItem";
 import { OrderStatus } from "src/enum/OrderStatus";
 import { Page } from "src/enum/Page";
@@ -14,7 +14,8 @@ import { useGetOrderedItemsQuery } from "src/api/orderApi";
 import { IProductVariantObj } from "src/interface/IProductVariantObj";
 
 interface IProps {
-    order: IOrderHistory;
+    order: IOrderDetail;
+    displayItemsOnly: boolean;
 }
 
 const columns = [
@@ -58,7 +59,7 @@ const columns = [
     },
 ];
 
-export const Order = ({ order }: IProps) => {
+export const Order = ({ order, displayItemsOnly }: IProps) => {
     const { data, isLoading } = useGetOrderedItemsQuery(order.ref);
 
     const { data: products, isLoading: productsIsLoading } =
@@ -78,7 +79,7 @@ export const Order = ({ order }: IProps) => {
                 unmountOnExit={true}
                 timeout={500}
             >
-                <Grid item xl={9} md={12} xs={12}>
+                <Grid item xl={displayItemsOnly ? 12 : 9} md={12} xs={12}>
                     <h1>Order #{order.ref}</h1>
                     <span>Placed on {order.dateTimeStr}</span>
                     <Box
@@ -156,50 +157,52 @@ export const Order = ({ order }: IProps) => {
                     </Box>
                 </Grid>
             </Fade>
-            <Fade
-                in={true}
-                mountOnEnter={true}
-                unmountOnExit={true}
-                timeout={500}
-                style={{
-                    transitionDelay: "250ms",
-                }}
-            >
-                <Grid item xl={3} md={12} xs={12}>
-                    <h2>Status</h2>
-                    <Box mt={1} display="flex" flexDirection={"column"}>
-                        <Typography className="standard-text">
-                            Order: {OrderStatus[order.status]}
-                        </Typography>
-                        <Typography className="standard-text">
-                            Payment: {order.paymentStatus}
-                        </Typography>
-                        <Typography className="standard-text">
-                            Arriving: Wednesday, April 3
-                        </Typography>
-                    </Box>
-                    <Box mt={3}>
-                        <h2>Shipping Address</h2>
+            {!displayItemsOnly && (
+                <Fade
+                    in={true}
+                    mountOnEnter={true}
+                    unmountOnExit={true}
+                    timeout={500}
+                    style={{
+                        transitionDelay: "250ms",
+                    }}
+                >
+                    <Grid item xl={3} md={12} xs={12}>
+                        <h2>Status</h2>
                         <Box mt={1} display="flex" flexDirection={"column"}>
                             <Typography className="standard-text">
-                                {order.name}
+                                Order: {OrderStatus[order.status]}
                             </Typography>
                             <Typography className="standard-text">
-                                {order.line1}
+                                Payment: {order.paymentStatus}
                             </Typography>
                             <Typography className="standard-text">
-                                {order.line2}
-                            </Typography>
-                            <Typography className="standard-text">
-                                {order.city}
-                            </Typography>
-                            <Typography className="standard-text">
-                                {order.postalCode}, {order.country}
+                                Arriving: Wednesday, April 3
                             </Typography>
                         </Box>
-                    </Box>
-                </Grid>
-            </Fade>
+                        <Box mt={3}>
+                            <h2>Shipping Address</h2>
+                            <Box mt={1} display="flex" flexDirection={"column"}>
+                                <Typography className="standard-text">
+                                    {order.name}
+                                </Typography>
+                                <Typography className="standard-text">
+                                    {order.line1}
+                                </Typography>
+                                <Typography className="standard-text">
+                                    {order.line2}
+                                </Typography>
+                                <Typography className="standard-text">
+                                    {order.city}
+                                </Typography>
+                                <Typography className="standard-text">
+                                    {order.postalCode}, {order.country}
+                                </Typography>
+                            </Box>
+                        </Box>
+                    </Grid>
+                </Fade>
+            )}
         </Grid>
     );
 };

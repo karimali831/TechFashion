@@ -10,7 +10,7 @@ namespace api.Service
     public interface ICartService
     {
         Task ArchiveAsync(int cartId);
-        Task<CartViewModel?> GetAsync(int userId);
+        Task<CartViewModel?> GetAsync(int userId, string? firebaseUid);
         Task<CartViewModel?> GetAsync(CartUserDto dto);
         Task SetUserIdAsync(int userId, Guid guestCheckoutId);
     }
@@ -48,10 +48,10 @@ namespace api.Service
             await _cartRepository.EmptyAsync(cartId);
         }
 
-        public async Task<CartViewModel?> GetAsync(int userId)
+        public async Task<CartViewModel?> GetAsync(int userId, string? firebaseUid)
         {
             var cart = await _cartRepository.GetByUserIdAsync(userId);
-            return await GetViewModelAsync(cart);
+            return await GetViewModelAsync(cart, firebaseUid);
         }
 
         public async Task<CartViewModel?> GetAsync(CartUserDto dto)
@@ -67,7 +67,7 @@ namespace api.Service
                 cart = await _cartRepository.GetByGuestCheckoutIdAsync(dto.GuestCheckoutId.Value);
             }
 
-            return await GetViewModelAsync(cart);
+            return await GetViewModelAsync(cart, dto.FirebaseUid);
         }
 
         public async Task SetUserIdAsync(int userId, Guid guestCheckoutId)
@@ -75,7 +75,7 @@ namespace api.Service
             await _cartRepository.SetUserIdAsync(userId, guestCheckoutId);
         }
 
-        private async Task<CartViewModel?> GetViewModelAsync(Cart? cart)
+        private async Task<CartViewModel?> GetViewModelAsync(Cart? cart, string? firebaseUid)
         {
             if (cart is null)
                 return null;
@@ -96,6 +96,7 @@ namespace api.Service
                 Id = cart.Id,
                 Products = products,
                 Total = total,
+                ShowGuestCheckout = products.Count != 0 && firebaseUid is null,
                 TotalStr = total.ToCurrencyGbp()
             };
         }

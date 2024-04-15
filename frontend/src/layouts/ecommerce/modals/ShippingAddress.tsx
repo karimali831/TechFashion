@@ -76,9 +76,7 @@ export const ShippingAddressModal = () => {
                                         {address.name})
                                     </MenuItem>
                                 ))}
-                                <MenuItem value={0}>
-                                    Enter new address in checkout
-                                </MenuItem>
+                                <MenuItem value={0}>New address</MenuItem>
                             </Select>
                         </FormControl>
                     )}

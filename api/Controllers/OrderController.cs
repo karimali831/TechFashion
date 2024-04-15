@@ -10,18 +10,27 @@ namespace api.Controllers
         private readonly IOrderService _orderService = orderService;
 
 
-        [HttpGet("Get/{paymentIntentId}")]
-        public async Task<IActionResult> Get(string paymentIntentId)
+        [HttpGet("Get/{id}")]
+        public async Task<IActionResult> Get(int id)
         {
-            var order = await _orderService.GetByPaymentIdAsync(paymentIntentId);
+            var order = await _orderService.GetDetailsAsync(id, orderRef: null);
             return Ok(order);
         }
+
+
+        [HttpGet("GetByRef/{orderRef}")]
+        public async Task<IActionResult> GetByRef(int orderRef)
+        {
+            var order = await _orderService.GetDetailsAsync(id: null, orderRef);
+            return Ok(order);
+        }
+
 
         [HttpGet("GetOrderedItems/{orderRef}")]
         public async Task<IActionResult> GetOrderedItems(int orderRef)
         {
-            var orderHistory = await _orderService.GetOrderedItemsAsync(orderRef);
-            return Ok(orderHistory);
+            var OrderDetail = await _orderService.GetOrderedItemsAsync(orderRef);
+            return Ok(OrderDetail);
         }
     }
 }

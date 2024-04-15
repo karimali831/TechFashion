@@ -2,6 +2,7 @@ namespace api.Dto.Stripe
 {
     public class PaymentIntentResponse
     {
+        public int OrderId { get; set; }
         public string? ClientSecret { get; set; }
         public string? ErrorMsg { get; set; }
         public string? Coupon { get; set; }

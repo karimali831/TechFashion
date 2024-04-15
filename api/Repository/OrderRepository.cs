@@ -1,4 +1,5 @@
 using api.Data;
+using api.Enum;
 using api.Helper;
 using api.Infrastructure;
 using api.Models;
@@ -7,11 +8,15 @@ namespace api.Repository
 {
     public interface IOrderRepository
     {
-        Task AddAsync(Order model);
+        Task<Order> GetAsync(int id);
+        Task<Order?> GetPendingByCartIdAsync(int cartId);
+        Task<int> AddAsync(Order model);
+        Task UpdateAsync(Order model);
         Task<Order?> GetByRefAsync(int orderRef);
-        Task<OrderHistory> GetByPaymentIdAsync(string paymentIntentId);
-        Task<IList<OrderHistory>> GetHistoryAsync(int userId);
+        Task<OrderDetail> GetDetailsAsync(int? id, int? orderRef);
+        Task<IList<OrderDetail>> GetHistoryAsync(int userId);
         Task<IList<OrderItem>> GetOrderedItemsAsync(int orderRef);
+        Task UpdateShippingAddressIdAsync(int id, int? shippingAddressId);
     }
 
     public class OrderRepository(DapperContext context) : DapperBaseRepository(context), IOrderRepository
@@ -19,10 +24,34 @@ namespace api.Repository
         private const string Table = "Orders";
         private static readonly string[] Fields = typeof(Order).DapperFields();
 
-
-        public async Task AddAsync(Order model)
+        public async Task<Order?> GetPendingByCartIdAsync(int cartId)
         {
-            await ExecuteAsync(DapperHelper.Insert(Table, Fields), model);
+            var sqlTxt = @$"
+                {DapperHelper.Select(Table, Fields)}
+                WHERE CartId = @cartId 
+                AND RemovedDate IS NULL
+                AND Status = {(int)OrderStatus.Created}
+            ";
+
+            return await QueryFirstOrDefaultAsync<Order?>(sqlTxt,
+                new { cartId }
+            );
+        }
+
+        public async Task<Order> GetAsync(int id)
+        {
+            return await QueryFirstAsync<Order>($"{DapperHelper.Select(Table, Fields)} WHERE Id = @id AND RemovedDate IS NULL", new { id });
+        }
+
+        public async Task<int> AddAsync(Order model)
+        {
+            var create = await QueryAsync<int>(DapperHelper.Insert(Table, Fields), model);
+            return create.Single();
+        }
+
+        public async Task UpdateAsync(Order model)
+        {
+            await ExecuteAsync(DapperHelper.Update(Table, Fields), model);
         }
 
         public async Task<Order?> GetByRefAsync(int orderRef)
@@ -30,7 +59,7 @@ namespace api.Repository
             return await QueryFirstOrDefaultAsync<Order>($"{DapperHelper.Select(Table, Fields)} WHERE Ref = @orderRef", new { orderRef });
         }
 
-        public async Task<OrderHistory> GetByPaymentIdAsync(string paymentIntentId)
+        public async Task<OrderDetail> GetDetailsAsync(int? id, int? orderRef)
         {
             var sqlTxt = @$"
                 SELECT
@@ -49,18 +78,17 @@ namespace api.Repository
                 FROM [Orders] AS O
                 JOIN [Carts] AS C
                 ON C.Id = O.CartId
-                JOIN [StripePayments] AS P
+                LEFT JOIN [StripePayments] AS P
                 ON O.PaymentId = P.Id
-                JOIN [CustomerAddress] AS CA
+                LEFT JOIN [CustomerAddress] AS CA
                 ON CA.Id = O.ShippingAddressId
-                WHERE C.ArchiveDate IS NOT NULL
-                AND P.PaymentIntentId = @paymentIntentId
+                WHERE O.Ref = @orderRef OR O.Id = @id
             ";
 
-            return await QueryFirstAsync<OrderHistory>(sqlTxt, new { paymentIntentId });
+            return await QueryFirstAsync<OrderDetail>(sqlTxt, new { id, orderRef });
         }
 
-        public async Task<IList<OrderHistory>> GetHistoryAsync(int userId)
+        public async Task<IList<OrderDetail>> GetHistoryAsync(int userId)
         {
             var sqlTxt = @$"
                 SELECT
@@ -87,7 +115,7 @@ namespace api.Repository
                 AND C.UserID = @userId
             ";
 
-            return (await QueryAsync<OrderHistory>(sqlTxt, new { userId })).ToList();
+            return (await QueryAsync<OrderDetail>(sqlTxt, new { userId })).ToList();
         }
 
         public async Task<IList<OrderItem>> GetOrderedItemsAsync(int orderRef)
@@ -111,7 +139,6 @@ namespace api.Repository
                 ON O.CartId = C.Id
                 WHERE O.Ref = @orderRef
                 AND CP.VariantId IS NULL
-                AND C.ArchiveDate IS NOT NULL
 
                 UNION
 
@@ -134,11 +161,21 @@ namespace api.Repository
                 JOIN [Orders] AS O
                 ON O.CartId = C.Id
                 WHERE O.Ref = @orderRef
-                AND C.ArchiveDate IS NOT NULL
             ";
 
             return (await QueryAsync<OrderItem>(sqlTxt, new { orderRef }))
                 .ToList();
+        }
+
+        public async Task UpdateShippingAddressIdAsync(int id, int? shippingAddressId)
+        {
+            var sqlTxt = @$"
+                UPDATE {Table} 
+                SET ShippingAddressId = @ShippingAddressId 
+                WHERE Id = @id AND Status = {(int)OrderStatus.Canceled}
+            ";
+
+            await ExecuteAsync(sqlTxt, new { id, shippingAddressId });
         }
     }
 }

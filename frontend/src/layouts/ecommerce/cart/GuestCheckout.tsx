@@ -50,10 +50,10 @@ export const GuestCheckout = () => {
 
     return (
         <Fade in={true} mountOnEnter={true} unmountOnExit={true} timeout={500}>
-            <MDBox className="content" display="flex" justifyContent="center">
-                <Box className="content-border" minWidth={500}>
+            <MDBox className="content">
+                <Box className="content-border content-small">
                     <h1>Guest checkout</h1>
-                    <Box mt={1} mb={1}>
+                    <Box mt={1}>
                         <span
                             onClick={() => navToLoginOrRegister(Page.Login)}
                             style={{

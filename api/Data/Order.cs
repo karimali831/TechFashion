@@ -7,8 +7,8 @@ namespace api.Data
         public int Id { get; set; }
         public int Ref { get; set; }
         public int CartId { get; set; }
-        public int PaymentId { get; set; }
-        public int ShippingAddressId { get; set; }
+        public int? PaymentId { get; set; }
+        public int? ShippingAddressId { get; set; }
         public OrderStatus Status { get; set; }
     }
 }

@@ -12,6 +12,8 @@ import { getUserState } from "src/state/contexts/user/Selectors";
 import MDTypography from "../MDTypography";
 import { IVerificationEmail, IVerificationEmailRequest } from "src/api/userApi";
 import { SetEmailVerificationAction } from "src/state/contexts/user/Actions";
+import { ShowPageAction } from "src/state/contexts/app/Actions";
+import { Page } from "src/enum/Page";
 
 interface IVerifyEmailRequest {
     email: string;
@@ -28,7 +30,8 @@ export const CodeVerification = ({ attempt }: IProps) => {
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     const { guestCheckout } = useAppSelector(getCartState);
-    const { user, firebaseUid } = useAppSelector(getUserState);
+    const { user, firebaseUid, verificationEmail } =
+        useAppSelector(getUserState);
 
     const dispatch = useDispatch();
 
@@ -85,7 +88,14 @@ export const CodeVerification = ({ attempt }: IProps) => {
                         title: "Success",
                         text: "Your email address is now verified",
                     }).then(() => {
-                        window.location.href = "/";
+                        dispatch(
+                            SetEmailVerificationAction({
+                                ...verificationEmail,
+                                verified: true,
+                            })
+                        );
+
+                        dispatch(ShowPageAction(Page.Cart));
                     });
                 } else {
                     setErrorMsg(
@@ -129,7 +139,7 @@ export const CodeVerification = ({ attempt }: IProps) => {
                             characterFilled: "character--filled",
                         }}
                     />
-                    <Box p={2}>
+                    <Box mt={2}>
                         <MDTypography
                             variant="caption"
                             fontWeight="regular"

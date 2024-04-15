@@ -16,9 +16,8 @@ import { useAppDispatch } from "src/state/Hooks";
 import { OpenSelectAddressModalAction } from "src/state/contexts/cart/Actions";
 
 export const Checkout = ({
+    paymentIntent,
     guestEmail,
-    clientSecret,
-    total,
     address,
 }: CheckoutProps) => {
     const [error, setError] = useState<string | null>(null);
@@ -43,9 +42,9 @@ export const Checkout = ({
 
         const { error } = await stripe.confirmPayment({
             elements,
-            clientSecret,
+            clientSecret: paymentIntent.clientSecret,
             confirmParams: {
-                return_url: `${baseWebUrl}/ordersuccess`,
+                return_url: `${baseWebUrl}/ordersuccess/${paymentIntent.orderId}`,
             },
         });
 
@@ -83,7 +82,7 @@ export const Checkout = ({
                             }
                         >
                             <Typography className="standard-text link">
-                                (change)
+                                ({address ? "change" : "select"})
                             </Typography>
                         </Box>
                     )}
@@ -144,7 +143,7 @@ export const Checkout = ({
                 }}
             >
                 <MDTypography>Total</MDTypography>
-                <MDTypography>{total}</MDTypography>
+                <MDTypography>{paymentIntent.amount}</MDTypography>
             </Box>
             <Box
                 sx={{

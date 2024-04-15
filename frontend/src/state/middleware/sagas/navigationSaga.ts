@@ -9,15 +9,12 @@ import {
     ShowPageAction,
     ShowPageWithParamsAction,
 } from "../../contexts/app/Actions";
-import { getUser, getVerificationEmail } from "../../contexts/user/Selectors";
+import { getUserState } from "../../contexts/user/Selectors";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { getPage } from "src/state/contexts/app/Selectors";
 import { AppRoutes } from "src/router/Routes";
-import { IUser } from "src/data/IUser";
 import { IRoute } from "src/router/Route";
-import { getGuestCheckoutId } from "src/state/contexts/cart/Selectors";
-import { IVerificationEmail } from "src/api/userApi";
-import { IGuestCheckout } from "src/interface/IGuestCheckout";
+import { IUserState } from "src/state/contexts/user/IUserState";
 
 export default function* navigationSaga() {
     yield takeLatest(ShowPageAction.type, navigateToScreen);
@@ -43,7 +40,10 @@ export function* locationChange() {
         } else {
             var path = route.path.split("/");
 
-            if (path.length == currentLocation.length) {
+            if (
+                path[1] == currentLocation[1] &&
+                path.length == currentLocation.length
+            ) {
                 return (currentRoute = route);
             }
         }
@@ -86,13 +86,8 @@ export function* navigateToScreen(
     secondaryId?: string
 ) {
     try {
-        const user: IUser | null = yield select(getUser);
-        const guestCheckout: IGuestCheckout | null = yield select(
-            getGuestCheckoutId
-        );
-        const verificationEmail: IVerificationEmail = yield select(
-            getVerificationEmail
-        );
+        const userState: IUserState = yield select(getUserState);
+        const user = userState.user;
 
         const newLocation = AppRoutes.filter(
             (x) => x.page === route.payload
@@ -109,12 +104,7 @@ export function* navigateToScreen(
             return;
         }
 
-        if (
-            (user && !user.emailVerified) ||
-            (!user &&
-                guestCheckout?.email !== "" &&
-                !verificationEmail.verified)
-        ) {
+        if (user?.firebaseUid && !userState.verificationEmail.verified) {
             const verifyEmailPage = AppRoutes.filter(
                 (x) => x.page === Page.VerifyEmail
             )[0].url;

@@ -1,4 +1,4 @@
-import { Card, Grid, LinearProgress } from "@mui/material";
+import { Box, Grid, LinearProgress } from "@mui/material";
 import MDBox from "src/components/MDBox";
 import MDTypography from "src/components/MDTypography";
 import { Payment } from "../payment";
@@ -37,7 +37,8 @@ export const Cart = () => {
 
     return (
         <MDBox className="content">
-            <Card
+            <Box className="content-border content-full">
+                {/* <Card
                 sx={{
                     p: 2,
                     display: "flex",
@@ -45,7 +46,7 @@ export const Cart = () => {
                     width: "100%",
                     justifyContent: "space-between",
                 }}
-            >
+            > */}
                 <Grid
                     alignItems={"flex-start"}
                     container
@@ -62,7 +63,7 @@ export const Cart = () => {
                         <CartOverlay isOverlay={false} />
                     </Grid>
                 </Grid>
-            </Card>
+            </Box>
         </MDBox>
     );
 };

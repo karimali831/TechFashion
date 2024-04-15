@@ -15,6 +15,8 @@ namespace api.Models.Ebay
         public int Stock { get; set; }
         [Name("Start price")]
         public decimal Price { get; set; }
+        [Name("Current price")]
+        public string? CurrentPrice { get; set; }
         [Name("eBay category 1 name")]
         public required string Category { get; set; }
         [Name("eBay category 2 number")]

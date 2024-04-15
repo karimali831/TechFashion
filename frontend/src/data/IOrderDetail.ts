@@ -1,6 +1,6 @@
 import { OrderStatus } from "src/enum/OrderStatus";
 
-export interface IOrderHistory {
+export interface IOrderDetail {
     id: number;
     ref: number;
     idStr: string;

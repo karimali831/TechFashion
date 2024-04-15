@@ -299,6 +299,7 @@ function ProductInfo({ item, loading }: IProps): JSX.Element {
 
                                     return (
                                         <Variant
+                                            key={idx}
                                             selected={selectedVariant}
                                             variant={variant}
                                             onClick={(value) => {
