@@ -7,8 +7,8 @@ namespace api.Repository
     public interface IEmailVerificationRepository
     {
         Task<DateTime?> IsVerifiedAsync(int userId);
-        Task<EmailVerification?> GetUnverifiedAsync(string email, Guid? guestCheckoutId = null);
-        Task<bool> CreateAsync(string email, int code, Guid? guestCheckoutId = null);
+        Task<EmailVerification?> GetUnverifiedAsync(string email);
+        Task<bool> CreateAsync(string email, int code);
         Task<bool> VerifyAsync(string email, int code);
     }
 
@@ -17,33 +17,19 @@ namespace api.Repository
         private const string Table = "[dbo].[EmailVerification]";
         private static readonly string[] Fields = typeof(EmailVerification).DapperFields();
 
-        public async Task<EmailVerification?> GetUnverifiedAsync(string email, Guid? guestCheckoutId = null)
+        public async Task<EmailVerification?> GetUnverifiedAsync(string email)
         {
-            var sqlTxt = @$"
-                {DapperHelper.Select(Table, Fields)} 
-                WHERE Email = @email 
-                AND GuestCheckoutId = @guestCheckoutId
-                AND RemovedDate IS NULL 
-                AND VerifiedDate IS NULL 
-                AND CreatedDate >= DateADD(MINUTE, -10, GETDATE()) AND CreatedDate< GETDATE()";
-
-            return await QueryFirstOrDefaultAsync<EmailVerification?>(sqlTxt,
-                new { email, guestCheckoutId }
+            return await QueryFirstOrDefaultAsync<EmailVerification?>($"{DapperHelper.Select(Table, Fields)} WHERE Email = @email AND RemovedDate IS NULL AND VerifiedDate IS NULL AND CreatedDate >= DateADD(MINUTE, -10, GETDATE()) AND CreatedDate< GETDATE()",
+                new { email }
             );
         }
 
-        public async Task<bool> CreateAsync(string email, int code, Guid? guestCheckoutId = null)
+        public async Task<bool> CreateAsync(string email, int code)
         {
-            var sqlTxt = @$"
-                UPDATE {Table} 
-                Set RemovedDate = GETDATE() 
-                WHERE Email = @email 
-                AND GuestCheckoutId = @guestCheckoutId";
+            await ExecuteAsync($"UPDATE {Table} Set RemovedDate = GETDATE() WHERE Email = @email", new { email });
 
-            await ExecuteAsync(sqlTxt, new { email, guestCheckoutId });
-
-            return await ExecuteAsync($"INSERT INTO {Table} (Email, Code, GuestCheckoutId) VALUES (@email, @code, @guestCheckoutId)",
-                new { email, code, guestCheckoutId }
+            return await ExecuteAsync($"INSERT INTO {Table} (Email, Code) VALUES (@email, @code)",
+                new { email, code }
             );
         }
 
