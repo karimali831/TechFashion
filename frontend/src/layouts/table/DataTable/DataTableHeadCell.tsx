@@ -27,7 +27,11 @@ function DataTableHeadCell({
             py={1.5}
             px={3}
             sx={({ palette: { light }, borders: { borderWidth } }: Theme) => ({
-                borderBottom: `${borderWidth[1]} solid ${light.main}`,
+                borderBottom: {
+                    xs: "none",
+                    sm: "none",
+                    xl: `${borderWidth[1]} solid ${light.main}`,
+                },
             })}
         >
             <MDBox
@@ -37,7 +41,7 @@ function DataTableHeadCell({
                 color={darkMode ? "white" : "secondary"}
                 opacity={0.7}
                 sx={({ typography: { size, fontWeightBold } }: Theme) => ({
-                    fontSize: size.xxs,
+                    fontSize: size.xs,
                     fontWeight: fontWeightBold,
                     textTransform: "uppercase",
                     cursor: sorted && "pointer",
@@ -48,6 +52,7 @@ function DataTableHeadCell({
                 {sorted && (
                     <MDBox
                         position="absolute"
+                        display={{ xs: "none", sm: "none" }}
                         top={0}
                         right={align !== "right" ? "16px" : 0}
                         left={align === "right" ? "-5px" : "unset"}

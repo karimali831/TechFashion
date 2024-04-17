@@ -8,14 +8,16 @@ import { ShowPageWithParamsAction } from "src/state/contexts/app/Actions";
 import { Page } from "src/enum/Page";
 
 const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
+    // backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
     ...theme.typography.body2,
     padding: theme.spacing(1),
-    textAlign: "center",
+    // textAlign: "center",
     color: theme.palette.text.secondary,
+    border: "none",
+    boxShadow: "none",
     // boxShadow:
     //     "box-shadow: 0 5px 10px rgba(154, 160, 185, 0.05), 0 15px 40px rgba(166, 173, 201, 0.2);",
-    boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+    // boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
     // bosShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px"
 }));
 

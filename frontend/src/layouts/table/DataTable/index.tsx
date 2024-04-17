@@ -20,6 +20,7 @@ import { isMobile } from "react-device-detect";
 import { Skeleton } from "@mui/material";
 import DataTableHeadCell from "./DataTableHeadCell";
 import DataTableBodyCell from "./DataTableBodyCell";
+import "./styles.css";
 
 // Declaring props types for DataTable
 interface IProps<T> {
@@ -256,7 +257,7 @@ function DataTable<T>({
     }
 
     return (
-        <TableContainer sx={{ boxShadow: "none" }}>
+        <TableContainer className="mobile-sort" sx={{ boxShadow: "none" }}>
             {entriesPerPage || canSearch ? (
                 <MDBox
                     display="flex"
@@ -304,6 +305,7 @@ function DataTable<T>({
                 <MDBox component="thead">
                     {headerGroups.map((headerGroup: any, key: any) => (
                         <TableRow
+                            className="sort-wrapper"
                             key={key}
                             {...headerGroup.getHeaderGroupProps()}
                         >
@@ -339,23 +341,56 @@ function DataTable<T>({
                                 {...row.getRowProps()}
                                 onClick={() => onRowClick(row.original)}
                             >
-                                {row.cells.map((cell: any, key: any) => (
-                                    <DataTableBodyCell
-                                        key={key}
-                                        noBorder={
-                                            noEndBorder &&
-                                            rows.length - 1 === key
-                                        }
-                                        align={
-                                            cell.column.align
-                                                ? cell.column.align
-                                                : "left"
-                                        }
-                                        {...cell.getCellProps()}
-                                    >
-                                        {cell.render("Cell")}
-                                    </DataTableBodyCell>
-                                ))}
+                                {row.cells.map((cell: any, key2: any) => {
+                                    return (
+                                        <DataTableBodyCell
+                                            key={key2}
+                                            noBorder={
+                                                noEndBorder &&
+                                                rows.length - 1 === key
+                                            }
+                                            align={
+                                                cell.column.align
+                                                    ? cell.column.align
+                                                    : "left"
+                                            }
+                                            {...cell.getCellProps()}
+                                        >
+                                            <MDBox
+                                                sx={{
+                                                    display: {
+                                                        xs: "flex",
+                                                        sm: "flex",
+                                                        md: "flex",
+                                                        lg: "none",
+                                                        xl: "none",
+                                                    },
+                                                }}
+                                                justifyContent={"space-between"}
+                                                alignItems={"center"}
+                                                width={"100%"}
+                                            >
+                                                <DataTableHeadCell>
+                                                    {cell.column.Header}
+                                                </DataTableHeadCell>
+                                                {cell.render("Cell")}
+                                            </MDBox>
+                                            <MDBox
+                                                sx={{
+                                                    display: {
+                                                        xs: "none",
+                                                        sm: "none",
+                                                        md: "none",
+                                                        lg: "block",
+                                                        xl: "block",
+                                                    },
+                                                }}
+                                            >
+                                                {cell.render("Cell")}
+                                            </MDBox>
+                                        </DataTableBodyCell>
+                                    );
+                                })}
                             </TableRow>
                         );
                     })}

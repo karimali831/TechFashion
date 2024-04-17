@@ -10,7 +10,7 @@ interface Props {
 
 function IdCell2({ id, onClick }: Props): JSX.Element {
     return (
-        <MDBox ml={1} className="id" onClick={onClick}>
+        <MDBox className="id" onClick={onClick}>
             <MDTypography variant="caption" color="text">
                 {id}
             </MDTypography>

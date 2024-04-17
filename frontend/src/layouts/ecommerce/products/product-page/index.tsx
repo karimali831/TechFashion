@@ -40,9 +40,9 @@ function ProductPage(): JSX.Element {
     return (
         <MDBox className="content-uncentered">
             {/* <Card sx={{ overflow: "visible" }}> */}
-            <Box className="content-border" sx={{ overflow: "visible" }}>
+            <Box sx={{ overflow: "visible" }}>
                 <MDBox>
-                    <MDBox mb={3} display="flex" alignItems="center">
+                    <MDBox mb={3} mt={3} display="flex" alignItems="center">
                         <Icon
                             onClick={() => dispatch(GoBackAction())}
                             sx={{ cursor: "pointer" }}
@@ -54,31 +54,33 @@ function ProductPage(): JSX.Element {
                         </MDTypography>
                     </MDBox>
 
-                    <Grid container>
-                        <Grid item xs={12} lg={6} xl={5}>
-                            {isLoading ? (
-                                <Box>
-                                    <Skeleton
-                                        animation="wave"
-                                        width="100%"
-                                        height={200}
-                                        variant="rounded"
-                                    />
-                                </Box>
-                            ) : (
-                                <ProductImages />
-                            )}
-                        </Grid>
+                    <MDBox className="content-border">
+                        <Grid container>
+                            <Grid item xs={12} lg={6} xl={5}>
+                                {isLoading ? (
+                                    <Box>
+                                        <Skeleton
+                                            animation="wave"
+                                            width="100%"
+                                            height={200}
+                                            variant="rounded"
+                                        />
+                                    </Box>
+                                ) : (
+                                    <ProductImages />
+                                )}
+                            </Grid>
 
-                        <Grid item xs={12} lg={5} sx={{ mx: "auto" }}>
-                            <ProductInfo
-                                item={selectedProduct}
-                                loading={isLoading}
-                            />
+                            <Grid item xs={12} lg={5} sx={{ mx: "auto" }}>
+                                <ProductInfo
+                                    item={selectedProduct}
+                                    loading={isLoading}
+                                />
+                            </Grid>
                         </Grid>
-                    </Grid>
+                    </MDBox>
 
-                    <MDBox mt={8} mb={2}>
+                    <MDBox mt={4} mb={2} className="content-border">
                         <MDBox mb={1} ml={2}>
                             <MDTypography variant="h5" fontWeight="medium">
                                 You may also like

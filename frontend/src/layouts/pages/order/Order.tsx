@@ -22,6 +22,7 @@ const columns = [
     {
         Header: "Product",
         accessor: "product",
+        width: 300,
         Cell: ({ value }: any) => (
             <DefaultCell link={true} value={value} maxLength={50} />
         ),
@@ -49,13 +50,16 @@ const columns = [
     {
         Header: "Quantity",
         accessor: "quantity",
+        width: 100,
         Cell: ({ value }: any) => <DefaultCell value={value} />,
     },
     ,
     {
         Header: "Total",
         accessor: "totalStr",
-        Cell: ({ value }: any) => <DefaultCell value={value} />,
+        Cell: ({ value }: any) => (
+            <DefaultCell value={value} textAlign="center" />
+        ),
     },
 ];
 
@@ -85,8 +89,25 @@ export const Order = ({ order, displayItemsOnly }: IProps) => {
                     <Box
                         mt={1}
                         sx={{
-                            border: "1px solid #eee",
-                            p: "10px 5px 5px 10px",
+                            borderTop: {
+                                xs: "none",
+                                sm: "none",
+                                md: "none",
+                                lg: "1px solid #eee",
+                            },
+                            borderLeft: {
+                                xs: "none",
+                                sm: "none",
+                                md: "none",
+                                lg: "1px solid #eee",
+                            },
+                            borderRight: {
+                                xs: "none",
+                                sm: "none",
+                                md: "none",
+                                lg: "1px solid #eee",
+                            },
+                            p: { xs: 0, sm: 0, md: 0, lg: "10px 5px 5px 10px" },
                         }}
                     >
                         <DataTable<IOrderItem>
@@ -94,7 +115,9 @@ export const Order = ({ order, displayItemsOnly }: IProps) => {
                                 columns,
                                 rows: data,
                             }}
+                            showTotalEntries={false}
                             entriesPerPage={false}
+                            noEndBorder={true}
                             canSearch={false}
                             loading={isLoading}
                             onRowClick={(order) => {
@@ -114,8 +137,13 @@ export const Order = ({ order, displayItemsOnly }: IProps) => {
                     </Box>
                     <Box
                         sx={{
-                            border: "1px solid #eee",
-                            p: "10px 5px 5px 10px",
+                            p: { xs: 0, sm: 0, md: 0, lg: "10px 5px 5px 10px" },
+                            border: {
+                                xs: 0,
+                                sm: 0,
+                                md: 0,
+                                lg: "1px solid #eee",
+                            },
                         }}
                     >
                         <Box

@@ -123,7 +123,7 @@ function Billing(): JSX.Element {
                 </span>
             </Box>
 
-            <Grid container mt={2} spacing={2} className="content-border">
+            <Grid container mt={2} spacing={2}>
                 <Fade
                     in={true}
                     mountOnEnter={true}
@@ -136,26 +136,25 @@ function Billing(): JSX.Element {
                             {account.orders.length === 0 ? (
                                 <span>You haven't placed any orders yet.</span>
                             ) : (
-                                <Box>
-                                    <DataTable<IOrderDetail>
-                                        table={{
-                                            columns,
-                                            rows: account.orders,
-                                        }}
-                                        entriesPerPage={false}
-                                        canSearch
-                                        loading={accountLoading}
-                                        onRowClick={(order) =>
-                                            dispatch(
-                                                ShowPageWithParamsAction({
-                                                    page: Page.AccountOrder,
-                                                    primaryId:
-                                                        order.ref.toString(),
-                                                })
-                                            )
-                                        }
-                                    />
-                                </Box>
+                                <DataTable<IOrderDetail>
+                                    table={{
+                                        columns,
+                                        rows: account.orders,
+                                    }}
+                                    showTotalEntries={false}
+                                    entriesPerPage={false}
+                                    noEndBorder={true}
+                                    canSearch={false}
+                                    loading={accountLoading}
+                                    onRowClick={(order) =>
+                                        dispatch(
+                                            ShowPageWithParamsAction({
+                                                page: Page.AccountOrder,
+                                                primaryId: order.ref.toString(),
+                                            })
+                                        )
+                                    }
+                                />
                             )}
                         </Box>
                     </Grid>
