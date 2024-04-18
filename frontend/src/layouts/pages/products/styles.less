@@ -1,7 +1,7 @@
 .zoom {
     object-fit: cover;
-    width: 270px;
-    height: 235px;
+    // width: 270px;
+    // min-height: 235px;
     transition: transform 0.5s ease;
 }
 
@@ -45,14 +45,14 @@
 }
 
 .product-item {
-    height: 326px;
+    min-height: 326px;
     width: 270px;
 }
 
 @media (max-width: 768px) {
     .product-item {
-        height: 280px;
-        width: 178px;
+        min-height: 280px;
+        width: 165px;
     }
 
     .grid-1 {
@@ -60,7 +60,7 @@
     }
 
     .zoom {
-        width: 178px;
-        height: 189px;
+        // width: 165px;
+        // min-height: 189px;
     }
 }

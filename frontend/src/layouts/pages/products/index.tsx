@@ -6,11 +6,12 @@ import { IProductCatalogue } from "src/interface/IProductCatalogue";
 import { useAppDispatch } from "src/state/Hooks";
 import { ShowPageWithParamsAction } from "src/state/contexts/app/Actions";
 import { Page } from "src/enum/Page";
+import MDBox from "src/components/MDBox";
 
 const Item = styled(Paper)(({ theme }) => ({
     // backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
     ...theme.typography.body2,
-    padding: theme.spacing(1),
+    // padding: theme.spacing(1),
     // textAlign: "center",
     color: theme.palette.text.secondary,
     border: "none",
@@ -44,42 +45,45 @@ const Products = () => {
             timeout={500}
             mountOnEnter={true}
             unmountOnExit={true}
-            className="content"
+            className="content-uncentered"
         >
-            <Grid container={true} spacing={3}>
-                {isLoading
-                    ? (() => {
-                          const arr = [];
-                          for (let i = 0; i < 3; i++) {
-                              arr.push(
-                                  <Grid item key={i}>
-                                      <Item className="product-item">
-                                          <ProductItem
-                                              index={i}
-                                              loading={true}
-                                          />
-                                      </Item>
-                                  </Grid>
-                              );
-                          }
-                          return arr;
-                      })()
-                    : products.catalogue.map((product, index) => (
-                          <Grid item key={index}>
-                              <Item
-                                  className="product-item"
-                                  sx={{ cursor: "pointer" }}
-                                  onClick={() => onProductClick(product)}
-                              >
-                                  <ProductItem
-                                      item={product}
-                                      index={index}
-                                      loading={false}
-                                  />
-                              </Item>
-                          </Grid>
-                      ))}
-            </Grid>
+            <MDBox mt={3}>
+                <h1>Products</h1>
+                <Grid container={true} spacing={3} mt={5}>
+                    {isLoading
+                        ? (() => {
+                              const arr = [];
+                              for (let i = 0; i < 4; i++) {
+                                  arr.push(
+                                      <Grid item key={i}>
+                                          <Item className="product-item">
+                                              <ProductItem
+                                                  index={i}
+                                                  loading={true}
+                                              />
+                                          </Item>
+                                      </Grid>
+                                  );
+                              }
+                              return arr;
+                          })()
+                        : products.catalogue.map((product, index) => (
+                              <Grid item key={index}>
+                                  <Item
+                                      className="product-item"
+                                      sx={{ cursor: "pointer" }}
+                                      onClick={() => onProductClick(product)}
+                                  >
+                                      <ProductItem
+                                          item={product}
+                                          index={index}
+                                          loading={false}
+                                      />
+                                  </Item>
+                              </Grid>
+                          ))}
+                </Grid>
+            </MDBox>
         </Fade>
     );
 };

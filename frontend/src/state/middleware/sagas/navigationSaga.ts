@@ -113,7 +113,6 @@ export function* navigateToScreen(
         }
 
         if (newLocation.url === currentLocation) {
-            window.scrollTo(0, 0);
             return;
         }
 
@@ -125,6 +124,12 @@ export function* navigateToScreen(
         history.push(newLocation.url);
     } catch {
         toast.error("An erorr occurred");
+    } finally {
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: "smooth",
+        });
     }
 }
 

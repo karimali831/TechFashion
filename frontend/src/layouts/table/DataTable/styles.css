@@ -25,6 +25,10 @@ table {
         width: 1px;
     }
 
+    table th {
+        padding: 10px 15px !important;
+    }
+
     table tr {
         border-bottom: 1px solid #eee;
         display: table-column;
