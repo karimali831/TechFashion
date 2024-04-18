@@ -55,10 +55,8 @@ builder.Services.AddCors(options =>
         builder =>
         {
             builder.WithOrigins(
-                "https://66171ef5c0c45800a2bfe77a--techfashion.netlify.app",
                 "http://localhost:5173",
-                "http://techfashion.netlify.app",
-                "https://techfashion.netlify.app"
+                "https://elegancecraft.netlify.app"
             )
             .AllowAnyHeader()
             .AllowCredentials()
