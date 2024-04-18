@@ -49,7 +49,7 @@ const Products = () => {
         >
             <MDBox mt={3}>
                 <h1>Products</h1>
-                <Grid container={true} spacing={3} mt={5}>
+                <Grid container={true} spacing={3} mt={3}>
                     {isLoading
                         ? (() => {
                               const arr = [];
