@@ -132,7 +132,7 @@ app.MapControllers();
 
 app.Run();
 
-SentrySdk.CaptureMessage("Hello Sentry - Tech fashion project");
+SentrySdk.CaptureMessage("Hello Sentry - Elegance Craft project");
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {

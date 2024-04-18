@@ -2,7 +2,6 @@ using api.Data;
 using api.Models;
 using api.Repository;
 using CloudChef.Library.Services;
-using Microsoft.Extensions.Options;
 
 namespace api.Service
 {
@@ -51,7 +50,7 @@ namespace api.Service
                 <a href='{url}'>visit this link</a> directly.
             ";
 
-            await _mailService.SendAsync("Tech Fashion Order Confirmation", email, mailBody);
+            await _mailService.SendAsync("Elegance Craft Order Confirmation", email, mailBody);
         }
 
         public async Task<Order?> GetPendingByCartIdAsync(int cartId)

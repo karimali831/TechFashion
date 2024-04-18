@@ -58,13 +58,13 @@ namespace api.Service
 
                 string mailBody = @$"
                 <hr /><br /> 
-                Sign in to Tech Fashion as {email} <br /><br />
+                Sign in to Elegance Craft as {email} <br /><br />
                 Enter this code to sign in: <br /> <br />
                 <h1>{otp}</h1><br /> 
                 This code will expire in 10 minutes and can only be used once.
             ";
 
-                await _mailService.SendAsync("Sign in to Tech Fashion", email, mailBody);
+                await _mailService.SendAsync("Sign in to Elegance Craft", email, mailBody);
 
                 return new ApiResponse<bool>
                 {
