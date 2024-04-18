@@ -25,6 +25,7 @@ import { ShowPageAction } from "src/state/contexts/app/Actions";
 import { Page } from "src/enum/Page";
 import { AppRoutes } from "src/router/Routes";
 import { useEffect, useState } from "react";
+import Logo from "src/assets/img/ec-logo.png";
 import { useAccountDetailsQuery } from "src/api/userApi";
 import { getAppState } from "src/state/contexts/app/Selectors";
 import { ShippingAddressModal } from "../ecommerce/modals/ShippingAddress";
@@ -136,7 +137,7 @@ function Navbar() {
                             onClick={() => dispatch(ShowPageAction(Page.Home))}
                         >
                             <img
-                                src="src/assets/img/ec-logo.png"
+                                src={Logo}
                                 alt="Elegance Craft"
                                 style={{
                                     height: 50,
@@ -226,7 +227,7 @@ function Navbar() {
                             onClick={() => dispatch(ShowPageAction(Page.Home))}
                         >
                             <img
-                                src="src/assets/img/ec-logo.png"
+                                src={Logo}
                                 alt="Elegance Craft"
                                 style={{
                                     height: 40,
