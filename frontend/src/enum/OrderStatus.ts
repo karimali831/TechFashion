@@ -3,5 +3,6 @@ export enum OrderStatus {
     Open,
     PartiallyShipped,
     Shipped,
+    Delivered,
     Canceled,
 }

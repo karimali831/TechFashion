@@ -33,7 +33,7 @@ const MenuLinkStyle: React.CSSProperties = {
     cursor: "pointer",
     marginRight: 30,
     fontFamily: "Assistant, sans-serif",
-    color: "#000",
+    color: "#ccc",
     fontSize: 14,
     textTransform: "none",
     letterSpacing: 0.6,
@@ -101,7 +101,10 @@ function Navbar() {
     return (
         <Box
             className="nav"
-            sx={{ borderBottom: ".1rem solid rgba(0,0,0, .08)" }}
+            sx={{
+                background: "#1d1d1d",
+                borderBottom: ".1rem solid rgba(0,0,0, .08)",
+            }}
         >
             <ShippingAddressModal />
             {openOverlay && (
@@ -113,10 +116,10 @@ function Navbar() {
                 </OverlaySlider>
             )}
             <AppBar
-                position="static"
+                position="sticky"
                 sx={{
-                    background: "transparent",
-                    color: "black",
+                    background: "#1d1d1d",
+                    color: "#ccc",
                     display: "flex",
                     justifyContent: "center",
                     height: { xs: 60, md: 85 },
@@ -124,18 +127,25 @@ function Navbar() {
             >
                 <Container maxWidth={false}>
                     <Toolbar disableGutters>
-                        {/* <Box sx={{ display: { xs: "none", md: "flex" } }}>
+                        <Box
+                            sx={{
+                                display: { xs: "none", md: "flex" },
+                                cursor: "pointer",
+                                mr: 4,
+                            }}
+                            onClick={() => dispatch(ShowPageAction(Page.Home))}
+                        >
                             <img
-                                src="src/assets/img/logo.png"
-                                alt="Tech Fashion"
+                                src="src/assets/img/ec-logo.png"
+                                alt="Elegance Craft"
                                 style={{
                                     height: 50,
                                     borderRadius: 5,
                                     objectFit: "cover",
                                 }}
                             />
-                        </Box> */}
-                        <Typography
+                        </Box>
+                        {/* <Typography
                             variant="h2"
                             noWrap
                             component="a"
@@ -152,8 +162,8 @@ function Navbar() {
                                 textDecoration: "none",
                             }}
                         >
-                            My Store
-                        </Typography>
+                            Elegance Craft
+                        </Typography> */}
 
                         <Box
                             sx={{
@@ -206,6 +216,27 @@ function Navbar() {
                             </Menu>
                         </Box>
 
+                        <Box
+                            sx={{
+                                display: { xs: "flex", md: "none" },
+                                textAlign: "left",
+                                cursor: "pointer",
+                                mr: 3,
+                            }}
+                            onClick={() => dispatch(ShowPageAction(Page.Home))}
+                        >
+                            <img
+                                src="src/assets/img/ec-logo.png"
+                                alt="Elegance Craft"
+                                style={{
+                                    height: 40,
+                                    width: 200,
+
+                                    objectFit: "cover",
+                                }}
+                            />
+                        </Box>
+                        {/* 
                         <Typography
                             variant="h5"
                             noWrap
@@ -224,8 +255,8 @@ function Navbar() {
                                 textDecoration: "none",
                             }}
                         >
-                            My store
-                        </Typography>
+                            Click & Chic
+                        </Typography> */}
                         <Box
                             sx={{
                                 flexGrow: 1,

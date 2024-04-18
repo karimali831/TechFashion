@@ -1,7 +1,7 @@
 import { IRouteParams } from "src/types/RouteParams";
 import { Order } from "./Order";
 import { useParams } from "react-router-dom";
-import { Box, LinearProgress } from "@mui/material";
+import { LinearProgress } from "@mui/material";
 import { useGetOrderByRefQuery } from "src/api/orderApi";
 import MDBox from "src/components/MDBox";
 
@@ -13,10 +13,8 @@ export const OrderByRef = () => {
     if (isLoading) return <LinearProgress />;
 
     return (
-        <MDBox className="content-uncentered">
-            <Box className="content-border">
-                <Order order={order} displayItemsOnly={false} />
-            </Box>
+        <MDBox className="content-uncentered" mt={3}>
+            <Order order={order} displayItemsOnly={false} />
         </MDBox>
     );
 };

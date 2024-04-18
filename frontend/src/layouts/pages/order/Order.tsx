@@ -1,4 +1,11 @@
-import { Grid, Fade, Typography, Box, LinearProgress } from "@mui/material";
+import {
+    Grid,
+    Fade,
+    Typography,
+    Box,
+    LinearProgress,
+    StepIconProps,
+} from "@mui/material";
 import MDTypography from "src/components/MDTypography";
 import { IOrderDetail } from "src/data/IOrderDetail";
 import { IOrderItem } from "src/data/IOrderItem";
@@ -12,6 +19,15 @@ import DefaultCell from "src/layouts/ecommerce/orders/order-list/components/Defa
 import { useGetProductQuery } from "src/api/productApi";
 import { useGetOrderedItemsQuery } from "src/api/orderApi";
 import { IProductVariantObj } from "src/interface/IProductVariantObj";
+import MDBox from "src/components/MDBox";
+import { ColorlibStepIconRoot, ProgressStepper } from "src/components/Stepper";
+import { IStepper } from "src/interface/IStepper";
+import {
+    CheckCircle,
+    LocalShipping,
+    Pending,
+    Receipt,
+} from "@mui/icons-material";
 
 interface IProps {
     order: IOrderDetail;
@@ -63,6 +79,33 @@ const columns = [
     },
 ];
 
+const orderSteps: IStepper[] = [
+    { id: 0, label: "Created" },
+    { id: 1, label: "Awaiting dispatch" },
+    { id: 3, label: "Shipped" },
+    { id: 4, label: "Delivered" },
+];
+
+function ColorlibStepIcon(props: StepIconProps) {
+    const { active, completed, className } = props;
+
+    const icons: { [index: string]: React.ReactElement } = {
+        1: <Receipt fontSize={"medium"} />,
+        2: <Pending fontSize={"medium"} />,
+        3: <LocalShipping fontSize={"medium"} />,
+        4: <CheckCircle fontSize={"medium"} />,
+    };
+
+    return (
+        <ColorlibStepIconRoot
+            ownerState={{ completed, active }}
+            className={className}
+        >
+            {icons[String(props.icon)]}
+        </ColorlibStepIconRoot>
+    );
+}
+
 export const Order = ({ order, displayItemsOnly }: IProps) => {
     const { data, isLoading } = useGetOrderedItemsQuery(order.ref);
 
@@ -76,161 +119,189 @@ export const Order = ({ order, displayItemsOnly }: IProps) => {
     }
 
     return (
-        <Grid container spacing={4}>
-            <Fade
-                in={true}
-                mountOnEnter={true}
-                unmountOnExit={true}
-                timeout={500}
-            >
-                <Grid item xl={displayItemsOnly ? 12 : 9} md={12} xs={12}>
-                    <h1>Order #{order.ref}</h1>
-                    <span>Placed on {order.dateTimeStr}</span>
-                    <Box
-                        mt={1}
-                        sx={{
-                            borderTop: {
-                                xs: "none",
-                                sm: "none",
-                                md: "none",
-                                lg: "1px solid #eee",
-                            },
-                            borderLeft: {
-                                xs: "none",
-                                sm: "none",
-                                md: "none",
-                                lg: "1px solid #eee",
-                            },
-                            borderRight: {
-                                xs: "none",
-                                sm: "none",
-                                md: "none",
-                                lg: "1px solid #eee",
-                            },
-                            p: { xs: 0, sm: 0, md: 0, lg: "10px 5px 5px 10px" },
-                        }}
-                    >
-                        <DataTable<IOrderItem>
-                            table={{
-                                columns,
-                                rows: data,
-                            }}
-                            showTotalEntries={false}
-                            entriesPerPage={false}
-                            noEndBorder={true}
-                            canSearch={false}
-                            loading={isLoading}
-                            onRowClick={(order) => {
-                                const productDetails = products.details.filter(
-                                    (x) => x.id === order.productId
-                                );
-
-                                dispatch(SelectedProductAction(productDetails));
-                                dispatch(
-                                    ShowPageWithParamsAction({
-                                        page: Page.Product,
-                                        primaryId: order.productSlug,
-                                    })
-                                );
-                            }}
-                        />
-                    </Box>
-                    <Box
-                        sx={{
-                            p: { xs: 0, sm: 0, md: 0, lg: "10px 5px 5px 10px" },
-                            border: {
-                                xs: 0,
-                                sm: 0,
-                                md: 0,
-                                lg: "1px solid #eee",
-                            },
-                        }}
-                    >
-                        <Box
-                            display="flex"
-                            justifyContent="space-between"
-                            sx={{ p: 1 }}
-                        >
-                            <MDTypography
-                                variant="caption"
-                                fontWeight="regular"
-                                color="text"
-                            >
-                                Subtotal
-                            </MDTypography>
-                            <MDTypography
-                                variant="caption"
-                                fontWeight="regular"
-                                color="text"
-                            >
-                                {order.totalStr}
-                            </MDTypography>
-                        </Box>
-                        <Box
-                            display="flex"
-                            justifyContent="space-between"
-                            sx={{ p: 1 }}
-                        >
-                            <MDTypography fontWeight="medium" color="text">
-                                Total
-                            </MDTypography>
-                            <MDTypography
-                                // variant="caption"
-                                fontWeight="medium"
-                                color="text"
-                            >
-                                {order.totalStr}
-                            </MDTypography>
-                        </Box>
-                    </Box>
-                </Grid>
-            </Fade>
-            {!displayItemsOnly && (
+        <MDBox>
+            <Grid container spacing={4}>
                 <Fade
                     in={true}
                     mountOnEnter={true}
                     unmountOnExit={true}
                     timeout={500}
-                    style={{
-                        transitionDelay: "250ms",
-                    }}
                 >
-                    <Grid item xl={3} md={12} xs={12}>
-                        <h2>Status</h2>
-                        <Box mt={1} display="flex" flexDirection={"column"}>
-                            <Typography className="standard-text">
-                                Order: {OrderStatus[order.status]}
-                            </Typography>
-                            <Typography className="standard-text">
-                                Payment: {order.paymentStatus}
-                            </Typography>
-                            <Typography className="standard-text">
-                                Arriving: Wednesday, April 3
-                            </Typography>
+                    <Grid item xl={displayItemsOnly ? 12 : 9} md={12} xs={12}>
+                        <h1>Order #{order.ref}</h1>
+                        <span>Placed on {order.dateTimeStr}</span>
+
+                        <MDBox mt={2} mb={2}>
+                            <ProgressStepper
+                                steps={orderSteps}
+                                activeStep={order.status}
+                                icons={ColorlibStepIcon}
+                            />
+                        </MDBox>
+
+                        <Box
+                            mt={1}
+                            sx={{
+                                borderTop: {
+                                    xs: "none",
+                                    sm: "none",
+                                    md: "none",
+                                    lg: "1px solid #eee",
+                                },
+                                borderLeft: {
+                                    xs: "none",
+                                    sm: "none",
+                                    md: "none",
+                                    lg: "1px solid #eee",
+                                },
+                                borderRight: {
+                                    xs: "none",
+                                    sm: "none",
+                                    md: "none",
+                                    lg: "1px solid #eee",
+                                },
+                                p: {
+                                    xs: 0,
+                                    sm: 0,
+                                    md: 0,
+                                    lg: "10px 5px 5px 10px",
+                                },
+                            }}
+                        >
+                            <DataTable<IOrderItem>
+                                table={{
+                                    columns,
+                                    rows: data,
+                                }}
+                                showTotalEntries={false}
+                                entriesPerPage={false}
+                                noEndBorder={true}
+                                canSearch={false}
+                                loading={isLoading}
+                                onRowClick={(order) => {
+                                    const productDetails =
+                                        products.details.filter(
+                                            (x) => x.id === order.productId
+                                        );
+
+                                    dispatch(
+                                        SelectedProductAction(productDetails)
+                                    );
+                                    dispatch(
+                                        ShowPageWithParamsAction({
+                                            page: Page.Product,
+                                            primaryId: order.productSlug,
+                                        })
+                                    );
+                                }}
+                            />
                         </Box>
-                        <Box mt={3}>
-                            <h2>Shipping Address</h2>
-                            <Box mt={1} display="flex" flexDirection={"column"}>
-                                <Typography className="standard-text">
-                                    {order.name}
-                                </Typography>
-                                <Typography className="standard-text">
-                                    {order.line1}
-                                </Typography>
-                                <Typography className="standard-text">
-                                    {order.line2}
-                                </Typography>
-                                <Typography className="standard-text">
-                                    {order.city}
-                                </Typography>
-                                <Typography className="standard-text">
-                                    {order.postalCode}, {order.country}
-                                </Typography>
+                        <Box
+                            sx={{
+                                p: {
+                                    xs: 0,
+                                    sm: 0,
+                                    md: 0,
+                                    lg: "10px 5px 5px 10px",
+                                },
+                                border: {
+                                    xs: 0,
+                                    sm: 0,
+                                    md: 0,
+                                    lg: "1px solid #eee",
+                                },
+                            }}
+                        >
+                            <Box
+                                display="flex"
+                                justifyContent="space-between"
+                                sx={{ p: 1 }}
+                            >
+                                <MDTypography
+                                    variant="caption"
+                                    fontWeight="regular"
+                                    color="text"
+                                >
+                                    Subtotal
+                                </MDTypography>
+                                <MDTypography
+                                    variant="caption"
+                                    fontWeight="regular"
+                                    color="text"
+                                >
+                                    {order.totalStr}
+                                </MDTypography>
+                            </Box>
+                            <Box
+                                display="flex"
+                                justifyContent="space-between"
+                                sx={{ p: 1 }}
+                            >
+                                <MDTypography fontWeight="medium" color="text">
+                                    Total
+                                </MDTypography>
+                                <MDTypography
+                                    // variant="caption"
+                                    fontWeight="medium"
+                                    color="text"
+                                >
+                                    {order.totalStr}
+                                </MDTypography>
                             </Box>
                         </Box>
                     </Grid>
                 </Fade>
-            )}
-        </Grid>
+                {!displayItemsOnly && (
+                    <Fade
+                        in={true}
+                        mountOnEnter={true}
+                        unmountOnExit={true}
+                        timeout={500}
+                        style={{
+                            transitionDelay: "250ms",
+                        }}
+                    >
+                        <Grid item xl={3} md={12} xs={12}>
+                            <h2>Status</h2>
+                            <Box mt={1} display="flex" flexDirection={"column"}>
+                                <Typography className="standard-text">
+                                    Order: {OrderStatus[order.status]}
+                                </Typography>
+                                <Typography className="standard-text">
+                                    Payment: {order.paymentStatus}
+                                </Typography>
+                                <Typography className="standard-text">
+                                    Arriving: Wednesday, April 3
+                                </Typography>
+                            </Box>
+                            <Box mt={3}>
+                                <h2>Shipping Address</h2>
+                                <Box
+                                    mt={1}
+                                    display="flex"
+                                    flexDirection={"column"}
+                                >
+                                    <Typography className="standard-text">
+                                        {order.name}
+                                    </Typography>
+                                    <Typography className="standard-text">
+                                        {order.line1}
+                                    </Typography>
+                                    <Typography className="standard-text">
+                                        {order.line2}
+                                    </Typography>
+                                    <Typography className="standard-text">
+                                        {order.city}
+                                    </Typography>
+                                    <Typography className="standard-text">
+                                        {order.postalCode}, {order.country}
+                                    </Typography>
+                                </Box>
+                            </Box>
+                        </Grid>
+                    </Fade>
+                )}
+            </Grid>
+        </MDBox>
     );
 };

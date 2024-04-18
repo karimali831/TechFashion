@@ -146,7 +146,7 @@ export const CodeVerification = ({ attempt }: IProps) => {
                             fontSize="small"
                         >
                             By continuing, your email address will be saved with
-                            Tech Fashion.
+                            Elegance Craft.
                         </MDTypography>
                     </Box>
                 </Box>
