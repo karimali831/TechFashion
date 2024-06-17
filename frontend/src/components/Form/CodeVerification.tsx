@@ -57,7 +57,7 @@ export const CodeVerification = ({ attempt }: IProps) => {
                         Swal.fire({
                             icon: "error",
                             title: "Account already exists, please login instead.",
-                        });
+                        }).then(() => dispatch(ShowPageAction(Page.Login)));
                     } else if (response.errorMsg) {
                         setErrorMsg(response.errorMsg);
                     } else {

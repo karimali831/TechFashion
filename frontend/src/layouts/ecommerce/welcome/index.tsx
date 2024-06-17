@@ -16,7 +16,10 @@ export const Welcome = () => {
     return (
         <Box
             sx={{
-                height: 36,
+                position: "absolute",
+                width: "100%",
+                top: 0,
+                height: 30,
                 background: welcomeText.variant === "default" && "#000",
                 backgroundImage: backgroundImg,
                 color: "#fff",

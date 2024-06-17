@@ -291,7 +291,8 @@ a:hover {
     }
 
     .content-small {
-        width: 390px;
+        padding: 5px 10px;
+        width: 100%;
     }
 
     /*navbar styles*/

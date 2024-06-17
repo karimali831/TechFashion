@@ -37,7 +37,11 @@ const ProductItem = ({ index, item, loading }: IProps) => {
             mountOnEnter={true}
             unmountOnExit={true}
             style={{
-                transitionDelay: index !== 0 ? index * 100 + "ms" : "0ms",
+                transitionDelay: loading
+                    ? "0ms"
+                    : index !== 0
+                    ? index * 100 + "ms"
+                    : "0ms",
             }}
         >
             {loading ? (

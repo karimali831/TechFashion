@@ -131,7 +131,7 @@ function Billing(): JSX.Element {
                     timeout={500}
                 >
                     <Grid item xl={9} md={12} xs={12}>
-                        <h1>Order history</h1>
+                        <h2>Order history</h2>
                         <Box mt={1}>
                             {account.orders.length === 0 ? (
                                 <span>You haven't placed any orders yet.</span>

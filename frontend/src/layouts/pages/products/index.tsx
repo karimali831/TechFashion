@@ -53,7 +53,7 @@ const Products = () => {
                     {isLoading
                         ? (() => {
                               const arr = [];
-                              for (let i = 0; i < 4; i++) {
+                              for (let i = 0; i < 8; i++) {
                                   arr.push(
                                       <Grid item key={i}>
                                           <Item className="product-item">

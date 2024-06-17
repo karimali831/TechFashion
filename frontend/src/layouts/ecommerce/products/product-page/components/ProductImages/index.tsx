@@ -17,7 +17,7 @@ const images = [
 ];
 
 function ProductImages(): JSX.Element {
-    return <ImageGallery items={images} />;
+    return <ImageGallery items={images} lazyLoad={true} />;
 }
 
 export default ProductImages;

@@ -56,6 +56,7 @@ builder.Services.AddCors(options =>
         {
             builder.WithOrigins(
                 "http://localhost:5173",
+                "https://elegancecraft.co.uk",
                 "https://elegancecraft.netlify.app"
             )
             .AllowAnyHeader()

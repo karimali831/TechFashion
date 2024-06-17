@@ -26,7 +26,7 @@ interface Props {
 
 function ProductCell({ image, name }: Props): JSX.Element {
     return (
-        <MDBox display="flex" alignItems="center" pr={2}>
+        <MDBox display="flex" alignItems="center">
             <MDBox mr={2}>
                 <MDAvatar src={image} alt={name} />
             </MDBox>

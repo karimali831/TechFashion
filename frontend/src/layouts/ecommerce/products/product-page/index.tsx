@@ -80,7 +80,7 @@ function ProductPage(): JSX.Element {
                         </Grid>
                     </MDBox>
 
-                    <MDBox mt={4} mb={2} className="content-border">
+                    <MDBox mt={10} mb={2}>
                         <MDBox mb={1} ml={2}>
                             <MDTypography variant="h5" fontWeight="medium">
                                 You may also like

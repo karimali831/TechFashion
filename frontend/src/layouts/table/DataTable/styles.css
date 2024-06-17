@@ -5,12 +5,18 @@ table {
     table-layout: fixed;
 }
 
+.mobile-sort {
+    border: 1px solid #eee;
+    border-radius: 2px !important;
+}
+
 @media screen and (max-width: 991px) {
     .mobile-sort,
     .sort-wrapper {
         display: flex;
         flex-direction: column;
-        margin-left: -15px;
+        border: none;
+        border-top: 1px solid #eee;
         /* gap: 20px; */
     }
 
@@ -26,21 +32,22 @@ table {
     }
 
     table th {
-        padding: 10px 15px !important;
+        padding: 8px 0px !important;
+    }
+
+    table th > div {
+        text-transform: capitalize !important;
     }
 
     table tr {
         border-bottom: 1px solid #eee;
-        display: table-column;
+        display: block;
         margin-bottom: 0.625em;
     }
 
     table td {
-        /* border-bottom: 1px solid #ddd; */
         border: none;
         display: block;
-        /* font-size: 0.8em; */
-        /* text-align: right; */
     }
 
     table td::before {
@@ -53,7 +60,7 @@ table {
     }
 
     table td:first-child {
-        margin-top: 10px;
+        margin-top: 20px;
     }
 
     table td:last-child {

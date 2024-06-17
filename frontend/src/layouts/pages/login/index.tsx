@@ -11,6 +11,7 @@ import { ClipLoader } from "react-spinners";
 import { ActionButton } from "src/components/Buttons/ActionButton";
 import { FormInput, FormValidation } from "src/components/Form";
 import { FormMessage } from "src/components/Form/Message";
+import MDBox from "src/components/MDBox";
 import { auth } from "src/config/firebase";
 import { IFormMessage, IFormMessageCode } from "src/enum/IFormMessage";
 import { Page } from "src/enum/Page";
@@ -113,7 +114,7 @@ const Login = (): JSX.Element => {
 
     return (
         <Fade in={true} mountOnEnter={true} unmountOnExit={true} timeout={500}>
-            <Box className="content">
+            <MDBox className="content">
                 <form className="content-border content-small">
                     <h1>Login</h1>
                     <FormInput
@@ -179,7 +180,7 @@ const Login = (): JSX.Element => {
                         onClick={handleLogin}
                     />
                 </form>
-            </Box>
+            </MDBox>
         </Fade>
     );
 };

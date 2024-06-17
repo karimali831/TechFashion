@@ -5,6 +5,7 @@ import { isMobile } from "react-device-detect";
 
 interface IProps {
     size: OverlaySliderSize;
+    direction: "left" | "right" | "up" | "down";
     customWidth?: number;
     onClose: () => void;
     children: ReactElement;
@@ -19,6 +20,7 @@ export enum OverlaySliderSize {
 
 export const OverlaySlider: FC<IProps> = ({
     size,
+    direction,
     customWidth,
     onClose,
     children,
@@ -29,7 +31,7 @@ export const OverlaySlider: FC<IProps> = ({
         <Box id="overlay-slider" className="modal-backdrop">
             <Slide
                 in={slide}
-                direction="left"
+                direction={direction}
                 mountOnEnter={true}
                 unmountOnExit={true}
                 onExited={onClose}
@@ -38,6 +40,9 @@ export const OverlaySlider: FC<IProps> = ({
                     id="component-inner"
                     style={{
                         width: customWidth ?? isMobile ? size - 50 : size,
+                        right: direction === "right" ? undefined : 0,
+                        left: direction === "left" ? undefined : 0,
+                        top: direction !== "left" ? 90 : 0,
                     }}
                 >
                     {children}

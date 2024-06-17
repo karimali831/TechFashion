@@ -29,6 +29,9 @@ import Logo from "src/assets/img/ec-logo.png";
 import { useAccountDetailsQuery } from "src/api/userApi";
 import { getAppState } from "src/state/contexts/app/Selectors";
 import { ShippingAddressModal } from "../ecommerce/modals/ShippingAddress";
+import MDBox from "src/components/MDBox";
+import { Close } from "@mui/icons-material";
+import { Welcome } from "../ecommerce/welcome";
 
 const MenuLinkStyle: React.CSSProperties = {
     cursor: "pointer",
@@ -50,12 +53,11 @@ function Navbar() {
     const [anchorElCategories, setAnchorElCategories] =
         React.useState<null | HTMLElement>(null);
     const openCategories = Boolean(anchorElCategories);
+    const [openMenu, setOpenMenu] = useState<boolean>(false);
 
     const { page } = useAppSelector(getAppState);
     const { user, firebaseUid } = useAppSelector(getUserState);
     const { guestCheckout, openOverlay } = useAppSelector(getCartState);
-
-    const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
     const { data: account } = useAccountDetailsQuery(user?.id, { skip: !user });
 
@@ -74,18 +76,10 @@ function Navbar() {
         guestCheckoutId: guestCheckout?.id,
     });
 
-    const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorElNav(event.currentTarget);
-    };
-
     const itemsInCart: ICartProductDetail[] = cart?.products ?? [];
 
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
-    };
-
     const navToPage = (page: Page) => {
-        handleCloseNavMenu();
+        setOpenMenu(false);
         dispatch(ShowPageAction(page));
     };
 
@@ -105,11 +99,13 @@ function Navbar() {
             sx={{
                 background: "#1d1d1d",
                 borderBottom: ".1rem solid rgba(0,0,0, .08)",
+                mb: 13,
             }}
         >
             <ShippingAddressModal />
             {openOverlay && (
                 <OverlaySlider
+                    direction="left"
                     size={OverlaySliderSize.Small}
                     onClose={() => dispatch(OpenCartOverlayAction(false))}
                 >
@@ -117,16 +113,24 @@ function Navbar() {
                 </OverlaySlider>
             )}
             <AppBar
-                position="sticky"
+                position="fixed"
+                className="content"
                 sx={{
+                    zIndex: 1030,
                     background: "#1d1d1d",
                     color: "#ccc",
                     display: "flex",
+                    alignItems: "center",
                     justifyContent: "center",
-                    height: { xs: 60, md: 85 },
+                    height: { xs: 90, md: 115 },
                 }}
             >
-                <Container maxWidth={false}>
+                <Welcome />
+                <Container
+                    maxWidth={false}
+                    className="content"
+                    sx={{ position: "relative", top: 15, p: 0 }}
+                >
                     <Toolbar disableGutters>
                         <Box
                             sx={{
@@ -146,26 +150,6 @@ function Navbar() {
                                 }}
                             />
                         </Box>
-                        {/* <Typography
-                            variant="h2"
-                            noWrap
-                            component="a"
-                            href="/"
-                            sx={{
-                                mr: 5,
-                                display: { xs: "none", md: "flex" },
-                                color: "rgba(0, 0, 0, 0.75)",
-                                fontFamily: "Assistant, sans-serif",
-                                fontSize: 24,
-                                fontWeight: 400,
-                                letterSpacing: 0.6,
-                                lineHeight: 2.4,
-                                textDecoration: "none",
-                            }}
-                        >
-                            Elegance Craft
-                        </Typography> */}
-
                         <Box
                             sx={{
                                 flexGrow: 1,
@@ -177,52 +161,42 @@ function Navbar() {
                                 aria-label="account of current user"
                                 aria-controls="menu-appbar"
                                 aria-haspopup="true"
-                                onClick={handleOpenNavMenu}
+                                onClick={() => setOpenMenu(!openMenu)}
                                 color="inherit"
                             >
-                                <MenuIcon />
+                                {openMenu ? <Close /> : <MenuIcon />}
                             </IconButton>
-                            <Menu
-                                id="menu-appbar"
-                                anchorEl={anchorElNav}
-                                anchorOrigin={{
-                                    vertical: "bottom",
-                                    horizontal: "left",
-                                }}
-                                keepMounted
-                                transformOrigin={{
-                                    vertical: "top",
-                                    horizontal: "left",
-                                }}
-                                open={Boolean(anchorElNav)}
-                                onClose={handleCloseNavMenu}
-                                sx={{
-                                    display: { xs: "block", md: "none" },
-                                }}
-                            >
-                                {AppRoutes.filter((x) => x.displayOnHeader).map(
-                                    (route) => (
-                                        <MenuItem
-                                            key={route.page}
-                                            onClick={() =>
-                                                navToPage(route.page)
-                                            }
-                                        >
-                                            <Typography textAlign="center">
-                                                {route.page}
-                                            </Typography>
-                                        </MenuItem>
-                                    )
-                                )}
-                            </Menu>
+                            {openMenu && (
+                                <OverlaySlider
+                                    direction="right"
+                                    size={OverlaySliderSize.Small}
+                                    onClose={() => setOpenMenu(false)}
+                                >
+                                    <MDBox>
+                                        {AppRoutes.filter(
+                                            (x) => x.displayOnHeader
+                                        ).map((route) => (
+                                            <MenuItem
+                                                key={route.page}
+                                                onClick={() =>
+                                                    navToPage(route.page)
+                                                }
+                                            >
+                                                <Typography textAlign="center">
+                                                    {route.page}
+                                                </Typography>
+                                            </MenuItem>
+                                        ))}
+                                    </MDBox>
+                                </OverlaySlider>
+                            )}
                         </Box>
 
                         <Box
                             sx={{
                                 display: { xs: "flex", md: "none" },
-                                textAlign: "left",
                                 cursor: "pointer",
-                                mr: 3,
+                                mr: 5,
                             }}
                             onClick={() => dispatch(ShowPageAction(Page.Home))}
                         >
@@ -237,27 +211,6 @@ function Navbar() {
                                 }}
                             />
                         </Box>
-                        {/* 
-                        <Typography
-                            variant="h5"
-                            noWrap
-                            component="a"
-                            href="/"
-                            sx={{
-                                mr: 2,
-                                display: { xs: "flex", md: "none" },
-                                flexGrow: 1,
-                                color: "rgba(0, 0, 0, 0.75)",
-                                fontFamily: "Assistant, sans-serif",
-                                fontSize: 22,
-                                fontWeight: 400,
-                                letterSpacing: 0.6,
-                                lineHeight: 1,
-                                textDecoration: "none",
-                            }}
-                        >
-                            Click & Chic
-                        </Typography> */}
                         <Box
                             sx={{
                                 flexGrow: 1,

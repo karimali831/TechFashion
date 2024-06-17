@@ -8,8 +8,7 @@ import Navbar from "./layouts/navigation/Navbar";
 import { PersistGate } from "redux-persist/integration/react";
 import theme from "src/assets/theme";
 import themeDark from "src/assets/theme-dark";
-import { Box, CircularProgress } from "@mui/material";
-import { Welcome } from "./layouts/ecommerce/welcome";
+import { CircularProgress } from "@mui/material";
 
 function App() {
     const darkMode = false;
@@ -18,11 +17,8 @@ function App() {
         <Provider store={store}>
             <PersistGate loading={<CircularProgress />} persistor={persistor}>
                 <ThemeProvider theme={darkMode ? themeDark : theme}>
-                    <Welcome />
-                    <Box>
-                        <Navbar />
-                        <AnimatedRoutes />
-                    </Box>
+                    <Navbar />
+                    <AnimatedRoutes />
                     <Footer />
                 </ThemeProvider>
             </PersistGate>

@@ -40,22 +40,35 @@ const columns = [
         accessor: "product",
         width: 300,
         Cell: ({ value }: any) => (
-            <DefaultCell link={true} value={value} maxLength={50} />
+            <DefaultCell
+                link={true}
+                value={value}
+                // maxLength={50}
+                textAlign="right"
+            />
         ),
     },
     {
         Header: "Variant",
         accessor: "variantList",
         Cell: ({ row }: any) => {
-            if (row.original.variantList.length == 0) return "-";
+            const variantCount = row.original.variantList.length;
+            if (variantCount == 0) return "-";
 
-            return row.original.variantList.map((book: IProductVariantObj) => (
-                <Box key={book.attribute}>
-                    <span>
-                        {book.attribute}: {book.value}
-                    </span>
-                </Box>
-            ));
+            return row.original.variantList.map(
+                (book: IProductVariantObj, idx: number) => (
+                    <Box key={book.attribute}>
+                        <MDTypography
+                            variant="caption"
+                            fontSize="small"
+                            fontWeight="regular"
+                            color="text"
+                        >
+                            {variantCount === 1 ? "" : "-"} {book.value}
+                        </MDTypography>
+                    </Box>
+                )
+            );
         },
     },
     {
@@ -142,24 +155,6 @@ export const Order = ({ order, displayItemsOnly }: IProps) => {
                         <Box
                             mt={1}
                             sx={{
-                                borderTop: {
-                                    xs: "none",
-                                    sm: "none",
-                                    md: "none",
-                                    lg: "1px solid #eee",
-                                },
-                                borderLeft: {
-                                    xs: "none",
-                                    sm: "none",
-                                    md: "none",
-                                    lg: "1px solid #eee",
-                                },
-                                borderRight: {
-                                    xs: "none",
-                                    sm: "none",
-                                    md: "none",
-                                    lg: "1px solid #eee",
-                                },
                                 p: {
                                     xs: 0,
                                     sm: 0,
@@ -198,13 +193,28 @@ export const Order = ({ order, displayItemsOnly }: IProps) => {
                         </Box>
                         <Box
                             sx={{
+                                ml: 1.2,
+                                mr: 0.6,
+                                mt: -1,
                                 p: {
                                     xs: 0,
                                     sm: 0,
                                     md: 0,
                                     lg: "10px 5px 5px 10px",
                                 },
-                                border: {
+                                borderBottom: {
+                                    xs: 0,
+                                    sm: 0,
+                                    md: 0,
+                                    lg: "1px solid #eee",
+                                },
+                                borderLeft: {
+                                    xs: 0,
+                                    sm: 0,
+                                    md: 0,
+                                    lg: "1px solid #eee",
+                                },
+                                borderRight: {
                                     xs: 0,
                                     sm: 0,
                                     md: 0,
@@ -215,7 +225,7 @@ export const Order = ({ order, displayItemsOnly }: IProps) => {
                             <Box
                                 display="flex"
                                 justifyContent="space-between"
-                                sx={{ p: 1 }}
+                                sx={{ p: 1, mt: 2 }}
                             >
                                 <MDTypography
                                     variant="caption"

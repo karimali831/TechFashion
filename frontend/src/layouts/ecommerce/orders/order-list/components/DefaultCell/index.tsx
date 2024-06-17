@@ -19,9 +19,14 @@ function DefaultCell({
     return (
         <MDTypography
             variant="caption"
+            fontSize={15}
             fontWeight="regular"
             color="text"
-            sx={{ cursor: link ? "pointer" : "auto", textAlign }}
+            sx={{
+                cursor: link ? "pointer" : "auto",
+                textDecoration: link && "underline",
+                textAlign,
+            }}
         >
             {!maxLength
                 ? value
@@ -44,6 +49,7 @@ function DefaultCell({
 // Declaring default props for DefaultCell
 DefaultCell.defaultProps = {
     suffix: "",
+    textAlign: "right",
 };
 
 export default DefaultCell;
